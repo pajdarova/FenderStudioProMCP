@@ -1,0 +1,67 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "studio-one-mcp"
+version = "0.1.0"
+description = "MCP server for controlling Studio One via the Mackie Control Universal (MCU) MIDI protocol"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "StudioOneMcp Contributors" }]
+keywords = ["mcp", "midi", "studio-one", "daw", "mackie-control"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Sound/Audio",
+]
+
+dependencies = [
+    "mcp>=1.0.0",
+    "python-rtmidi>=1.5.0",
+    "anyio>=4.0.0",
+    "click>=8.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-mock>=3.12.0",
+    "ruff>=0.3.0",
+    "mypy>=1.8.0",
+]
+
+[project.scripts]
+studio-one-mcp = "studio_one_mcp.server:main"
+
+[project.urls]
+Repository = "https://github.com/tiwadara/studioonemcp"
+Documentation = "https://github.com/tiwadara/studioonemcp/blob/main/docs/phase1-mcu-bridge.md"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/studio_one_mcp"]
+
+[tool.ruff]
+src = ["src"]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

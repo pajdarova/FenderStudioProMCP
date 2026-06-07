@@ -1,0 +1,263 @@
+"""MCU-over-MIDI bridge: opens a virtual MIDI port and sends Mackie Control Universal messages."""
+
+from __future__ import annotations
+
+import asyncio
+import logging
+import time
+from contextlib import contextmanager
+from typing import Generator
+
+import rtmidi
+from rtmidi.midiconstants import NOTE_ON, PITCH_BEND, CONTROL_CHANGE
+
+log = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# MCU note numbers (all on MIDI channel 1, i.e. status byte 0x90)
+# ---------------------------------------------------------------------------
+
+# Per-channel strip notes — add channel index (0–7) to each base
+_NOTE_REC_ARM_BASE = 0
+_NOTE_SOLO_BASE = 8
+_NOTE_MUTE_BASE = 16
+_NOTE_SELECT_BASE = 24
+
+# Transport
+_NOTE_REWIND = 91
+_NOTE_FAST_FORWARD = 92
+_NOTE_STOP = 93
+_NOTE_PLAY = 94
+_NOTE_RECORD = 95
+_NOTE_CYCLE = 86   # Loop / Cycle
+_NOTE_SAVE = 98
+_NOTE_UNDO = 110
+_NOTE_REDO = 101
+
+# VPot relative CC base (pan encoders) — channels 0–7 → CC 16–23
+_CC_VPOT_BASE = 16
+
+# MIDI channel for channel strips: strip N uses pitch-bend channel N+1
+# Master fader lives on MIDI channel 9 (0-indexed: 8)
+_MIDI_CH_MASTER_FADER = 8
+
+# Maximum 14-bit pitch-bend value
+_PB_MAX = 16383
+
+# Minimum inter-message delay to avoid Studio One dropping rapid bursts
+_DEFAULT_MESSAGE_DELAY_S = 0.02
+
+
+class MidiBridgeError(Exception):
+    """Raised when the MIDI bridge cannot open a port or send a message."""
+
+
+class MidiBridge:
+    """Manages a virtual MIDI output port and encodes MCU commands.
+
+    Parameters
+    ----------
+    port_name:
+        Name of the virtual MIDI port to create (must match what Studio One
+        is configured to listen on).
+    message_delay:
+        Seconds to wait between messages when sending press/release pairs.
+    """
+
+    def __init__(self, port_name: str = "StudioOneMCP", message_delay: float = _DEFAULT_MESSAGE_DELAY_S) -> None:
+        self._port_name = port_name
+        self._message_delay = message_delay
+        self._out: rtmidi.MidiOut | None = None
+        # Optimistic state cache — populated when we send commands
+        self._fader_levels: dict[str | int, float] = {}
+        self._mute_state: dict[int, bool] = {}
+        self._solo_state: dict[int, bool] = {}
+        self._rec_arm_state: dict[int, bool] = {}
+
+    # ------------------------------------------------------------------
+    # Lifecycle
+    # ------------------------------------------------------------------
+
+    def open(self) -> None:
+        """Open the virtual MIDI output port."""
+        if self._out is not None:
+            return
+        try:
+            self._out = rtmidi.MidiOut()
+            self._out.open_virtual_port(self._port_name)
+            log.info("Opened virtual MIDI port: %s", self._port_name)
+        except Exception as exc:
+            raise MidiBridgeError(f"Failed to open virtual MIDI port '{self._port_name}': {exc}") from exc
+
+    def close(self) -> None:
+        """Close the virtual MIDI port."""
+        if self._out is not None:
+            self._out.close_port()
+            del self._out
+            self._out = None
+            log.info("Closed virtual MIDI port: %s", self._port_name)
+
+    def __enter__(self) -> "MidiBridge":
+        self.open()
+        return self
+
+    def __exit__(self, *_: object) -> None:
+        self.close()
+
+    @contextmanager
+    def _ensure_open(self) -> Generator[None, None, None]:
+        if self._out is None:
+            raise MidiBridgeError("MIDI port is not open. Call open() first.")
+        yield
+
+    # ------------------------------------------------------------------
+    # Low-level send helpers
+    # ------------------------------------------------------------------
+
+    def _send(self, message: list[int]) -> None:
+        with self._ensure_open():
+            log.debug("MIDI → %s", [hex(b) for b in message])
+            self._out.send_message(message)  # type: ignore[union-attr]
+
+    def _note_on(self, note: int, velocity: int = 127, channel: int = 0) -> None:
+        self._send([NOTE_ON | channel, note, velocity])
+
+    def _note_off(self, note: int, channel: int = 0) -> None:
+        self._send([NOTE_ON | channel, note, 0])
+
+    def _button_press(self, note: int, channel: int = 0) -> None:
+        """Send a momentary button press (note-on then note-off)."""
+        self._note_on(note, 127, channel)
+        time.sleep(self._message_delay)
+        self._note_off(note, channel)
+
+    def _pitch_bend(self, value: int, channel: int = 0) -> None:
+        """Send a 14-bit pitch-bend message on the given MIDI channel."""
+        lsb = value & 0x7F
+        msb = (value >> 7) & 0x7F
+        self._send([PITCH_BEND | channel, lsb, msb])
+
+    def _cc(self, cc: int, value: int, channel: int = 0) -> None:
+        self._send([CONTROL_CHANGE | channel, cc, value & 0x7F])
+
+    # ------------------------------------------------------------------
+    # Transport commands
+    # ------------------------------------------------------------------
+
+    def play(self) -> None:
+        self._button_press(_NOTE_PLAY)
+
+    def stop(self) -> None:
+        self._button_press(_NOTE_STOP)
+
+    def record(self) -> None:
+        self._button_press(_NOTE_RECORD)
+
+    def rewind(self) -> None:
+        self._button_press(_NOTE_REWIND)
+
+    def fast_forward(self) -> None:
+        self._button_press(_NOTE_FAST_FORWARD)
+
+    def toggle_loop(self) -> None:
+        self._button_press(_NOTE_CYCLE)
+
+    def save(self) -> None:
+        self._button_press(_NOTE_SAVE)
+
+    def undo(self) -> None:
+        self._button_press(_NOTE_UNDO)
+
+    def redo(self) -> None:
+        self._button_press(_NOTE_REDO)
+
+    # ------------------------------------------------------------------
+    # Mixer commands
+    # ------------------------------------------------------------------
+
+    def set_fader(self, channel: int | str, level: float) -> None:
+        """Set a fader position.
+
+        Parameters
+        ----------
+        channel:
+            Strip index 0–7, or the string ``"master"``.
+        level:
+            Linear position 0–100 mapped to pitch-bend 0–16383.
+        """
+        level = max(0.0, min(100.0, level))
+        pb_value = int(level / 100.0 * _PB_MAX)
+        if channel == "master":
+            midi_ch = _MIDI_CH_MASTER_FADER
+        else:
+            ch = int(channel)
+            if not 0 <= ch <= 7:
+                raise ValueError(f"Channel must be 0–7 or 'master', got {channel!r}")
+            midi_ch = ch
+        self._pitch_bend(pb_value, channel=midi_ch)
+        self._fader_levels[channel] = level
+
+    def toggle_mute(self, channel: int) -> None:
+        ch = self._validate_strip(channel)
+        self._button_press(_NOTE_MUTE_BASE + ch)
+        self._mute_state[ch] = not self._mute_state.get(ch, False)
+
+    def toggle_solo(self, channel: int) -> None:
+        ch = self._validate_strip(channel)
+        self._button_press(_NOTE_SOLO_BASE + ch)
+        self._solo_state[ch] = not self._solo_state.get(ch, False)
+
+    def toggle_rec_arm(self, channel: int) -> None:
+        ch = self._validate_strip(channel)
+        self._button_press(_NOTE_REC_ARM_BASE + ch)
+        self._rec_arm_state[ch] = not self._rec_arm_state.get(ch, False)
+
+    def select_channel(self, channel: int) -> None:
+        ch = self._validate_strip(channel)
+        self._button_press(_NOTE_SELECT_BASE + ch)
+
+    def set_pan(self, channel: int, pan: int) -> None:
+        """Adjust pan via a relative VPot encoder message.
+
+        Parameters
+        ----------
+        pan:
+            Signed offset in the range −64 to +63.
+            Positive = right, negative = left.
+        """
+        ch = self._validate_strip(channel)
+        pan = max(-64, min(63, pan))
+        if pan >= 0:
+            cc_value = pan if pan > 0 else 0
+        else:
+            cc_value = 64 + (64 + pan)  # 65–127 = left rotation
+        self._cc(_CC_VPOT_BASE + ch, cc_value)
+
+    # ------------------------------------------------------------------
+    # State introspection (optimistic cache)
+    # ------------------------------------------------------------------
+
+    def get_assumed_state(self) -> dict[str, object]:
+        return {
+            "fader_levels": dict(self._fader_levels),
+            "mute": dict(self._mute_state),
+            "solo": dict(self._solo_state),
+            "rec_arm": dict(self._rec_arm_state),
+        }
+
+    # ------------------------------------------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _validate_strip(channel: int) -> int:
+        ch = int(channel)
+        if not 0 <= ch <= 7:
+            raise ValueError(f"Channel strip must be 0–7, got {ch}")
+        return ch
+
+    @staticmethod
+    def list_available_ports() -> list[str]:
+        """Return names of available MIDI output ports on this machine."""
+        out = rtmidi.MidiOut()
+        return [out.get_port_name(i) for i in range(out.get_port_count())]

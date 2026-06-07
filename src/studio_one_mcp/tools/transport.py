@@ -1,0 +1,106 @@
+"""MCP tools for Studio One transport control (play, stop, record, etc.)."""
+
+from __future__ import annotations
+
+import logging
+
+from mcp.server import Server
+from mcp.types import Tool, TextContent
+
+from studio_one_mcp.midi_bridge import MidiBridge
+
+log = logging.getLogger(__name__)
+
+
+def register_transport_tools(server: Server, bridge: MidiBridge) -> None:
+    """Register all transport-related MCP tools onto *server*."""
+
+    @server.list_tools()
+    async def _list() -> list[Tool]:
+        return _transport_tools()
+
+    @server.call_tool()
+    async def _call(name: str, arguments: dict) -> list[TextContent]:
+        return await _dispatch(name, arguments, bridge)
+
+
+# ---------------------------------------------------------------------------
+# Tool catalogue
+# ---------------------------------------------------------------------------
+
+def _transport_tools() -> list[Tool]:
+    return [
+        Tool(
+            name="transport_play",
+            description="Start playback in Studio One.",
+            inputSchema={"type": "object", "properties": {}, "required": []},
+        ),
+        Tool(
+            name="transport_stop",
+            description="Stop playback in Studio One.",
+            inputSchema={"type": "object", "properties": {}, "required": []},
+        ),
+        Tool(
+            name="transport_record",
+            description="Start recording in Studio One (arms and rolls transport).",
+            inputSchema={"type": "object", "properties": {}, "required": []},
+        ),
+        Tool(
+            name="transport_rewind",
+            description="Rewind the transport position in Studio One.",
+            inputSchema={"type": "object", "properties": {}, "required": []},
+        ),
+        Tool(
+            name="transport_fast_forward",
+            description="Fast-forward the transport position in Studio One.",
+            inputSchema={"type": "object", "properties": {}, "required": []},
+        ),
+        Tool(
+            name="transport_toggle_loop",
+            description="Toggle loop (cycle) mode on or off in Studio One.",
+            inputSchema={"type": "object", "properties": {}, "required": []},
+        ),
+        Tool(
+            name="transport_save",
+            description="Save the current Studio One project.",
+            inputSchema={"type": "object", "properties": {}, "required": []},
+        ),
+        Tool(
+            name="transport_undo",
+            description="Undo the last action in Studio One.",
+            inputSchema={"type": "object", "properties": {}, "required": []},
+        ),
+        Tool(
+            name="transport_redo",
+            description="Redo the last undone action in Studio One.",
+            inputSchema={"type": "object", "properties": {}, "required": []},
+        ),
+    ]
+
+
+# ---------------------------------------------------------------------------
+# Dispatcher
+# ---------------------------------------------------------------------------
+
+_HANDLERS: dict[str, str] = {
+    "transport_play": "play",
+    "transport_stop": "stop",
+    "transport_record": "record",
+    "transport_rewind": "rewind",
+    "transport_fast_forward": "fast_forward",
+    "transport_toggle_loop": "toggle_loop",
+    "transport_save": "save",
+    "transport_undo": "undo",
+    "transport_redo": "redo",
+}
+
+
+async def _dispatch(name: str, _arguments: dict, bridge: MidiBridge) -> list[TextContent]:
+    method_name = _HANDLERS.get(name)
+    if method_name is None:
+        raise ValueError(f"Unknown transport tool: {name!r}")
+
+    method = getattr(bridge, method_name)
+    log.info("Transport: %s()", method_name)
+    method()
+    return [TextContent(type="text", text=f"OK: {name} sent via MCU MIDI")]
