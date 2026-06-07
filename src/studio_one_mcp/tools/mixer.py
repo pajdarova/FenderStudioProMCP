@@ -120,6 +120,48 @@ def _mixer_tools() -> list[Tool]:
             ),
             inputSchema={"type": "object", "properties": {}, "required": []},
         ),
+        Tool(
+            name="mixer_bank_left",
+            description=(
+                "Shift the MCU fader bank one step left (show the previous 8 channels). "
+                "Has no effect if already at bank 0 (channels 1–8)."
+            ),
+            inputSchema={"type": "object", "properties": {}, "required": []},
+        ),
+        Tool(
+            name="mixer_bank_right",
+            description=(
+                "Shift the MCU fader bank one step right (show the next 8 channels). "
+                "Has no effect if already at the last bank."
+            ),
+            inputSchema={"type": "object", "properties": {}, "required": []},
+        ),
+        Tool(
+            name="mixer_goto_bank",
+            description=(
+                "Jump directly to a specific MCU bank (0–7), where bank 0 = channels 1–8, "
+                "bank 1 = channels 9–16, … bank 7 = channels 57–64."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "bank": {
+                        "type": "integer",
+                        "description": "Target bank number 0–7.",
+                        "minimum": 0,
+                        "maximum": 7,
+                    },
+                },
+                "required": ["bank"],
+            },
+        ),
+        Tool(
+            name="mixer_get_bank",
+            description=(
+                "Return the current MCU bank number and the absolute channel range it shows."
+            ),
+            inputSchema={"type": "object", "properties": {}, "required": []},
+        ),
     ]
 
 
@@ -177,6 +219,29 @@ async def _dispatch(name: str, arguments: dict[str, Any], bridge: MidiBridge) ->
         case "mixer_get_state":
             state = bridge.get_assumed_state()
             return [TextContent(type="text", text=json.dumps(state, indent=2))]
+
+        case "mixer_bank_left":
+            moved = bridge.bank_left()
+            if moved:
+                return [TextContent(type="text", text=f"OK: bank → {bridge.current_bank} (ch {bridge.channel_offset + 1}–{bridge.channel_offset + 8})")]
+            return [TextContent(type="text", text="Already at bank 0 (channels 1–8)")]
+
+        case "mixer_bank_right":
+            moved = bridge.bank_right()
+            if moved:
+                return [TextContent(type="text", text=f"OK: bank → {bridge.current_bank} (ch {bridge.channel_offset + 1}–{bridge.channel_offset + 8})")]
+            return [TextContent(type="text", text="Already at last bank (channels 57–64)")]
+
+        case "mixer_goto_bank":
+            bank = int(arguments["bank"])
+            bridge.goto_bank(bank)
+            return [TextContent(type="text", text=f"OK: bank → {bridge.current_bank} (ch {bridge.channel_offset + 1}–{bridge.channel_offset + 8})")]
+
+        case "mixer_get_bank":
+            b = bridge.current_bank
+            lo = bridge.channel_offset + 1
+            hi = bridge.channel_offset + 8
+            return [TextContent(type="text", text=f"Bank {b}: channels {lo}–{hi}")]
 
         case _:
             raise ValueError(f"Unknown mixer tool: {name!r}")

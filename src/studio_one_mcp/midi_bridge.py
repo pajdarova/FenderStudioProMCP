@@ -44,6 +44,15 @@ _MIDI_CH_MASTER_FADER = 8
 # Maximum 14-bit pitch-bend value
 _PB_MAX = 16383
 
+# Bank navigation note numbers
+_NOTE_BANK_LEFT = 46
+_NOTE_BANK_RIGHT = 47
+_NOTE_CHANNEL_LEFT = 48
+_NOTE_CHANNEL_RIGHT = 49
+
+# MCU supports 8 banks of 8 channels (0–7)
+_MAX_BANK = 7
+
 # Minimum inter-message delay to avoid Studio One dropping rapid bursts
 _DEFAULT_MESSAGE_DELAY_S = 0.02
 
@@ -68,6 +77,7 @@ class MidiBridge:
         self._port_name = port_name
         self._message_delay = message_delay
         self._out: rtmidi.MidiOut | None = None
+        self._current_bank: int = 0
         # Optimistic state cache — populated when we send commands
         self._fader_levels: dict[str | int, float] = {}
         self._mute_state: dict[int, bool] = {}
@@ -229,6 +239,55 @@ class MidiBridge:
         pan = max(-64, min(63, pan))
         cc_value = (pan if pan > 0 else 0) if pan >= 0 else 64 + (64 + pan)  # 65–127 = left
         self._cc(_CC_VPOT_BASE + ch, cc_value)
+
+    # ------------------------------------------------------------------
+    # Bank navigation
+    # ------------------------------------------------------------------
+
+    @property
+    def current_bank(self) -> int:
+        """0-indexed bank currently displayed on the MCU surface (0 = ch 1–8)."""
+        return self._current_bank
+
+    @property
+    def channel_offset(self) -> int:
+        """Absolute channel offset of the first visible strip (bank × 8)."""
+        return self._current_bank * 8
+
+    def bank_left(self) -> bool:
+        """Shift one bank left. Returns False (and sends nothing) if already at bank 0."""
+        if self._current_bank <= 0:
+            return False
+        self._button_press(_NOTE_BANK_LEFT)
+        self._current_bank -= 1
+        return True
+
+    def bank_right(self) -> bool:
+        """Shift one bank right. Returns False (and sends nothing) if already at max bank."""
+        if self._current_bank >= _MAX_BANK:
+            return False
+        self._button_press(_NOTE_BANK_RIGHT)
+        self._current_bank += 1
+        return True
+
+    def channel_left(self) -> None:
+        """Nudge the visible window one channel to the left."""
+        self._button_press(_NOTE_CHANNEL_LEFT)
+
+    def channel_right(self) -> None:
+        """Nudge the visible window one channel to the right."""
+        self._button_press(_NOTE_CHANNEL_RIGHT)
+
+    def goto_bank(self, bank: int) -> None:
+        """Navigate directly to *bank* (0–7) by sending the required number of bank presses."""
+        bank = max(0, min(_MAX_BANK, bank))
+        delta = bank - self._current_bank
+        if delta == 0:
+            return
+        note = _NOTE_BANK_RIGHT if delta > 0 else _NOTE_BANK_LEFT
+        for _ in range(abs(delta)):
+            self._button_press(note)
+        self._current_bank = bank
 
     # ------------------------------------------------------------------
     # State introspection (optimistic cache)
