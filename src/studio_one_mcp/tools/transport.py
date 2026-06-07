@@ -4,24 +4,11 @@ from __future__ import annotations
 
 import logging
 
-from mcp.server import Server
-from mcp.types import Tool, TextContent
+from mcp.types import TextContent, Tool
 
 from studio_one_mcp.midi_bridge import MidiBridge
 
 log = logging.getLogger(__name__)
-
-
-def register_transport_tools(server: Server, bridge: MidiBridge) -> None:
-    """Register all transport-related MCP tools onto *server*."""
-
-    @server.list_tools()
-    async def _list() -> list[Tool]:
-        return _transport_tools()
-
-    @server.call_tool()
-    async def _call(name: str, arguments: dict) -> list[TextContent]:
-        return await _dispatch(name, arguments, bridge)
 
 
 # ---------------------------------------------------------------------------
@@ -95,7 +82,7 @@ _HANDLERS: dict[str, str] = {
 }
 
 
-async def _dispatch(name: str, _arguments: dict, bridge: MidiBridge) -> list[TextContent]:
+async def _dispatch(name: str, _arguments: dict[str, object], bridge: MidiBridge) -> list[TextContent]:
     method_name = _HANDLERS.get(name)
     if method_name is None:
         raise ValueError(f"Unknown transport tool: {name!r}")

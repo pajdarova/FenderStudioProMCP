@@ -10,7 +10,7 @@ from typing import Any
 import click
 import mcp.server.stdio
 import mcp.types as types
-from mcp.server import Server
+from mcp.server import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
 
 from studio_one_mcp import __version__
@@ -24,16 +24,18 @@ def _build_server(bridge: MidiBridge) -> Server:
     server = Server("studio-one-mcp")
 
     # Collect tools from both modules
-    from studio_one_mcp.tools.transport import _transport_tools, _dispatch as _transport_dispatch
-    from studio_one_mcp.tools.mixer import _mixer_tools, _dispatch as _mixer_dispatch
+    from studio_one_mcp.tools.mixer import _dispatch as _mixer_dispatch
+    from studio_one_mcp.tools.mixer import _mixer_tools
+    from studio_one_mcp.tools.transport import _dispatch as _transport_dispatch
+    from studio_one_mcp.tools.transport import _transport_tools
 
     all_transport_names = {t.name for t in _transport_tools()}
 
-    @server.list_tools()
+    @server.list_tools()  # type: ignore[no-untyped-call, untyped-decorator]
     async def handle_list_tools() -> list[types.Tool]:
         return _transport_tools() + _mixer_tools()
 
-    @server.call_tool()
+    @server.call_tool()  # type: ignore[untyped-decorator]
     async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[types.TextContent]:
         try:
             if name in all_transport_names:
@@ -53,7 +55,7 @@ async def _run_stdio(bridge: MidiBridge) -> None:
         server_name="studio-one-mcp",
         server_version=__version__,
         capabilities=server.get_capabilities(
-            notification_options=None,
+            notification_options=NotificationOptions(),
             experimental_capabilities={},
         ),
     )

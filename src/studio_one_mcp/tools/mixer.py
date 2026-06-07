@@ -2,27 +2,15 @@
 
 from __future__ import annotations
 
+import json
 import logging
 from typing import Any
 
-from mcp.server import Server
-from mcp.types import Tool, TextContent
+from mcp.types import TextContent, Tool
 
 from studio_one_mcp.midi_bridge import MidiBridge
 
 log = logging.getLogger(__name__)
-
-
-def register_mixer_tools(server: Server, bridge: MidiBridge) -> None:
-    """Register all mixer-related MCP tools onto *server*."""
-
-    @server.list_tools()
-    async def _list() -> list[Tool]:
-        return _mixer_tools()
-
-    @server.call_tool()
-    async def _call(name: str, arguments: dict) -> list[TextContent]:
-        return await _dispatch(name, arguments, bridge)
 
 
 # ---------------------------------------------------------------------------
@@ -188,7 +176,6 @@ async def _dispatch(name: str, arguments: dict[str, Any], bridge: MidiBridge) ->
 
         case "mixer_get_state":
             state = bridge.get_assumed_state()
-            import json
             return [TextContent(type="text", text=json.dumps(state, indent=2))]
 
         case _:

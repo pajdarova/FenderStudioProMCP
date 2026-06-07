@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-import asyncio
 import logging
 import time
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Generator
+from typing import Any
 
 import rtmidi
-from rtmidi.midiconstants import NOTE_ON, PITCH_BEND, CONTROL_CHANGE
+from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_ON, PITCH_BEND
 
 log = logging.getLogger(__name__)
 
@@ -97,7 +97,7 @@ class MidiBridge:
             self._out = None
             log.info("Closed virtual MIDI port: %s", self._port_name)
 
-    def __enter__(self) -> "MidiBridge":
+    def __enter__(self) -> MidiBridge:
         self.open()
         return self
 
@@ -227,17 +227,14 @@ class MidiBridge:
         """
         ch = self._validate_strip(channel)
         pan = max(-64, min(63, pan))
-        if pan >= 0:
-            cc_value = pan if pan > 0 else 0
-        else:
-            cc_value = 64 + (64 + pan)  # 65–127 = left rotation
+        cc_value = (pan if pan > 0 else 0) if pan >= 0 else 64 + (64 + pan)  # 65–127 = left
         self._cc(_CC_VPOT_BASE + ch, cc_value)
 
     # ------------------------------------------------------------------
     # State introspection (optimistic cache)
     # ------------------------------------------------------------------
 
-    def get_assumed_state(self) -> dict[str, object]:
+    def get_assumed_state(self) -> dict[str, Any]:
         return {
             "fader_levels": dict(self._fader_levels),
             "mute": dict(self._mute_state),
