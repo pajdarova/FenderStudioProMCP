@@ -15,33 +15,49 @@ from mcp.server.models import InitializationOptions
 
 from studio_one_mcp import __version__
 from studio_one_mcp.midi_bridge import MidiBridge, MidiBridgeError
+from studio_one_mcp.ucnet.client import UCNETClient
 
 log = logging.getLogger(__name__)
 
 
-def _build_server(bridge: MidiBridge) -> Server:
-    """Construct and configure the MCP server with all tools registered."""
+def _build_server(bridge: MidiBridge, ucnet: UCNETClient | None = None) -> Server:
+    """Construct and configure the MCP server with all tools registered.
+
+    Parameters
+    ----------
+    bridge:
+        Open MCU MIDI bridge (always required — handles transport + mixer).
+    ucnet:
+        Optional connected UCNET client. When provided, additional state-query
+        and precise parameter-write tools are registered alongside the MCU ones.
+    """
     server = Server("studio-one-mcp")
 
-    # Collect tools from both modules
     from studio_one_mcp.tools.mixer import _dispatch as _mixer_dispatch
     from studio_one_mcp.tools.mixer import _mixer_tools
     from studio_one_mcp.tools.transport import _dispatch as _transport_dispatch
     from studio_one_mcp.tools.transport import _transport_tools
+    from studio_one_mcp.tools.ucnet_state import _dispatch as _ucnet_dispatch
+    from studio_one_mcp.tools.ucnet_state import _ucnet_tools
 
-    all_transport_names = {t.name for t in _transport_tools()}
+    transport_names = {t.name for t in _transport_tools()}
+    ucnet_names = {t.name for t in _ucnet_tools()} if ucnet else set()
 
     @server.list_tools()  # type: ignore[no-untyped-call, untyped-decorator]
     async def handle_list_tools() -> list[types.Tool]:
-        return _transport_tools() + _mixer_tools()
+        tools = _transport_tools() + _mixer_tools()
+        if ucnet:
+            tools += _ucnet_tools()
+        return tools
 
     @server.call_tool()  # type: ignore[untyped-decorator]
     async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[types.TextContent]:
         try:
-            if name in all_transport_names:
+            if name in transport_names:
                 return await _transport_dispatch(name, arguments, bridge)
-            else:
-                return await _mixer_dispatch(name, arguments, bridge)
+            if name in ucnet_names and ucnet is not None:
+                return await _ucnet_dispatch(name, arguments, ucnet)
+            return await _mixer_dispatch(name, arguments, bridge)
         except (ValueError, MidiBridgeError) as exc:
             log.error("Tool %r failed: %s", name, exc)
             return [types.TextContent(type="text", text=f"ERROR: {exc}")]
@@ -49,8 +65,8 @@ def _build_server(bridge: MidiBridge) -> Server:
     return server
 
 
-async def _run_stdio(bridge: MidiBridge) -> None:
-    server = _build_server(bridge)
+async def _run_stdio(bridge: MidiBridge, ucnet: UCNETClient | None) -> None:
+    server = _build_server(bridge, ucnet)
     init_opts = InitializationOptions(
         server_name="studio-one-mcp",
         server_version=__version__,
@@ -83,26 +99,38 @@ async def _run_stdio(bridge: MidiBridge) -> None:
     help="Seconds to wait between MIDI note-on and note-off (press/release).",
 )
 @click.option(
-    "--transport",
-    default="stdio",
-    show_default=True,
-    type=click.Choice(["stdio"], case_sensitive=False),
-    help="MCP transport to use. Only 'stdio' is supported in Phase 1.",
+    "--ucnet-host",
+    default=None,
+    envvar="STUDIO_ONE_UCNET_HOST",
+    help="IP address of the Studio One machine for UCNET (Phase 2). "
+         "When provided, state-query tools are enabled alongside MCU tools.",
 )
-@click.option("--list-ports", is_flag=True, help="List available MIDI output ports and exit.")
+@click.option(
+    "--ucnet-port",
+    default=52327,
+    show_default=True,
+    type=int,
+    envvar="STUDIO_ONE_UCNET_PORT",
+    help="UCNET TCP port.",
+)
+@click.option(
+    "--list-ports", is_flag=True,
+    help="List available MIDI output ports and exit.",
+)
 @click.option("--debug", is_flag=True, help="Enable debug logging.")
 @click.version_option(__version__)
 def main(
     port_name: str,
     message_delay: float,
-    transport: str,
+    ucnet_host: str | None,
+    ucnet_port: int,
     list_ports: bool,
     debug: bool,
 ) -> None:
-    """Studio One MCP Server — MCU MIDI bridge (Phase 1).
+    """Studio One MCP Server — MCU MIDI bridge (Phase 1) + UCNET (Phase 2).
 
-    Exposes Studio One transport and mixer controls as MCP tools, communicating
-    via the Mackie Control Universal protocol over a virtual MIDI port.
+    Always opens a virtual MIDI port for MCU transport and mixer control.
+    Pass --ucnet-host to also connect via UCNET for real state readback.
     """
     logging.basicConfig(
         level=logging.DEBUG if debug else logging.INFO,
@@ -127,15 +155,40 @@ def main(
         click.echo(f"ERROR: {exc}", err=True)
         sys.exit(1)
 
-    click.echo(f"Studio One MCP server v{__version__} starting on port '{port_name}' …", err=True)
+    mode = f"MCU MIDI (port='{port_name}')"
+    if ucnet_host:
+        mode += f" + UCNET ({ucnet_host}:{ucnet_port})"
+    click.echo(f"Studio One MCP server v{__version__} — {mode}", err=True)
 
     try:
-        asyncio.run(_run_stdio(bridge))
+        asyncio.run(_async_main(bridge, ucnet_host, ucnet_port))
     except KeyboardInterrupt:
         pass
     finally:
         bridge.close()
         click.echo("Server stopped.", err=True)
+
+
+async def _async_main(
+    bridge: MidiBridge,
+    ucnet_host: str | None,
+    ucnet_port: int,
+) -> None:
+    ucnet: UCNETClient | None = None
+    if ucnet_host:
+        ucnet = UCNETClient(ucnet_host, ucnet_port)
+        try:
+            await ucnet.connect()
+            log.info("UCNET connected to %s:%d", ucnet_host, ucnet_port)
+        except Exception as exc:
+            log.warning("UCNET connection failed (%s) — continuing with MCU only", exc)
+            ucnet = None
+
+    try:
+        await _run_stdio(bridge, ucnet)
+    finally:
+        if ucnet:
+            await ucnet.close()
 
 
 if __name__ == "__main__":
