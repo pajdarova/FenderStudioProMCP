@@ -10,6 +10,8 @@ import pytest
 from studio_one_mcp.plugin_db import (
     Plugin,
     PluginNotFoundError,
+    _normalise_category,
+    _parse_plugins_en,
     find_plugin,
     list_plugins,
 )
@@ -209,3 +211,103 @@ class TestFindPlugin:
         with patch("studio_one_mcp.plugin_db._find_datastore", return_value=None):
             with pytest.raises(PluginNotFoundError):
                 find_plugin("Serum")
+
+
+# ---------------------------------------------------------------------------
+# Tests for Plugins-en.settings XML parser
+# ---------------------------------------------------------------------------
+
+_PLUGINS_EN_XML = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<Attributes>
+    <Attribute id="/Library/Audio/Plug-Ins/VST3/Serum.vst3" members="classID name vendor category">
+        <Attribute id="classID" value="{56535458-6673-5873-6572-756D00000000}"/>
+        <Attribute id="name" value="Serum"/>
+        <Attribute id="vendor" value="Xfer Records"/>
+        <Attribute id="category" value="AudioSynth"/>
+    </Attribute>
+    <Attribute id="/Library/Audio/Plug-Ins/VST3/ProQ3.vst3" members="classID name vendor category">
+        <Attribute id="classID" value="{ABCD1234-0000-0000-0000-000000000001}"/>
+        <Attribute id="name" value="Pro-Q 3"/>
+        <Attribute id="vendor" value="FabFilter"/>
+        <Attribute id="category" value="AudioEffect"/>
+    </Attribute>
+    <Attribute id="/bad/entry/no_classid" members="name vendor">
+        <Attribute id="name" value="Broken Plugin"/>
+        <Attribute id="vendor" value="Nobody"/>
+    </Attribute>
+</Attributes>
+"""
+
+
+class TestParsePluginsEn:
+    def _write_xml(self, tmp_path: Path, xml: str = _PLUGINS_EN_XML) -> Path:
+        p = tmp_path / "Plugins-en.settings"
+        p.write_text(xml, encoding="utf-8")
+        return p
+
+    def test_parses_plugins(self, tmp_path: Path) -> None:
+        path = self._write_xml(tmp_path)
+        plugins = _parse_plugins_en(path)
+        names = {p.name for p in plugins}
+        assert "Serum" in names
+        assert "Pro-Q 3" in names
+
+    def test_excludes_missing_classid(self, tmp_path: Path) -> None:
+        path = self._write_xml(tmp_path)
+        plugins = _parse_plugins_en(path)
+        names = {p.name for p in plugins}
+        assert "Broken Plugin" not in names
+
+    def test_fields_populated(self, tmp_path: Path) -> None:
+        path = self._write_xml(tmp_path)
+        plugins = _parse_plugins_en(path)
+        serum = next(p for p in plugins if p.name == "Serum")
+        assert serum.cid == "{56535458-6673-5873-6572-756D00000000}"
+        assert serum.vendor == "Xfer Records"
+        assert serum.category == "AudioSynth"
+
+    def test_returns_empty_on_bad_xml(self, tmp_path: Path) -> None:
+        path = tmp_path / "Plugins-en.settings"
+        path.write_text("not xml at all <<<", encoding="utf-8")
+        plugins = _parse_plugins_en(path)
+        assert plugins == []
+
+    def test_list_plugins_prefers_settings_file(self, tmp_path: Path) -> None:
+        """Plugins-en.settings takes priority over DataStore.db."""
+        settings = self._write_xml(tmp_path)
+        with (
+            patch("studio_one_mcp.plugin_db._find_settings", return_value=settings),
+            patch("studio_one_mcp.plugin_db._find_datastore", return_value=None),
+        ):
+            plugins = list_plugins()
+        names = {p.name for p in plugins}
+        assert "Serum" in names
+        assert "Pro-Q 3" in names
+
+
+# ---------------------------------------------------------------------------
+# Tests for _normalise_category
+# ---------------------------------------------------------------------------
+
+class TestNormaliseCategory:
+    def test_audiosynth_passthrough(self) -> None:
+        assert _normalise_category("AudioSynth") == "AudioSynth"
+
+    def test_audioeffect_passthrough(self) -> None:
+        assert _normalise_category("AudioEffect") == "AudioEffect"
+
+    def test_lowercase_synth(self) -> None:
+        assert _normalise_category("synth") == "AudioSynth"
+
+    def test_vst3_fx_category(self) -> None:
+        assert _normalise_category("Fx") == "AudioEffect"
+
+    def test_reverb_maps_to_effect(self) -> None:
+        assert _normalise_category("Reverb") == "AudioEffect"
+
+    def test_empty_string(self) -> None:
+        assert _normalise_category("") == ""
+
+    def test_unknown_passthrough(self) -> None:
+        assert _normalise_category("SomeUnknownThing") == "SomeUnknownThing"

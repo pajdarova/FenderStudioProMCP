@@ -82,7 +82,7 @@ def _list_plugins(arguments: dict[str, Any]) -> list[TextContent]:
     category: str | None = arguments.get("category") or None
     plugins = list_plugins(category=category)
     if not plugins:
-        msg = "No plugins found in Studio One DataStore.db."
+        msg = "No plugins found in Studio One plugin database (Plugins-en.settings / DataStore.db)."
         if category:
             msg = f"No plugins found for category {category!r}."
         return [TextContent(type="text", text=msg)]
