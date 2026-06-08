@@ -3,16 +3,14 @@
 from __future__ import annotations
 
 import json
-import platform
-import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
 from studio_one_mcp.keystrokes import (
-    KeystrokeError,
     _AS_KEY_CODES,
+    KeystrokeError,
     _combo_to_applescript,
     _platform_key,
     _split_combo,
@@ -124,22 +122,27 @@ class TestLoadKeymap:
         assert "my_action" in km["actions"]
 
     def test_missing_keymap_raises(self, tmp_path: Path):
-        with patch.dict("os.environ", {"STUDIO_ONE_MCP_KEYMAP": str(tmp_path / "nope.json")}):
-            with pytest.raises(KeystrokeError, match="Keymap not found"):
-                load_keymap()
+        with (
+            patch.dict("os.environ", {"STUDIO_ONE_MCP_KEYMAP": str(tmp_path / "nope.json")}),
+            pytest.raises(KeystrokeError, match="Keymap not found"),
+        ):
+            load_keymap()
 
     def test_invalid_json_raises(self, tmp_path: Path):
         bad = tmp_path / "bad.json"
         bad.write_text("{not valid json")
-        with patch.dict("os.environ", {"STUDIO_ONE_MCP_KEYMAP": str(bad)}):
-            with pytest.raises(KeystrokeError, match="Invalid keymap JSON"):
-                load_keymap()
+        with (
+            patch.dict("os.environ", {"STUDIO_ONE_MCP_KEYMAP": str(bad)}),
+            pytest.raises(KeystrokeError, match="Invalid keymap JSON"),
+        ):
+            load_keymap()
 
 
 class TestToolDispatcher:
     @pytest.mark.asyncio
     async def test_known_tool_returns_ok(self):
         from unittest.mock import AsyncMock, patch
+
         from studio_one_mcp.tools.automation import _dispatch
         with patch("studio_one_mcp.tools.automation.send_action", new_callable=AsyncMock) as mock_send:
             result = await _dispatch("auto_undo", {})
@@ -149,6 +152,7 @@ class TestToolDispatcher:
     @pytest.mark.asyncio
     async def test_keystroke_error_returns_error_text(self):
         from unittest.mock import AsyncMock, patch
+
         from studio_one_mcp.tools.automation import _dispatch
         with patch(
             "studio_one_mcp.tools.automation.send_action",

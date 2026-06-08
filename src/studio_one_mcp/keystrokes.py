@@ -68,8 +68,10 @@ def load_keymap() -> dict[str, Any]:
     try:
         with path.open() as fh:
             return json.load(fh)  # type: ignore[no-any-return]
-    except FileNotFoundError:
-        raise KeystrokeError(f"Keymap not found: {path}. Set STUDIO_ONE_MCP_KEYMAP to override.")
+    except FileNotFoundError as exc:
+        raise KeystrokeError(
+            f"Keymap not found: {path}. Set STUDIO_ONE_MCP_KEYMAP to override."
+        ) from exc
     except json.JSONDecodeError as exc:
         raise KeystrokeError(f"Invalid keymap JSON at {path}: {exc}") from exc
 

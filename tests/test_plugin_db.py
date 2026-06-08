@@ -10,12 +10,11 @@ import pytest
 from studio_one_mcp.plugin_db import (
     Plugin,
     PluginNotFoundError,
-    _normalise_category,
-    _parse_plugins_en,
+    _normalise_category,  # noqa: PLC2701
+    _parse_plugins_en,  # noqa: PLC2701
     find_plugin,
     list_plugins,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -107,7 +106,6 @@ class TestListPlugins:
         db = _create_test_db(tmp_path)
         with patch("studio_one_mcp.plugin_db._find_datastore", return_value=db):
             plugins = list_plugins()
-        names = {p.name for p in plugins}
         # null subFolder rows should be excluded or have empty string name
         for p in plugins:
             assert p.name != ""  # empty names are excluded by the query
@@ -173,17 +171,21 @@ class TestFindPlugin:
 
     def test_not_found_raises_error(self, tmp_path: Path) -> None:
         db = _create_test_db(tmp_path)
-        with patch("studio_one_mcp.plugin_db._find_datastore", return_value=db):
-            with pytest.raises(PluginNotFoundError) as exc_info:
-                find_plugin("NonexistentPlugin99")
+        with (
+            patch("studio_one_mcp.plugin_db._find_datastore", return_value=db),
+            pytest.raises(PluginNotFoundError) as exc_info,
+        ):
+            find_plugin("NonexistentPlugin99")
         assert "NonexistentPlugin99" in str(exc_info.value)
         assert "not found" in str(exc_info.value).lower()
 
     def test_not_found_lists_known_plugins(self, tmp_path: Path) -> None:
         db = _create_test_db(tmp_path)
-        with patch("studio_one_mcp.plugin_db._find_datastore", return_value=db):
-            with pytest.raises(PluginNotFoundError) as exc_info:
-                find_plugin("DoesNotExist")
+        with (
+            patch("studio_one_mcp.plugin_db._find_datastore", return_value=db),
+            pytest.raises(PluginNotFoundError) as exc_info,
+        ):
+            find_plugin("DoesNotExist")
         error_msg = str(exc_info.value)
         # The error should mention known plugins
         assert "Serum" in error_msg or "Pro-Q 3" in error_msg
@@ -208,9 +210,11 @@ class TestFindPlugin:
         assert plugin.cid == "{AAA}"
 
     def test_find_plugin_no_datastore_raises_error(self) -> None:
-        with patch("studio_one_mcp.plugin_db._find_datastore", return_value=None):
-            with pytest.raises(PluginNotFoundError):
-                find_plugin("Serum")
+        with (
+            patch("studio_one_mcp.plugin_db._find_datastore", return_value=None),
+            pytest.raises(PluginNotFoundError),
+        ):
+            find_plugin("Serum")
 
 
 # ---------------------------------------------------------------------------

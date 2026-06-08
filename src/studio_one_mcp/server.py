@@ -41,8 +41,11 @@ def _build_server(
     """
     server = Server("studio-one-mcp")
 
+    from studio_one_mcp.ipc_bridge import IPCBridge
     from studio_one_mcp.tools.automation import _automation_tools
     from studio_one_mcp.tools.automation import _dispatch as _automation_dispatch
+    from studio_one_mcp.tools.ipc_tools import _dispatch as _ipc_dispatch
+    from studio_one_mcp.tools.ipc_tools import _ipc_tools
     from studio_one_mcp.tools.macro_tools import _dispatch as _macro_dispatch
     from studio_one_mcp.tools.macro_tools import _macro_tools
     from studio_one_mcp.tools.mixer import _dispatch as _mixer_dispatch
@@ -52,14 +55,16 @@ def _build_server(
     from studio_one_mcp.tools.ucnet_state import _dispatch as _ucnet_dispatch
     from studio_one_mcp.tools.ucnet_state import _ucnet_tools
 
+    ipc = IPCBridge()
     transport_names = {t.name for t in _transport_tools()}
     ucnet_names = {t.name for t in _ucnet_tools()} if ucnet else set()
     auto_names = {t.name for t in _automation_tools()} if automation else set()
     macro_names = {t.name for t in _macro_tools()}
+    ipc_names = {t.name for t in _ipc_tools()}
 
     @server.list_tools()  # type: ignore[no-untyped-call, untyped-decorator]
     async def handle_list_tools() -> list[types.Tool]:
-        tools = _transport_tools() + _mixer_tools() + _macro_tools()
+        tools = _transport_tools() + _mixer_tools() + _macro_tools() + _ipc_tools()
         if ucnet:
             tools += _ucnet_tools()
         if automation:
@@ -77,6 +82,8 @@ def _build_server(
                 return await _automation_dispatch(name, arguments)
             if name in macro_names:
                 return await _macro_dispatch(name, arguments)
+            if name in ipc_names:
+                return await _ipc_dispatch(name, arguments, ipc)
             return await _mixer_dispatch(name, arguments, bridge)
         except (ValueError, MidiBridgeError) as exc:
             log.error("Tool %r failed: %s", name, exc)
