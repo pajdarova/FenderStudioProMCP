@@ -44,9 +44,13 @@ undo entry.
 | `View` | Previous/Next Macro Page, Select Macro Page |
 | `Zoom` | Zoom to Selection, Zoom Full, Track Height Tiny/Normal/Large |
 
-**Track creation is NOT a direct command.** Adding audio/instrument tracks goes
-through an `IEditTask` dialog (`trackedit.package`). Use keyboard shortcuts for
-track creation (already implemented in Phase 1).
+**Track creation via direct commands (no dialog):**
+- `Track` / `Add Audio Track (mono)` — direct, no dialog
+- `Track` / `Add Layer` — add comping layer to selected track
+- `Track` / `Expand Layers` with `CommandArgument name="Expand" value="1"`
+
+Full Add Track dialog is an `IEditTask` (`trackedit.package`), but the mono
+variant is exposed as a plain command callable from macros and the extension.
 
 ### Macro File Format (fully reverse-engineered)
 
@@ -85,6 +89,37 @@ MacroExecuter.execute()
 ---
 
 ## Phase 3 Capabilities (Planned)
+
+### Plugin Insertion API
+
+`Track/Add Insert to Selected Channels`:
+```xml
+<CommandArgument name="mode" value="1"/>
+<CommandArgument name="cid" value="{PLUGIN-GUID}"/>
+<CommandArgument name="preset" value="default"/>
+```
+
+`Audio/Insert Event FX` (same args + optional `tail` = tail seconds).
+
+Known built-in plugin GUIDs:
+| Plugin | GUID |
+|--------|------|
+| Compressor | `{54F19B72-352C-4AA5-A2AF-67F86F30D6BE}` |
+| Pro EQ | `{073C4094-E062-4FB5-8328-74608DD1A3A4}` |
+| GainTrim | `{E4D7D911-0608-4B46-ABA3-2E345399A5AC}` |
+| Space Delay | `{BFBEA41B-679A-41F2-AACA-ED9D51137412}` |
+| Open Air (Reverb) | `{29C71194-B29A-40C0-9A35-9053DB6F596C}` |
+
+Additional useful commands:
+- `Console` / `Show Channel Editor`
+- `Audio` / `Open Event FX Editor`
+- `Edit` / `Toggle Ripple Edit` (`State` = `"1"` on, `""` off)
+- `Transport` / `Locate Selection`
+
+User Extensions folder (confirmed, directory-based like built-in extensions):
+`~/Library/Application Support/PreSonus/Studio One 6/Extensions/`
+
+---
 
 ### 3a — Macro Generation
 
