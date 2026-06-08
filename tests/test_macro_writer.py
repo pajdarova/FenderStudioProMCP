@@ -6,14 +6,11 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
-
 from studio_one_mcp.macro_writer import (
     MacroCommand,
     macro_command_name,
     write_macro,
 )
-
 
 # ---------------------------------------------------------------------------
 # Tests for macro_command_name
