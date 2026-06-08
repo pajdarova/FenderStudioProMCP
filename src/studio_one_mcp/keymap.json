@@ -146,6 +146,12 @@
       "mac":     {"keys": ["cmd+,"]},
       "windows": {"keys": ["ctrl+,"]},
       "linux":   {"keys": ["ctrl+comma"]}
+    },
+    "add_audio_track_mono": {
+      "description": "Add a mono audio track without dialog. Assign Ctrl+Shift+Cmd+M in Studio One Preferences → Keyboard Shortcuts → Track → 'Add Audio Track (mono)'.",
+      "mac":     {"keys": ["ctrl+shift+cmd+m"], "custom": true},
+      "windows": {"keys": ["ctrl+shift+alt+m"], "custom": true},
+      "linux":   {"keys": ["ctrl+shift+alt+m"], "custom": true}
     }
   }
 }

@@ -35,6 +35,7 @@ _TOOL_ACTION: dict[str, str] = {
     "auto_go_to_end":            "go_to_end",
     "auto_split_at_playhead":    "split_at_playhead",
     "auto_quantize":             "quantize",
+    "auto_add_audio_track_mono": "add_audio_track_mono",
 }
 
 _NO_ARGS: dict[str, Any] = {"type": "object", "properties": {}, "required": []}
@@ -157,6 +158,15 @@ def _automation_tools() -> list[Tool]:
         Tool(
             name="auto_quantize",
             description="Quantize selected MIDI notes to the current quantize grid.",
+            inputSchema=_NO_ARGS,
+        ),
+        Tool(
+            name="auto_add_audio_track_mono",
+            description=(
+                "Add a new mono audio track directly without the Add Track dialog. "
+                "Requires a custom shortcut (Ctrl+Shift+Cmd+M on Mac) assigned once in "
+                "Studio One Preferences → Keyboard Shortcuts → Track → 'Add Audio Track (mono)'."
+            ),
             inputSchema=_NO_ARGS,
         ),
     ]

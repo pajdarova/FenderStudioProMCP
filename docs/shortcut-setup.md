@@ -15,9 +15,16 @@ that don't have defaults need a one-time manual assignment.
 |--------|-----------|-------------|-----------------|
 | `auto_add_instrument_track` | "Add Instrument Track" | `Ctrl+Shift+Cmd+I` | `Ctrl+Shift+Alt+I` |
 | `auto_add_bus_track` | "Add Bus Channel" | `Ctrl+Shift+Cmd+B` | `Ctrl+Shift+Alt+B` |
+| `auto_add_audio_track_mono` | "Add Audio Track (mono)" | `Ctrl+Shift+Cmd+M` | `Ctrl+Shift+Alt+M` |
 
 All other automation tools use Studio One's existing default shortcuts — no
 additional setup required.
+
+> **Note:** `auto_generate_insert_macro` needs no shortcut — it generates a
+> `.studioonemacro` file in `~/Documents/Studio One/Macros/MCP/`. After
+> running the tool, reload macros in Studio One (Studio One menu → Macros →
+> Reload Macros) and the macro will appear in the macro toolbar under the
+> **MCP** group.
 
 ## Built-in shortcuts used
 

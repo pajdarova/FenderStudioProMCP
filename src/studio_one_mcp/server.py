@@ -43,6 +43,8 @@ def _build_server(
 
     from studio_one_mcp.tools.automation import _automation_tools
     from studio_one_mcp.tools.automation import _dispatch as _automation_dispatch
+    from studio_one_mcp.tools.macro_tools import _dispatch as _macro_dispatch
+    from studio_one_mcp.tools.macro_tools import _macro_tools
     from studio_one_mcp.tools.mixer import _dispatch as _mixer_dispatch
     from studio_one_mcp.tools.mixer import _mixer_tools
     from studio_one_mcp.tools.transport import _dispatch as _transport_dispatch
@@ -53,10 +55,11 @@ def _build_server(
     transport_names = {t.name for t in _transport_tools()}
     ucnet_names = {t.name for t in _ucnet_tools()} if ucnet else set()
     auto_names = {t.name for t in _automation_tools()} if automation else set()
+    macro_names = {t.name for t in _macro_tools()}
 
     @server.list_tools()  # type: ignore[no-untyped-call, untyped-decorator]
     async def handle_list_tools() -> list[types.Tool]:
-        tools = _transport_tools() + _mixer_tools()
+        tools = _transport_tools() + _mixer_tools() + _macro_tools()
         if ucnet:
             tools += _ucnet_tools()
         if automation:
@@ -72,6 +75,8 @@ def _build_server(
                 return await _ucnet_dispatch(name, arguments, ucnet)
             if name in auto_names:
                 return await _automation_dispatch(name, arguments)
+            if name in macro_names:
+                return await _macro_dispatch(name, arguments)
             return await _mixer_dispatch(name, arguments, bridge)
         except (ValueError, MidiBridgeError) as exc:
             log.error("Tool %r failed: %s", name, exc)
