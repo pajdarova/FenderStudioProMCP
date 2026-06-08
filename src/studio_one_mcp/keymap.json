@@ -1,0 +1,151 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "doc": "StudioOneMCP keyboard shortcut mapping. Actions marked custom=true require a one-time assignment in Studio One Preferences → Keyboard Shortcuts. See docs/shortcut-setup.md."
+  },
+  "app_name": {
+    "mac": "Studio One",
+    "windows": "Studio One",
+    "linux": "Studio One"
+  },
+  "actions": {
+    "add_audio_track": {
+      "description": "Add a new audio track (uses Add Tracks dialog with default = Audio)",
+      "mac":     {"keys": ["t"], "delay_ms": 350, "dialog": {"confirm": ["return"]}},
+      "windows": {"keys": ["t"], "delay_ms": 350, "dialog": {"confirm": ["return"]}},
+      "linux":   {"keys": ["t"], "delay_ms": 350, "dialog": {"confirm": ["Return"]}}
+    },
+    "add_instrument_track": {
+      "description": "Add a new instrument track. Assign Ctrl+Shift+Cmd+I in Studio One Preferences → Keyboard Shortcuts → 'Add Instrument Track'.",
+      "mac":     {"keys": ["ctrl+shift+cmd+i"], "custom": true, "delay_ms": 350, "dialog": {"confirm": ["return"]}},
+      "windows": {"keys": ["ctrl+shift+alt+i"], "custom": true, "delay_ms": 350, "dialog": {"confirm": ["return"]}},
+      "linux":   {"keys": ["ctrl+shift+alt+i"], "custom": true, "delay_ms": 350, "dialog": {"confirm": ["Return"]}}
+    },
+    "add_bus_track": {
+      "description": "Add a bus/FX channel. Assign Ctrl+Shift+Cmd+B in Studio One Preferences → Keyboard Shortcuts → 'Add Bus Channel'.",
+      "mac":     {"keys": ["ctrl+shift+cmd+b"], "custom": true},
+      "windows": {"keys": ["ctrl+shift+alt+b"], "custom": true},
+      "linux":   {"keys": ["ctrl+shift+alt+b"], "custom": true}
+    },
+    "duplicate_track": {
+      "description": "Duplicate the currently selected track",
+      "mac":     {"keys": ["cmd+d"]},
+      "windows": {"keys": ["ctrl+d"]},
+      "linux":   {"keys": ["ctrl+d"]}
+    },
+    "delete_selected": {
+      "description": "Delete the selected track or event",
+      "mac":     {"keys": ["backspace"]},
+      "windows": {"keys": ["Delete"]},
+      "linux":   {"keys": ["Delete"]}
+    },
+    "undo": {
+      "description": "Undo the last action",
+      "mac":     {"keys": ["cmd+z"]},
+      "windows": {"keys": ["ctrl+z"]},
+      "linux":   {"keys": ["ctrl+z"]}
+    },
+    "redo": {
+      "description": "Redo the last undone action",
+      "mac":     {"keys": ["cmd+shift+z"]},
+      "windows": {"keys": ["ctrl+shift+z"]},
+      "linux":   {"keys": ["ctrl+shift+z"]}
+    },
+    "save": {
+      "description": "Save the current song",
+      "mac":     {"keys": ["cmd+s"]},
+      "windows": {"keys": ["ctrl+s"]},
+      "linux":   {"keys": ["ctrl+s"]}
+    },
+    "save_as": {
+      "description": "Save the current song as a new file",
+      "mac":     {"keys": ["cmd+shift+s"]},
+      "windows": {"keys": ["ctrl+shift+s"]},
+      "linux":   {"keys": ["ctrl+shift+s"]}
+    },
+    "new_song": {
+      "description": "Create a new song (opens template dialog)",
+      "mac":     {"keys": ["cmd+n"]},
+      "windows": {"keys": ["ctrl+n"]},
+      "linux":   {"keys": ["ctrl+n"]}
+    },
+    "toggle_mixer": {
+      "description": "Show/hide the Mixer panel",
+      "mac":     {"keys": ["f3"]},
+      "windows": {"keys": ["f3"]},
+      "linux":   {"keys": ["F3"]}
+    },
+    "toggle_browser": {
+      "description": "Show/hide the Browser panel",
+      "mac":     {"keys": ["f5"]},
+      "windows": {"keys": ["f5"]},
+      "linux":   {"keys": ["F5"]}
+    },
+    "toggle_editor": {
+      "description": "Show/hide the Piano Roll / Audio Editor",
+      "mac":     {"keys": ["f2"]},
+      "windows": {"keys": ["f2"]},
+      "linux":   {"keys": ["F2"]}
+    },
+    "select_all": {
+      "description": "Select all tracks or events in the current context",
+      "mac":     {"keys": ["cmd+a"]},
+      "windows": {"keys": ["ctrl+a"]},
+      "linux":   {"keys": ["ctrl+a"]}
+    },
+    "zoom_in": {
+      "description": "Zoom in on the timeline",
+      "mac":     {"keys": ["ctrl+="]},
+      "windows": {"keys": ["ctrl+="]},
+      "linux":   {"keys": ["ctrl+equal"]}
+    },
+    "zoom_out": {
+      "description": "Zoom out on the timeline",
+      "mac":     {"keys": ["ctrl+-"]},
+      "windows": {"keys": ["ctrl+-"]},
+      "linux":   {"keys": ["ctrl+minus"]}
+    },
+    "zoom_to_fit": {
+      "description": "Zoom to fit all content in view",
+      "mac":     {"keys": ["shift+f"]},
+      "windows": {"keys": ["shift+f"]},
+      "linux":   {"keys": ["shift+f"]}
+    },
+    "toggle_loop": {
+      "description": "Toggle loop playback on/off",
+      "mac":     {"keys": ["cmd+l"]},
+      "windows": {"keys": ["ctrl+l"]},
+      "linux":   {"keys": ["ctrl+l"]}
+    },
+    "go_to_start": {
+      "description": "Move playhead to the beginning of the song",
+      "mac":     {"keys": ["home"]},
+      "windows": {"keys": ["home"]},
+      "linux":   {"keys": ["Home"]}
+    },
+    "go_to_end": {
+      "description": "Move playhead to the end of the song",
+      "mac":     {"keys": ["end"]},
+      "windows": {"keys": ["end"]},
+      "linux":   {"keys": ["End"]}
+    },
+    "split_at_playhead": {
+      "description": "Split selected event(s) at playhead position",
+      "mac":     {"keys": ["s"]},
+      "windows": {"keys": ["s"]},
+      "linux":   {"keys": ["s"]}
+    },
+    "quantize": {
+      "description": "Quantize selected MIDI notes to the current grid",
+      "mac":     {"keys": ["q"]},
+      "windows": {"keys": ["q"]},
+      "linux":   {"keys": ["q"]}
+    },
+    "open_preferences": {
+      "description": "Open Studio One Preferences / Options",
+      "mac":     {"keys": ["cmd+,"]},
+      "windows": {"keys": ["ctrl+,"]},
+      "linux":   {"keys": ["ctrl+comma"]}
+    }
+  }
+}

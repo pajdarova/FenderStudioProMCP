@@ -20,7 +20,11 @@ from studio_one_mcp.ucnet.client import UCNETClient
 log = logging.getLogger(__name__)
 
 
-def _build_server(bridge: MidiBridge, ucnet: UCNETClient | None = None) -> Server:
+def _build_server(
+    bridge: MidiBridge,
+    ucnet: UCNETClient | None = None,
+    automation: bool = True,
+) -> Server:
     """Construct and configure the MCP server with all tools registered.
 
     Parameters
@@ -30,9 +34,15 @@ def _build_server(bridge: MidiBridge, ucnet: UCNETClient | None = None) -> Serve
     ucnet:
         Optional connected UCNET client. When provided, additional state-query
         and precise parameter-write tools are registered alongside the MCU ones.
+    automation:
+        When True (default), register OS-level keyboard automation tools.
+        Disable with --no-automation if running the server on a different
+        machine than Studio One.
     """
     server = Server("studio-one-mcp")
 
+    from studio_one_mcp.tools.automation import _automation_tools
+    from studio_one_mcp.tools.automation import _dispatch as _automation_dispatch
     from studio_one_mcp.tools.mixer import _dispatch as _mixer_dispatch
     from studio_one_mcp.tools.mixer import _mixer_tools
     from studio_one_mcp.tools.transport import _dispatch as _transport_dispatch
@@ -42,12 +52,15 @@ def _build_server(bridge: MidiBridge, ucnet: UCNETClient | None = None) -> Serve
 
     transport_names = {t.name for t in _transport_tools()}
     ucnet_names = {t.name for t in _ucnet_tools()} if ucnet else set()
+    auto_names = {t.name for t in _automation_tools()} if automation else set()
 
     @server.list_tools()  # type: ignore[no-untyped-call, untyped-decorator]
     async def handle_list_tools() -> list[types.Tool]:
         tools = _transport_tools() + _mixer_tools()
         if ucnet:
             tools += _ucnet_tools()
+        if automation:
+            tools += _automation_tools()
         return tools
 
     @server.call_tool()  # type: ignore[untyped-decorator]
@@ -57,6 +70,8 @@ def _build_server(bridge: MidiBridge, ucnet: UCNETClient | None = None) -> Serve
                 return await _transport_dispatch(name, arguments, bridge)
             if name in ucnet_names and ucnet is not None:
                 return await _ucnet_dispatch(name, arguments, ucnet)
+            if name in auto_names:
+                return await _automation_dispatch(name, arguments)
             return await _mixer_dispatch(name, arguments, bridge)
         except (ValueError, MidiBridgeError) as exc:
             log.error("Tool %r failed: %s", name, exc)
@@ -65,8 +80,8 @@ def _build_server(bridge: MidiBridge, ucnet: UCNETClient | None = None) -> Serve
     return server
 
 
-async def _run_stdio(bridge: MidiBridge, ucnet: UCNETClient | None) -> None:
-    server = _build_server(bridge, ucnet)
+async def _run_stdio(bridge: MidiBridge, ucnet: UCNETClient | None, automation: bool = True) -> None:
+    server = _build_server(bridge, ucnet, automation)
     init_opts = InitializationOptions(
         server_name="studio-one-mcp",
         server_version=__version__,
@@ -117,6 +132,11 @@ async def _run_stdio(bridge: MidiBridge, ucnet: UCNETClient | None) -> None:
     "--list-ports", is_flag=True,
     help="List available MIDI output ports and exit.",
 )
+@click.option(
+    "--no-automation",
+    is_flag=True,
+    help="Disable OS-level keyboard automation tools (use when server runs remotely).",
+)
 @click.option("--debug", is_flag=True, help="Enable debug logging.")
 @click.version_option(__version__)
 def main(
@@ -125,6 +145,7 @@ def main(
     ucnet_host: str | None,
     ucnet_port: int,
     list_ports: bool,
+    no_automation: bool,
     debug: bool,
 ) -> None:
     """Studio One MCP Server — MCU MIDI bridge (Phase 1) + UCNET (Phase 2).
@@ -158,10 +179,12 @@ def main(
     mode = f"MCU MIDI (port='{port_name}')"
     if ucnet_host:
         mode += f" + UCNET ({ucnet_host}:{ucnet_port})"
+    if not no_automation:
+        mode += " + automation"
     click.echo(f"Studio One MCP server v{__version__} — {mode}", err=True)
 
     try:
-        asyncio.run(_async_main(bridge, ucnet_host, ucnet_port))
+        asyncio.run(_async_main(bridge, ucnet_host, ucnet_port, not no_automation))
     except KeyboardInterrupt:
         pass
     finally:
@@ -173,6 +196,7 @@ async def _async_main(
     bridge: MidiBridge,
     ucnet_host: str | None,
     ucnet_port: int,
+    automation: bool,
 ) -> None:
     ucnet: UCNETClient | None = None
     if ucnet_host:
@@ -185,7 +209,7 @@ async def _async_main(
             ucnet = None
 
     try:
-        await _run_stdio(bridge, ucnet)
+        await _run_stdio(bridge, ucnet, automation)
     finally:
         if ucnet:
             await ucnet.close()
