@@ -1,7 +1,12 @@
 # StudioOneMcp
 
-An MCP (Model Context Protocol) server that lets an LLM control PreSonus Studio One
-via the **Mackie Control Universal (MCU)** protocol over a virtual MIDI port.
+An MCP (Model Context Protocol) server that lets an LLM control PreSonus Studio One.
+It drives Studio One three push-based ways: **keyboard automation** (the main
+path — most actions), **macro generation** (commands with no shortcut), and
+**MCU MIDI** (faders, pan, transport).
+
+👉 **See [SETUP.md](SETUP.md) for setup** — keyboard automation needs only a single
+macOS Accessibility toggle; macros need nothing; MCU MIDI is optional.
 
 ## Quick Start
 

@@ -99,6 +99,17 @@ class MidiBridge:
         except Exception as exc:
             raise MidiBridgeError(f"Failed to open virtual MIDI port '{self._port_name}': {exc}") from exc
 
+        # macOS: pin a stable uniqueID so a saved Studio One device registration
+        # (see surface_installer) keeps binding to this port across restarts.
+        # rtmidi otherwise assigns a fresh random ID each launch. Best-effort.
+        try:
+            from studio_one_mcp.coremidi import pin_unique_id
+
+            if pin_unique_id(self._port_name):
+                log.info("Pinned uniqueID for port %s", self._port_name)
+        except Exception as exc:  # never block MIDI on this
+            log.debug("Could not pin port uniqueID: %s", exc)
+
     def close(self) -> None:
         """Close the virtual MIDI port."""
         if self._out is not None:

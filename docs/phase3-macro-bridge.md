@@ -132,17 +132,22 @@ The server then triggers them via keyboard shortcut or a future Extension.
 - Generate session-template macros ("My mix template" = N buses + routing)
 - Combine any sequence of `interpretCommand` calls into a single user-triggerable action
 
-### 3b — Extension IPC Bridge (future)
+### 3b — Extension IPC Bridge (ABANDONED)
 
-A Studio One JS Extension (`FrameworkService`) that:
-1. Polls a watched folder (via `Host.FileTypes.registerHandler` on `.s1mcp` files
-   or a timer if available in the JS runtime)
-2. Reads JSON command files written by the Python MCP server
-3. Calls `interpretCommand` and writes results back
-4. Enables non-UI-blocking command dispatch and state readback
-
-Blocked on: finding a reliable timer/interval mechanism in the Extension JS
-runtime. Candidate: subscribe to a high-frequency host signal as a clock tick.
+> **Status: abandoned.** A JS-Extension file-IPC bridge would need the extension
+> to *poll* a watched folder, which requires a timer the Studio One JS runtime
+> does not provide. Verified on Studio One 7.2.3 (2026-06): no
+> `setInterval`/`setTimeout`, no timer class, `Host.Signals.advise` fires no
+> callbacks, `DocumentEventHandler.onDocumentEvent` never fires from a
+> classfactory declaration. The control-surface `onIdle` *is* periodic, but its
+> JS context has **no `Host` global** — so it can read no files and dispatch no
+> commands. The two contexts (file access vs. timer) are isolated.
+>
+> **Use the push-based paths instead** — they need no timer because the OS /
+> Studio One do the work in real time:
+> - **Keyboard automation** (`tools/automation.py`) — primary path. See [SETUP.md](../SETUP.md).
+> - **Macros** (`macro_writer.py`) — for commands with no shortcut.
+> - **MCU MIDI** (`midi_bridge.py`) — transport & mixer.
 
 ---
 
@@ -167,7 +172,7 @@ runtime. Candidate: subscribe to a high-frequency host signal as a clock tick.
 
 ## Next Steps
 
-1. Read remaining SDK files: `toolset.package`, `audioedit.package`, full `engine.js`
-2. Find user Extensions install path (for deploying the IPC bridge)
-3. Implement `auto_generate_macro` + `auto_run_macro` MCP tools (Phase 3a)
-4. Prototype the Extension IPC bridge (Phase 3b)
+1. Verify MIDI-can-trigger-a-macro (bind a MIDI note to a generated macro in
+   Studio One) — would give a fully no-Accessibility command path.
+2. Exercise the keyboard automation suite end-to-end against a live session.
+3. Expand the plugin GUID database for `auto_generate_insert_macro`.
