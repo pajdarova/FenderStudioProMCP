@@ -1,0 +1,1570 @@
+[
+ {
+  "label": "Undo",
+  "category": "Edit",
+  "name": "Undo",
+  "channel": 0,
+  "cc": 0
+ },
+ {
+  "label": "Redo",
+  "category": "Edit",
+  "name": "Redo",
+  "channel": 0,
+  "cc": 1
+ },
+ {
+  "label": "Split Loop",
+  "category": "Edit",
+  "name": "Split Loop",
+  "channel": 0,
+  "cc": 2
+ },
+ {
+  "label": "Split Range",
+  "category": "Edit",
+  "name": "Split Range",
+  "channel": 0,
+  "cc": 3
+ },
+ {
+  "label": "Split at Cursor",
+  "category": "Edit",
+  "name": "Split at Cursor",
+  "channel": 0,
+  "cc": 4
+ },
+ {
+  "label": "Zoom to Selection",
+  "category": "Zoom",
+  "name": "Zoom to Selection",
+  "channel": 0,
+  "cc": 5
+ },
+ {
+  "label": "Zoom to Loop",
+  "category": "Zoom",
+  "name": "Zoom to Loop",
+  "channel": 0,
+  "cc": 6
+ },
+ {
+  "label": "Toggle Zoom",
+  "category": "Zoom",
+  "name": "Toggle Zoom",
+  "channel": 0,
+  "cc": 7
+ },
+ {
+  "label": "Track Height Tiny",
+  "category": "Zoom",
+  "name": "Track Height Tiny",
+  "channel": 0,
+  "cc": 8
+ },
+ {
+  "label": "Track Height Normal",
+  "category": "Zoom",
+  "name": "Track Height Normal",
+  "channel": 0,
+  "cc": 9
+ },
+ {
+  "label": "Track Height Large",
+  "category": "Zoom",
+  "name": "Track Height Large",
+  "channel": 0,
+  "cc": 10
+ },
+ {
+  "label": "Duplicate (complete)",
+  "category": "Track",
+  "name": "Duplicate (complete)",
+  "channel": 0,
+  "cc": 11
+ },
+ {
+  "label": "Show in Explorer/Finder",
+  "category": "Song",
+  "name": "Show in Explorer/Finder",
+  "channel": 0,
+  "cc": 12
+ },
+ {
+  "label": "Remove Gaps",
+  "category": "Event",
+  "name": "Remove Gaps",
+  "channel": 0,
+  "cc": 13
+ },
+ {
+  "label": "Merge Events",
+  "category": "Event",
+  "name": "Merge Events",
+  "channel": 0,
+  "cc": 14
+ },
+ {
+  "label": "Reverse Audio",
+  "category": "Audio",
+  "name": "Reverse Audio",
+  "channel": 0,
+  "cc": 15
+ },
+ {
+  "label": "Activate Previous Layer",
+  "category": "Track",
+  "name": "Activate Previous Layer",
+  "channel": 0,
+  "cc": 16
+ },
+ {
+  "label": "Activate Next Layer",
+  "category": "Track",
+  "name": "Activate Next Layer",
+  "channel": 0,
+  "cc": 17
+ },
+ {
+  "label": "Bounce Selection",
+  "category": "Event",
+  "name": "Bounce Selection",
+  "channel": 0,
+  "cc": 18
+ },
+ {
+  "label": "Mixdown Selection",
+  "category": "Event",
+  "name": "Mixdown Selection",
+  "channel": 0,
+  "cc": 19
+ },
+ {
+  "label": "Render Event FX",
+  "category": "Audio",
+  "name": "Render Event FX",
+  "channel": 0,
+  "cc": 20
+ },
+ {
+  "label": "Previous Hotspot",
+  "category": "Navigation",
+  "name": "Previous Hotspot",
+  "channel": 0,
+  "cc": 21
+ },
+ {
+  "label": "Next Hotspot",
+  "category": "Navigation",
+  "name": "Next Hotspot",
+  "channel": 0,
+  "cc": 22
+ },
+ {
+  "label": "Undo Zoom",
+  "category": "Zoom",
+  "name": "Undo Zoom",
+  "channel": 0,
+  "cc": 23
+ },
+ {
+  "label": "Crop to Content",
+  "category": "Event",
+  "name": "Crop to Content",
+  "channel": 0,
+  "cc": 24
+ },
+ {
+  "label": "Trim Start to Cursor",
+  "category": "Event",
+  "name": "Trim Start to Cursor",
+  "channel": 0,
+  "cc": 25
+ },
+ {
+  "label": "Trim End to Cursor",
+  "category": "Event",
+  "name": "Trim End to Cursor",
+  "channel": 0,
+  "cc": 26
+ },
+ {
+  "label": "Select Notes",
+  "category": "Musical Functions",
+  "name": "Select Notes",
+  "channel": 0,
+  "cc": 27
+ },
+ {
+  "label": "Select from Start to Event",
+  "category": "Edit",
+  "name": "Select from Start to Event",
+  "channel": 0,
+  "cc": 28
+ },
+ {
+  "label": "Select from Event to End",
+  "category": "Edit",
+  "name": "Select from Event to End",
+  "channel": 0,
+  "cc": 29
+ },
+ {
+  "label": "Deselect All",
+  "category": "Edit",
+  "name": "Deselect All",
+  "channel": 0,
+  "cc": 30
+ },
+ {
+  "label": "Apply Scale",
+  "category": "Musical Functions",
+  "name": "Apply Scale",
+  "channel": 0,
+  "cc": 31
+ },
+ {
+  "label": "Move to Cursor",
+  "category": "Edit",
+  "name": "Move to Cursor",
+  "channel": 0,
+  "cc": 32
+ },
+ {
+  "label": "Extend to Part End",
+  "category": "Event",
+  "name": "Extend to Part End",
+  "channel": 0,
+  "cc": 33
+ },
+ {
+  "label": "Toggle Mute",
+  "category": "Event",
+  "name": "Toggle Mute",
+  "channel": 0,
+  "cc": 34
+ },
+ {
+  "label": "Invert Selection",
+  "category": "Edit",
+  "name": "Invert Selection",
+  "channel": 0,
+  "cc": 35
+ },
+ {
+  "label": "All Notes Off",
+  "category": "Devices",
+  "name": "All Notes Off",
+  "channel": 0,
+  "cc": 36
+ },
+ {
+  "label": "Zoom Full",
+  "category": "Zoom",
+  "name": "Zoom Full",
+  "channel": 0,
+  "cc": 37
+ },
+ {
+  "label": "Strip Silence",
+  "category": "Audio",
+  "name": "Strip Silence",
+  "channel": 0,
+  "cc": 38
+ },
+ {
+  "label": "Copy External Files",
+  "category": "Media",
+  "name": "Copy External Files",
+  "channel": 0,
+  "cc": 39
+ },
+ {
+  "label": "Show All Tracks",
+  "category": "Edit",
+  "name": "Show All Tracks",
+  "channel": 0,
+  "cc": 40
+ },
+ {
+  "label": "Show Audio Tracks",
+  "category": "Edit",
+  "name": "Show Audio Tracks",
+  "channel": 0,
+  "cc": 41
+ },
+ {
+  "label": "Show Instrument Tracks",
+  "category": "Edit",
+  "name": "Show Instrument Tracks",
+  "channel": 0,
+  "cc": 42
+ },
+ {
+  "label": "Show Enabled Tracks",
+  "category": "Edit",
+  "name": "Show Enabled Tracks",
+  "channel": 0,
+  "cc": 43
+ },
+ {
+  "label": "Show Disabled Tracks",
+  "category": "Edit",
+  "name": "Show Disabled Tracks",
+  "channel": 0,
+  "cc": 44
+ },
+ {
+  "label": "Show Selected Tracks",
+  "category": "Edit",
+  "name": "Show Selected Tracks",
+  "channel": 0,
+  "cc": 45
+ },
+ {
+  "label": "Show Muted Tracks",
+  "category": "Edit",
+  "name": "Show Muted Tracks",
+  "channel": 0,
+  "cc": 46
+ },
+ {
+  "label": "Show Empty Tracks",
+  "category": "Edit",
+  "name": "Show Empty Tracks",
+  "channel": 0,
+  "cc": 47
+ },
+ {
+  "label": "Show Soloed Tracks",
+  "category": "Edit",
+  "name": "Show Soloed Tracks",
+  "channel": 0,
+  "cc": 48
+ },
+ {
+  "label": "Show Tracks with Events under Cursor",
+  "category": "Edit",
+  "name": "Show Tracks with Events under Cursor",
+  "channel": 0,
+  "cc": 49
+ },
+ {
+  "label": "Show Tracks with Events in Loop Range",
+  "category": "Edit",
+  "name": "Show Tracks with Events in Loop Range",
+  "channel": 0,
+  "cc": 50
+ },
+ {
+  "label": "Find Track",
+  "category": "Track",
+  "name": "Find Track",
+  "channel": 0,
+  "cc": 51
+ },
+ {
+  "label": "Find Channel",
+  "category": "Console",
+  "name": "Find Channel",
+  "channel": 0,
+  "cc": 52
+ },
+ {
+  "label": "Hide Enabled Tracks",
+  "category": "Edit",
+  "name": "Hide Enabled Tracks",
+  "channel": 0,
+  "cc": 53
+ },
+ {
+  "label": "Hide Audio Tracks",
+  "category": "Edit",
+  "name": "Hide Audio Tracks",
+  "channel": 0,
+  "cc": 54
+ },
+ {
+  "label": "Hide Instrument Tracks",
+  "category": "Edit",
+  "name": "Hide Instrument Tracks",
+  "channel": 0,
+  "cc": 55
+ },
+ {
+  "label": "Hide Disabled Tracks",
+  "category": "Edit",
+  "name": "Hide Disabled Tracks",
+  "channel": 0,
+  "cc": 56
+ },
+ {
+  "label": "Hide Selected Tracks",
+  "category": "Edit",
+  "name": "Hide Selected Tracks",
+  "channel": 0,
+  "cc": 57
+ },
+ {
+  "label": "Hide Muted Tracks",
+  "category": "Edit",
+  "name": "Hide Muted Tracks",
+  "channel": 0,
+  "cc": 58
+ },
+ {
+  "label": "Hide Empty Tracks",
+  "category": "Edit",
+  "name": "Hide Empty Tracks",
+  "channel": 0,
+  "cc": 59
+ },
+ {
+  "label": "Hide Soloed Tracks",
+  "category": "Edit",
+  "name": "Hide Soloed Tracks",
+  "channel": 0,
+  "cc": 60
+ },
+ {
+  "label": "Hide Tracks with Events under Cursor",
+  "category": "Edit",
+  "name": "Hide Tracks with Events under Cursor",
+  "channel": 0,
+  "cc": 61
+ },
+ {
+  "label": "Hide Tracks with Events in Loop Range",
+  "category": "Edit",
+  "name": "Hide Tracks with Events in Loop Range",
+  "channel": 0,
+  "cc": 62
+ },
+ {
+  "label": "Toggle Section Playback Mode Loop / Continue",
+  "category": "Show",
+  "name": "Toggle Section Playback Mode Loop / Continue",
+  "channel": 0,
+  "cc": 63
+ },
+ {
+  "label": "Stop at End of Bar",
+  "category": "Arranger",
+  "name": "Stop at End of Bar",
+  "channel": 0,
+  "cc": 64
+ },
+ {
+  "label": "Stop at End of Section",
+  "category": "Arranger",
+  "name": "Stop at End of Section",
+  "channel": 0,
+  "cc": 65
+ },
+ {
+  "label": "Previous Setlist Item",
+  "category": "Show",
+  "name": "Previous Setlist Item",
+  "channel": 0,
+  "cc": 66
+ },
+ {
+  "label": "Next Setlist Item",
+  "category": "Show",
+  "name": "Next Setlist Item",
+  "channel": 0,
+  "cc": 67
+ },
+ {
+  "label": "Goto Previous Section",
+  "category": "Arranger",
+  "name": "Goto Previous Section",
+  "channel": 0,
+  "cc": 68
+ },
+ {
+  "label": "Goto Next Section",
+  "category": "Arranger",
+  "name": "Goto Next Section",
+  "channel": 0,
+  "cc": 69
+ },
+ {
+  "label": "Set Sync Mode Off",
+  "category": "Arranger",
+  "name": "Set Sync Mode Off",
+  "channel": 0,
+  "cc": 70
+ },
+ {
+  "label": "Set Sync Mode 1 Bar",
+  "category": "Arranger",
+  "name": "Set Sync Mode 1 Bar",
+  "channel": 0,
+  "cc": 71
+ },
+ {
+  "label": "Set Sync Mode 2 Bars",
+  "category": "Arranger",
+  "name": "Set Sync Mode 2 Bars",
+  "channel": 0,
+  "cc": 72
+ },
+ {
+  "label": "Set Sync Mode 4 Bars",
+  "category": "Arranger",
+  "name": "Set Sync Mode 4 Bars",
+  "channel": 0,
+  "cc": 73
+ },
+ {
+  "label": "Set Sync Mode End",
+  "category": "Arranger",
+  "name": "Set Sync Mode End",
+  "channel": 0,
+  "cc": 74
+ },
+ {
+  "label": "Previous Patch",
+  "category": "Show",
+  "name": "Previous Patch",
+  "channel": 0,
+  "cc": 75
+ },
+ {
+  "label": "Next Patch",
+  "category": "Show",
+  "name": "Next Patch",
+  "channel": 0,
+  "cc": 76
+ },
+ {
+  "label": "Select Patch 1",
+  "category": "Show",
+  "name": "Select Patch 1",
+  "channel": 0,
+  "cc": 77
+ },
+ {
+  "label": "Select Patch 2",
+  "category": "Show",
+  "name": "Select Patch 2",
+  "channel": 0,
+  "cc": 78
+ },
+ {
+  "label": "Select Patch 3",
+  "category": "Show",
+  "name": "Select Patch 3",
+  "channel": 0,
+  "cc": 79
+ },
+ {
+  "label": "Select Patch 4",
+  "category": "Show",
+  "name": "Select Patch 4",
+  "channel": 0,
+  "cc": 80
+ },
+ {
+  "label": "Select Patch 5",
+  "category": "Show",
+  "name": "Select Patch 5",
+  "channel": 0,
+  "cc": 81
+ },
+ {
+  "label": "Update Mastering Files",
+  "category": "Project",
+  "name": "Update Mastering Files",
+  "channel": 0,
+  "cc": 82
+ },
+ {
+  "label": "Detect Loudness",
+  "category": "Project",
+  "name": "Detect Loudness",
+  "channel": 0,
+  "cc": 83
+ },
+ {
+  "label": "Copy Metadata to all Tracks",
+  "category": "Project",
+  "name": "Copy Metadata to all Tracks",
+  "channel": 0,
+  "cc": 84
+ },
+ {
+  "label": "Transform to Rendered Audio",
+  "category": "Project",
+  "name": "Transform to Rendered Audio",
+  "channel": 0,
+  "cc": 85
+ },
+ {
+  "label": "Normalize Audio",
+  "category": "Audio",
+  "name": "Normalize Audio",
+  "channel": 0,
+  "cc": 86
+ },
+ {
+  "label": "Undo Add Audio Track (stereo)",
+  "category": "Edit",
+  "name": "Undo Add Audio Track (stereo)",
+  "channel": 0,
+  "cc": 87
+ },
+ {
+  "label": "History",
+  "category": "Edit",
+  "name": "History",
+  "channel": 0,
+  "cc": 88
+ },
+ {
+  "label": "Delete Undo History",
+  "category": "Edit",
+  "name": "Delete Undo History",
+  "channel": 0,
+  "cc": 89
+ },
+ {
+  "label": "Cut",
+  "category": "Edit",
+  "name": "Cut",
+  "channel": 0,
+  "cc": 90
+ },
+ {
+  "label": "Copy",
+  "category": "Edit",
+  "name": "Copy",
+  "channel": 0,
+  "cc": 91
+ },
+ {
+  "label": "Paste",
+  "category": "Edit",
+  "name": "Paste",
+  "channel": 0,
+  "cc": 92
+ },
+ {
+  "label": "Paste at Original Position",
+  "category": "Edit",
+  "name": "Paste at Original Position",
+  "channel": 0,
+  "cc": 93
+ },
+ {
+  "label": "Delete",
+  "category": "Edit",
+  "name": "Delete",
+  "channel": 0,
+  "cc": 94
+ },
+ {
+  "label": "Select",
+  "category": "Edit",
+  "name": "Select",
+  "channel": 0,
+  "cc": 95
+ },
+ {
+  "label": "Duplicate",
+  "category": "Edit",
+  "name": "Duplicate",
+  "channel": 0,
+  "cc": 96
+ },
+ {
+  "label": "Duplicate Shared",
+  "category": "Edit",
+  "name": "Duplicate Shared",
+  "channel": 0,
+  "cc": 97
+ },
+ {
+  "label": "Duplicate and Insert",
+  "category": "Edit",
+  "name": "Duplicate and Insert",
+  "channel": 0,
+  "cc": 98
+ },
+ {
+  "label": "Nudge",
+  "category": "Edit",
+  "name": "Nudge",
+  "channel": 0,
+  "cc": 99
+ },
+ {
+  "label": "Split",
+  "category": "Edit",
+  "name": "Split",
+  "channel": 0,
+  "cc": 100
+ },
+ {
+  "label": "Insert Silence",
+  "category": "Edit",
+  "name": "Insert Silence",
+  "channel": 0,
+  "cc": 101
+ },
+ {
+  "label": "Delete Time",
+  "category": "Edit",
+  "name": "Delete Time",
+  "channel": 0,
+  "cc": 102
+ },
+ {
+  "label": "Instrument Parts",
+  "category": "Event",
+  "name": "Instrument Parts",
+  "channel": 0,
+  "cc": 103
+ },
+ {
+  "label": "Rename Events",
+  "category": "Event",
+  "name": "Rename Events",
+  "channel": 0,
+  "cc": 104
+ },
+ {
+  "label": "Send to Back",
+  "category": "Event",
+  "name": "Send to Back",
+  "channel": 0,
+  "cc": 105
+ },
+ {
+  "label": "Send to Front",
+  "category": "Event",
+  "name": "Send to Front",
+  "channel": 0,
+  "cc": 106
+ },
+ {
+  "label": "Mute Events",
+  "category": "Event",
+  "name": "Mute Events",
+  "channel": 0,
+  "cc": 107
+ },
+ {
+  "label": "Unmute Events",
+  "category": "Event",
+  "name": "Unmute Events",
+  "channel": 0,
+  "cc": 108
+ },
+ {
+  "label": "Add Arranger Section from Selection",
+  "category": "Event",
+  "name": "Add Arranger Section from Selection",
+  "channel": 0,
+  "cc": 109
+ },
+ {
+  "label": "Bounce To New Track",
+  "category": "Event",
+  "name": "Bounce To New Track",
+  "channel": 0,
+  "cc": 110
+ },
+ {
+  "label": "Bounce To New Track (Keep Speaker Format)",
+  "category": "Event",
+  "name": "Bounce To New Track (Keep Speaker Format)",
+  "channel": 0,
+  "cc": 111
+ },
+ {
+  "label": "Export Selection",
+  "category": "Event",
+  "name": "Export Selection",
+  "channel": 0,
+  "cc": 112
+ },
+ {
+  "label": "Select in Pool",
+  "category": "Event",
+  "name": "Select in Pool",
+  "channel": 0,
+  "cc": 113
+ },
+ {
+  "label": "Split at Grid",
+  "category": "Event",
+  "name": "Split at Grid",
+  "channel": 0,
+  "cc": 114
+ },
+ {
+  "label": "Spot",
+  "category": "Event",
+  "name": "Spot",
+  "channel": 0,
+  "cc": 115
+ },
+ {
+  "label": "Move To Origin",
+  "category": "Event",
+  "name": "Move To Origin",
+  "channel": 0,
+  "cc": 116
+ },
+ {
+  "label": "Set Sync Point to Cursor",
+  "category": "Event",
+  "name": "Set Sync Point to Cursor",
+  "channel": 0,
+  "cc": 117
+ },
+ {
+  "label": "Toggle Time Lock",
+  "category": "Event",
+  "name": "Toggle Time Lock",
+  "channel": 0,
+  "cc": 118
+ },
+ {
+  "label": "Toggle Edit Lock",
+  "category": "Event",
+  "name": "Toggle Edit Lock",
+  "channel": 0,
+  "cc": 119
+ },
+ {
+  "label": "Separate Shared Copies",
+  "category": "Event",
+  "name": "Separate Shared Copies",
+  "channel": 0,
+  "cc": 120
+ },
+ {
+  "label": "Quantize",
+  "category": "Event",
+  "name": "Quantize",
+  "channel": 0,
+  "cc": 121
+ },
+ {
+  "label": "Quantize 50%",
+  "category": "Event",
+  "name": "Quantize 50%",
+  "channel": 0,
+  "cc": 122
+ },
+ {
+  "label": "Quantize on Track",
+  "category": "Event",
+  "name": "Quantize on Track",
+  "channel": 0,
+  "cc": 123
+ },
+ {
+  "label": "Restore Timing",
+  "category": "Event",
+  "name": "Restore Timing",
+  "channel": 0,
+  "cc": 124
+ },
+ {
+  "label": "Separate Stems",
+  "category": "Audio",
+  "name": "Separate Stems",
+  "channel": 0,
+  "cc": 125
+ },
+ {
+  "label": "Edit with Melodyne",
+  "category": "Audio",
+  "name": "Edit with Melodyne",
+  "channel": 0,
+  "cc": 126
+ },
+ {
+  "label": "Remove Melodyne",
+  "category": "Audio",
+  "name": "Remove Melodyne",
+  "channel": 0,
+  "cc": 127
+ },
+ {
+  "label": "Fade In to Cursor",
+  "category": "Audio",
+  "name": "Fade In to Cursor",
+  "channel": 1,
+  "cc": 0
+ },
+ {
+  "label": "Fade Out from Cursor",
+  "category": "Audio",
+  "name": "Fade Out from Cursor",
+  "channel": 1,
+  "cc": 1
+ },
+ {
+  "label": "Create Autofades",
+  "category": "Audio",
+  "name": "Create Autofades",
+  "channel": 1,
+  "cc": 2
+ },
+ {
+  "label": "Create Crossfades",
+  "category": "Audio",
+  "name": "Create Crossfades",
+  "channel": 1,
+  "cc": 3
+ },
+ {
+  "label": "Decrease Volume",
+  "category": "Audio",
+  "name": "Decrease Volume",
+  "channel": 1,
+  "cc": 4
+ },
+ {
+  "label": "Increase Volume",
+  "category": "Audio",
+  "name": "Increase Volume",
+  "channel": 1,
+  "cc": 5
+ },
+ {
+  "label": "Reset Gain Envelope",
+  "category": "Audio",
+  "name": "Reset Gain Envelope",
+  "channel": 1,
+  "cc": 6
+ },
+ {
+  "label": "Detect Tempo",
+  "category": "Audio",
+  "name": "Detect Tempo",
+  "channel": 1,
+  "cc": 7
+ },
+ {
+  "label": "Detect Transients",
+  "category": "Audio",
+  "name": "Detect Transients",
+  "channel": 1,
+  "cc": 8
+ },
+ {
+  "label": "Extract to Tempo Track",
+  "category": "Audio",
+  "name": "Extract to Tempo Track",
+  "channel": 1,
+  "cc": 9
+ },
+ {
+  "label": "Remove Bend Markers",
+  "category": "Audio",
+  "name": "Remove Bend Markers",
+  "channel": 1,
+  "cc": 10
+ },
+ {
+  "label": "Split at Bend Markers",
+  "category": "Audio",
+  "name": "Split at Bend Markers",
+  "channel": 1,
+  "cc": 11
+ },
+ {
+  "label": "Detect Chords",
+  "category": "Audio",
+  "name": "Detect Chords",
+  "channel": 1,
+  "cc": 12
+ },
+ {
+  "label": "Remove Chords",
+  "category": "Audio",
+  "name": "Remove Chords",
+  "channel": 1,
+  "cc": 13
+ },
+ {
+  "label": "Extract to Chord Track",
+  "category": "Audio",
+  "name": "Extract to Chord Track",
+  "channel": 1,
+  "cc": 14
+ },
+ {
+  "label": "Apply Chords from Chord Track",
+  "category": "Audio",
+  "name": "Apply Chords from Chord Track",
+  "channel": 1,
+  "cc": 15
+ },
+ {
+  "label": "Extract Key Signatures from Event",
+  "category": "Audio",
+  "name": "Extract Key Signatures from Event",
+  "channel": 1,
+  "cc": 16
+ },
+ {
+  "label": "Merge to Audio Part",
+  "category": "Audio",
+  "name": "Merge to Audio Part",
+  "channel": 1,
+  "cc": 17
+ },
+ {
+  "label": "Dissolve Audio Part",
+  "category": "Audio",
+  "name": "Dissolve Audio Part",
+  "channel": 1,
+  "cc": 18
+ },
+ {
+  "label": "New Clip Version",
+  "category": "Audio",
+  "name": "New Clip Version",
+  "channel": 1,
+  "cc": 19
+ },
+ {
+  "label": "Send To new SampleOne",
+  "category": "Audio",
+  "name": "Send To new SampleOne",
+  "channel": 1,
+  "cc": 20
+ },
+ {
+  "label": "Send To new Impact",
+  "category": "Audio",
+  "name": "Send To new Impact",
+  "channel": 1,
+  "cc": 21
+ },
+ {
+  "label": "Add Tracks",
+  "category": "Track",
+  "name": "Add Tracks",
+  "channel": 1,
+  "cc": 22
+ },
+ {
+  "label": "Add Audio Track (mono)",
+  "category": "Track",
+  "name": "Add Audio Track (mono)",
+  "channel": 1,
+  "cc": 23
+ },
+ {
+  "label": "Add Audio Track (stereo)",
+  "category": "Track",
+  "name": "Add Audio Track (stereo)",
+  "channel": 1,
+  "cc": 24
+ },
+ {
+  "label": "Add Instrument Track",
+  "category": "Track",
+  "name": "Add Instrument Track",
+  "channel": 1,
+  "cc": 25
+ },
+ {
+  "label": "Add Automation Track",
+  "category": "Track",
+  "name": "Add Automation Track",
+  "channel": 1,
+  "cc": 26
+ },
+ {
+  "label": "Add Folder Track",
+  "category": "Track",
+  "name": "Add Folder Track",
+  "channel": 1,
+  "cc": 27
+ },
+ {
+  "label": "Add Tracks for all Inputs",
+  "category": "Track",
+  "name": "Add Tracks for all Inputs",
+  "channel": 1,
+  "cc": 28
+ },
+ {
+  "label": "Add Bus for Selected Channels",
+  "category": "Track",
+  "name": "Add Bus for Selected Channels",
+  "channel": 1,
+  "cc": 29
+ },
+ {
+  "label": "Add VCA for Selected Channels",
+  "category": "Track",
+  "name": "Add VCA for Selected Channels",
+  "channel": 1,
+  "cc": 30
+ },
+ {
+  "label": "Pack Folder",
+  "category": "Track",
+  "name": "Pack Folder",
+  "channel": 1,
+  "cc": 31
+ },
+ {
+  "label": "Collapse All Tracks",
+  "category": "Track",
+  "name": "Collapse All Tracks",
+  "channel": 1,
+  "cc": 32
+ },
+ {
+  "label": "Remove Track Automation",
+  "category": "Track",
+  "name": "Remove Track Automation",
+  "channel": 1,
+  "cc": 33
+ },
+ {
+  "label": "Apply Track Names to Channels",
+  "category": "Track",
+  "name": "Apply Track Names to Channels",
+  "channel": 1,
+  "cc": 34
+ },
+ {
+  "label": "Freeze Global Transposition",
+  "category": "Track",
+  "name": "Freeze Global Transposition",
+  "channel": 1,
+  "cc": 35
+ },
+ {
+  "label": "Remove Track",
+  "category": "Track",
+  "name": "Remove Track",
+  "channel": 1,
+  "cc": 36
+ },
+ {
+  "label": "Duplicate",
+  "category": "Track",
+  "name": "Duplicate",
+  "channel": 1,
+  "cc": 37
+ },
+ {
+  "label": "Store Track Preset",
+  "category": "Track",
+  "name": "Store Track Preset",
+  "channel": 1,
+  "cc": 38
+ },
+ {
+  "label": "Load Track Preset",
+  "category": "Track",
+  "name": "Load Track Preset",
+  "channel": 1,
+  "cc": 39
+ },
+ {
+  "label": "Group Selected Tracks",
+  "category": "Track",
+  "name": "Group Selected Tracks",
+  "channel": 1,
+  "cc": 40
+ },
+ {
+  "label": "Dissolve Group",
+  "category": "Track",
+  "name": "Dissolve Group",
+  "channel": 1,
+  "cc": 41
+ },
+ {
+  "label": "Transform",
+  "category": "Track",
+  "name": "Transform",
+  "channel": 1,
+  "cc": 42
+ },
+ {
+  "label": "Layers",
+  "category": "Track",
+  "name": "Layers",
+  "channel": 1,
+  "cc": 43
+ },
+ {
+  "label": "Controls",
+  "category": "Track",
+  "name": "Controls",
+  "channel": 1,
+  "cc": 44
+ },
+ {
+  "label": "Automation",
+  "category": "Track",
+  "name": "Automation",
+  "channel": 1,
+  "cc": 45
+ },
+ {
+  "label": "Edit Track",
+  "category": "Track",
+  "name": "Edit Track",
+  "channel": 1,
+  "cc": 46
+ },
+ {
+  "label": "Show in Console",
+  "category": "Track",
+  "name": "Show in Console",
+  "channel": 1,
+  "cc": 47
+ },
+ {
+  "label": "Show Automation",
+  "category": "Track",
+  "name": "Show Automation",
+  "channel": 1,
+  "cc": 48
+ },
+ {
+  "label": "Show Channel Editor",
+  "category": "Track",
+  "name": "Show Channel Editor",
+  "channel": 1,
+  "cc": 49
+ },
+ {
+  "label": "Show Instrument Editor",
+  "category": "Track",
+  "name": "Show Instrument Editor",
+  "channel": 1,
+  "cc": 50
+ },
+ {
+  "label": "Import File",
+  "category": "Song",
+  "name": "Import File",
+  "channel": 1,
+  "cc": 51
+ },
+ {
+  "label": "Import Song Data",
+  "category": "Song",
+  "name": "Import Song Data",
+  "channel": 1,
+  "cc": 52
+ },
+ {
+  "label": "Export Mixdown",
+  "category": "Song",
+  "name": "Export Mixdown",
+  "channel": 1,
+  "cc": 53
+ },
+ {
+  "label": "Export Stems",
+  "category": "Song",
+  "name": "Export Stems",
+  "channel": 1,
+  "cc": 54
+ },
+ {
+  "label": "Export Spatial Audio",
+  "category": "Song",
+  "name": "Export Spatial Audio",
+  "channel": 1,
+  "cc": 55
+ },
+ {
+  "label": "Export Video",
+  "category": "Song",
+  "name": "Export Video",
+  "channel": 1,
+  "cc": 56
+ },
+ {
+  "label": "Send to Notion",
+  "category": "Song",
+  "name": "Send to Notion",
+  "channel": 1,
+  "cc": 57
+ },
+ {
+  "label": "Print Score",
+  "category": "Song",
+  "name": "Print Score",
+  "channel": 1,
+  "cc": 58
+ },
+ {
+  "label": "Update Mastering File",
+  "category": "Song",
+  "name": "Update Mastering File",
+  "channel": 1,
+  "cc": 59
+ },
+ {
+  "label": "Add to Project",
+  "category": "Song",
+  "name": "Add to Project",
+  "channel": 1,
+  "cc": 60
+ },
+ {
+  "label": "Add to Show",
+  "category": "Song",
+  "name": "Add to Show",
+  "channel": 1,
+  "cc": 61
+ },
+ {
+  "label": "Locate Missing Files",
+  "category": "Song",
+  "name": "Locate Missing Files",
+  "channel": 1,
+  "cc": 62
+ },
+ {
+  "label": "Locate Missing Devices",
+  "category": "Song",
+  "name": "Locate Missing Devices",
+  "channel": 1,
+  "cc": 63
+ },
+ {
+  "label": "Remove Unused Files",
+  "category": "Song",
+  "name": "Remove Unused Files",
+  "channel": 1,
+  "cc": 64
+ },
+ {
+  "label": "Copy External Files",
+  "category": "Song",
+  "name": "Copy External Files",
+  "channel": 1,
+  "cc": 65
+ },
+ {
+  "label": "Show Media Folder in Finder",
+  "category": "Song",
+  "name": "Show Media Folder in Finder",
+  "channel": 1,
+  "cc": 66
+ },
+ {
+  "label": "Set Bar Offset to Cursor",
+  "category": "Song",
+  "name": "Set Bar Offset to Cursor",
+  "channel": 1,
+  "cc": 67
+ },
+ {
+  "label": "Set Time Offset to Cursor",
+  "category": "Song",
+  "name": "Set Time Offset to Cursor",
+  "channel": 1,
+  "cc": 68
+ },
+ {
+  "label": "Set Frames at Cursor",
+  "category": "Song",
+  "name": "Set Frames at Cursor",
+  "channel": 1,
+  "cc": 69
+ },
+ {
+  "label": "Song Setup",
+  "category": "Song",
+  "name": "Song Setup",
+  "channel": 1,
+  "cc": 70
+ },
+ {
+  "label": "Spatial Audio",
+  "category": "Song",
+  "name": "Spatial Audio",
+  "channel": 1,
+  "cc": 71
+ },
+ {
+  "label": "Song Information",
+  "category": "Song",
+  "name": "Song Information",
+  "channel": 1,
+  "cc": 72
+ },
+ {
+  "label": "Start",
+  "category": "Transport",
+  "name": "Start",
+  "channel": 1,
+  "cc": 73
+ },
+ {
+  "label": "Stop",
+  "category": "Transport",
+  "name": "Stop",
+  "channel": 1,
+  "cc": 74
+ },
+ {
+  "label": "Return to Zero",
+  "category": "Transport",
+  "name": "Return to Zero",
+  "channel": 1,
+  "cc": 75
+ },
+ {
+  "label": "Goto Time",
+  "category": "Transport",
+  "name": "Goto Time",
+  "channel": 1,
+  "cc": 76
+ },
+ {
+  "label": "Options",
+  "category": "Transport",
+  "name": "Options",
+  "channel": 1,
+  "cc": 77
+ },
+ {
+  "label": "Sync to External Devices",
+  "category": "Transport",
+  "name": "Sync to External Devices",
+  "channel": 1,
+  "cc": 78
+ },
+ {
+  "label": "External Sync Options",
+  "category": "Transport",
+  "name": "External Sync Options",
+  "channel": 1,
+  "cc": 79
+ },
+ {
+  "label": "Loop Active",
+  "category": "Transport",
+  "name": "Loop Active",
+  "channel": 1,
+  "cc": 80
+ },
+ {
+  "label": "Loop Selection",
+  "category": "Transport",
+  "name": "Loop Selection",
+  "channel": 1,
+  "cc": 81
+ },
+ {
+  "label": "Loop Selection Snapped",
+  "category": "Transport",
+  "name": "Loop Selection Snapped",
+  "channel": 1,
+  "cc": 82
+ },
+ {
+  "label": "Goto Loop Start",
+  "category": "Transport",
+  "name": "Goto Loop Start",
+  "channel": 1,
+  "cc": 83
+ },
+ {
+  "label": "Goto Loop End",
+  "category": "Transport",
+  "name": "Goto Loop End",
+  "channel": 1,
+  "cc": 84
+ },
+ {
+  "label": "Insert Marker",
+  "category": "Transport",
+  "name": "Insert Marker",
+  "channel": 1,
+  "cc": 85
+ },
+ {
+  "label": "Goto Marker",
+  "category": "Transport",
+  "name": "Goto Marker",
+  "channel": 1,
+  "cc": 86
+ },
+ {
+  "label": "Set Play Start Marker",
+  "category": "Transport",
+  "name": "Set Play Start Marker",
+  "channel": 1,
+  "cc": 87
+ },
+ {
+  "label": "Locate Selection",
+  "category": "Transport",
+  "name": "Locate Selection",
+  "channel": 1,
+  "cc": 88
+ },
+ {
+  "label": "Locate Selection End",
+  "category": "Transport",
+  "name": "Locate Selection End",
+  "channel": 1,
+  "cc": 89
+ },
+ {
+  "label": "Set Start and End to Selection",
+  "category": "Transport",
+  "name": "Set Start and End to Selection",
+  "channel": 1,
+  "cc": 90
+ },
+ {
+  "label": "Goto Next Marker",
+  "category": "Transport",
+  "name": "Goto Next Marker",
+  "channel": 1,
+  "cc": 91
+ },
+ {
+  "label": "Goto Previous Marker",
+  "category": "Transport",
+  "name": "Goto Previous Marker",
+  "channel": 1,
+  "cc": 92
+ },
+ {
+  "label": "Goto Next Event",
+  "category": "Transport",
+  "name": "Goto Next Event",
+  "channel": 1,
+  "cc": 93
+ },
+ {
+  "label": "Goto Previous Event",
+  "category": "Transport",
+  "name": "Goto Previous Event",
+  "channel": 1,
+  "cc": 94
+ },
+ {
+  "label": "Metronome Setup",
+  "category": "Transport",
+  "name": "Metronome Setup",
+  "channel": 1,
+  "cc": 95
+ }
+]

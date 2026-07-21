@@ -152,6 +152,15 @@ class MidiBridge:
         time.sleep(self._message_delay)
         self._note_off(note, channel)
 
+    def press_cc(self, cc: int, channel: int = 0) -> None:
+        """Momentary CC press (127) then release (0).
+
+        Fires a command mapped on the StudioOneMCP Pads surface (CC → <Command>).
+        """
+        self._send([0xB0 | (channel & 0x0F), cc, 127])
+        time.sleep(self._message_delay)
+        self._send([0xB0 | (channel & 0x0F), cc, 0])
+
     def _pitch_bend(self, value: int, channel: int = 0) -> None:
         """Send a 14-bit pitch-bend message on the given MIDI channel."""
         lsb = value & 0x7F

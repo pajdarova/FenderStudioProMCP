@@ -25,6 +25,8 @@ def _build_server(bridge: MidiBridge, automation: bool = True) -> Server:
 
     from studio_one_mcp.tools.automation import _automation_tools
     from studio_one_mcp.tools.automation import _dispatch as _automation_dispatch
+    from studio_one_mcp.tools.commands import _command_tools
+    from studio_one_mcp.tools.commands import _dispatch as _command_dispatch
     from studio_one_mcp.tools.macro_tools import _dispatch as _macro_dispatch
     from studio_one_mcp.tools.macro_tools import _macro_tools
     from studio_one_mcp.tools.mixer import _dispatch as _mixer_dispatch
@@ -35,10 +37,11 @@ def _build_server(bridge: MidiBridge, automation: bool = True) -> Server:
     transport_names = {t.name for t in _transport_tools()}
     auto_names = {t.name for t in _automation_tools()} if automation else set()
     macro_names = {t.name for t in _macro_tools()}
+    command_names = {t.name for t in _command_tools()}
 
     @server.list_tools()  # type: ignore[no-untyped-call, untyped-decorator]
     async def handle_list_tools() -> list[types.Tool]:
-        tools = _transport_tools() + _mixer_tools() + _macro_tools()
+        tools = _transport_tools() + _mixer_tools() + _macro_tools() + _command_tools()
         if automation:
             tools += _automation_tools()
         return tools
@@ -52,6 +55,8 @@ def _build_server(bridge: MidiBridge, automation: bool = True) -> Server:
                 return await _automation_dispatch(name, arguments)
             if name in macro_names:
                 return await _macro_dispatch(name, arguments)
+            if name in command_names:
+                return await _command_dispatch(name, arguments, bridge)
             return await _mixer_dispatch(name, arguments, bridge)
         except (ValueError, MidiBridgeError) as exc:
             log.error("Tool %r failed: %s", name, exc)

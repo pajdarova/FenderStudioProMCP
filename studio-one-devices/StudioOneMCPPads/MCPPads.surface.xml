@@ -1,31 +1,462 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ControlSurface>
 
-	<!-- Controls use CC #40-#47 on channel 1 (status #B0). -->
-	<!-- Python bridge sends CC val=127 (press) / val=0 (release). -->
+	<!-- Auto-generated: 224 built-in commands (macros excluded - they do not dispatch from a surface) -->
 	<Controls>
-		<Control name="pad[0]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#40"/></Control>
-		<Control name="pad[1]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#41"/></Control>
-		<Control name="pad[2]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#42"/></Control>
-		<Control name="pad[3]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#43"/></Control>
-		<Control name="pad[4]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#44"/></Control>
-		<Control name="pad[5]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#45"/></Control>
-		<Control name="pad[6]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#46"/></Control>
-		<Control name="pad[7]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#47"/></Control>
+		<Control name="fn[0]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#00"/></Control>
+		<Control name="fn[1]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#01"/></Control>
+		<Control name="fn[2]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#02"/></Control>
+		<Control name="fn[3]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#03"/></Control>
+		<Control name="fn[4]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#04"/></Control>
+		<Control name="fn[5]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#05"/></Control>
+		<Control name="fn[6]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#06"/></Control>
+		<Control name="fn[7]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#07"/></Control>
+		<Control name="fn[8]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#08"/></Control>
+		<Control name="fn[9]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#09"/></Control>
+		<Control name="fn[10]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#0A"/></Control>
+		<Control name="fn[11]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#0B"/></Control>
+		<Control name="fn[12]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#0C"/></Control>
+		<Control name="fn[13]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#0D"/></Control>
+		<Control name="fn[14]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#0E"/></Control>
+		<Control name="fn[15]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#0F"/></Control>
+		<Control name="fn[16]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#10"/></Control>
+		<Control name="fn[17]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#11"/></Control>
+		<Control name="fn[18]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#12"/></Control>
+		<Control name="fn[19]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#13"/></Control>
+		<Control name="fn[20]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#14"/></Control>
+		<Control name="fn[21]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#15"/></Control>
+		<Control name="fn[22]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#16"/></Control>
+		<Control name="fn[23]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#17"/></Control>
+		<Control name="fn[24]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#18"/></Control>
+		<Control name="fn[25]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#19"/></Control>
+		<Control name="fn[26]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#1A"/></Control>
+		<Control name="fn[27]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#1B"/></Control>
+		<Control name="fn[28]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#1C"/></Control>
+		<Control name="fn[29]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#1D"/></Control>
+		<Control name="fn[30]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#1E"/></Control>
+		<Control name="fn[31]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#1F"/></Control>
+		<Control name="fn[32]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#20"/></Control>
+		<Control name="fn[33]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#21"/></Control>
+		<Control name="fn[34]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#22"/></Control>
+		<Control name="fn[35]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#23"/></Control>
+		<Control name="fn[36]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#24"/></Control>
+		<Control name="fn[37]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#25"/></Control>
+		<Control name="fn[38]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#26"/></Control>
+		<Control name="fn[39]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#27"/></Control>
+		<Control name="fn[40]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#28"/></Control>
+		<Control name="fn[41]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#29"/></Control>
+		<Control name="fn[42]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#2A"/></Control>
+		<Control name="fn[43]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#2B"/></Control>
+		<Control name="fn[44]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#2C"/></Control>
+		<Control name="fn[45]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#2D"/></Control>
+		<Control name="fn[46]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#2E"/></Control>
+		<Control name="fn[47]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#2F"/></Control>
+		<Control name="fn[48]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#30"/></Control>
+		<Control name="fn[49]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#31"/></Control>
+		<Control name="fn[50]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#32"/></Control>
+		<Control name="fn[51]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#33"/></Control>
+		<Control name="fn[52]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#34"/></Control>
+		<Control name="fn[53]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#35"/></Control>
+		<Control name="fn[54]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#36"/></Control>
+		<Control name="fn[55]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#37"/></Control>
+		<Control name="fn[56]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#38"/></Control>
+		<Control name="fn[57]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#39"/></Control>
+		<Control name="fn[58]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#3A"/></Control>
+		<Control name="fn[59]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#3B"/></Control>
+		<Control name="fn[60]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#3C"/></Control>
+		<Control name="fn[61]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#3D"/></Control>
+		<Control name="fn[62]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#3E"/></Control>
+		<Control name="fn[63]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#3F"/></Control>
+		<Control name="fn[64]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#40"/></Control>
+		<Control name="fn[65]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#41"/></Control>
+		<Control name="fn[66]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#42"/></Control>
+		<Control name="fn[67]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#43"/></Control>
+		<Control name="fn[68]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#44"/></Control>
+		<Control name="fn[69]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#45"/></Control>
+		<Control name="fn[70]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#46"/></Control>
+		<Control name="fn[71]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#47"/></Control>
+		<Control name="fn[72]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#48"/></Control>
+		<Control name="fn[73]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#49"/></Control>
+		<Control name="fn[74]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#4A"/></Control>
+		<Control name="fn[75]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#4B"/></Control>
+		<Control name="fn[76]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#4C"/></Control>
+		<Control name="fn[77]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#4D"/></Control>
+		<Control name="fn[78]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#4E"/></Control>
+		<Control name="fn[79]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#4F"/></Control>
+		<Control name="fn[80]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#50"/></Control>
+		<Control name="fn[81]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#51"/></Control>
+		<Control name="fn[82]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#52"/></Control>
+		<Control name="fn[83]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#53"/></Control>
+		<Control name="fn[84]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#54"/></Control>
+		<Control name="fn[85]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#55"/></Control>
+		<Control name="fn[86]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#56"/></Control>
+		<Control name="fn[87]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#57"/></Control>
+		<Control name="fn[88]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#58"/></Control>
+		<Control name="fn[89]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#59"/></Control>
+		<Control name="fn[90]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#5A"/></Control>
+		<Control name="fn[91]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#5B"/></Control>
+		<Control name="fn[92]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#5C"/></Control>
+		<Control name="fn[93]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#5D"/></Control>
+		<Control name="fn[94]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#5E"/></Control>
+		<Control name="fn[95]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#5F"/></Control>
+		<Control name="fn[96]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#60"/></Control>
+		<Control name="fn[97]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#61"/></Control>
+		<Control name="fn[98]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#62"/></Control>
+		<Control name="fn[99]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#63"/></Control>
+		<Control name="fn[100]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#64"/></Control>
+		<Control name="fn[101]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#65"/></Control>
+		<Control name="fn[102]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#66"/></Control>
+		<Control name="fn[103]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#67"/></Control>
+		<Control name="fn[104]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#68"/></Control>
+		<Control name="fn[105]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#69"/></Control>
+		<Control name="fn[106]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#6A"/></Control>
+		<Control name="fn[107]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#6B"/></Control>
+		<Control name="fn[108]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#6C"/></Control>
+		<Control name="fn[109]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#6D"/></Control>
+		<Control name="fn[110]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#6E"/></Control>
+		<Control name="fn[111]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#6F"/></Control>
+		<Control name="fn[112]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#70"/></Control>
+		<Control name="fn[113]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#71"/></Control>
+		<Control name="fn[114]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#72"/></Control>
+		<Control name="fn[115]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#73"/></Control>
+		<Control name="fn[116]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#74"/></Control>
+		<Control name="fn[117]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#75"/></Control>
+		<Control name="fn[118]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#76"/></Control>
+		<Control name="fn[119]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#77"/></Control>
+		<Control name="fn[120]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#78"/></Control>
+		<Control name="fn[121]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#79"/></Control>
+		<Control name="fn[122]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#7A"/></Control>
+		<Control name="fn[123]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#7B"/></Control>
+		<Control name="fn[124]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#7C"/></Control>
+		<Control name="fn[125]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#7D"/></Control>
+		<Control name="fn[126]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#7E"/></Control>
+		<Control name="fn[127]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#7F"/></Control>
+		<Control name="fn[128]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#00"/></Control>
+		<Control name="fn[129]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#01"/></Control>
+		<Control name="fn[130]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#02"/></Control>
+		<Control name="fn[131]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#03"/></Control>
+		<Control name="fn[132]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#04"/></Control>
+		<Control name="fn[133]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#05"/></Control>
+		<Control name="fn[134]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#06"/></Control>
+		<Control name="fn[135]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#07"/></Control>
+		<Control name="fn[136]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#08"/></Control>
+		<Control name="fn[137]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#09"/></Control>
+		<Control name="fn[138]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#0A"/></Control>
+		<Control name="fn[139]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#0B"/></Control>
+		<Control name="fn[140]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#0C"/></Control>
+		<Control name="fn[141]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#0D"/></Control>
+		<Control name="fn[142]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#0E"/></Control>
+		<Control name="fn[143]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#0F"/></Control>
+		<Control name="fn[144]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#10"/></Control>
+		<Control name="fn[145]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#11"/></Control>
+		<Control name="fn[146]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#12"/></Control>
+		<Control name="fn[147]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#13"/></Control>
+		<Control name="fn[148]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#14"/></Control>
+		<Control name="fn[149]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#15"/></Control>
+		<Control name="fn[150]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#16"/></Control>
+		<Control name="fn[151]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#17"/></Control>
+		<Control name="fn[152]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#18"/></Control>
+		<Control name="fn[153]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#19"/></Control>
+		<Control name="fn[154]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#1A"/></Control>
+		<Control name="fn[155]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#1B"/></Control>
+		<Control name="fn[156]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#1C"/></Control>
+		<Control name="fn[157]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#1D"/></Control>
+		<Control name="fn[158]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#1E"/></Control>
+		<Control name="fn[159]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#1F"/></Control>
+		<Control name="fn[160]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#20"/></Control>
+		<Control name="fn[161]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#21"/></Control>
+		<Control name="fn[162]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#22"/></Control>
+		<Control name="fn[163]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#23"/></Control>
+		<Control name="fn[164]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#24"/></Control>
+		<Control name="fn[165]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#25"/></Control>
+		<Control name="fn[166]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#26"/></Control>
+		<Control name="fn[167]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#27"/></Control>
+		<Control name="fn[168]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#28"/></Control>
+		<Control name="fn[169]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#29"/></Control>
+		<Control name="fn[170]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#2A"/></Control>
+		<Control name="fn[171]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#2B"/></Control>
+		<Control name="fn[172]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#2C"/></Control>
+		<Control name="fn[173]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#2D"/></Control>
+		<Control name="fn[174]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#2E"/></Control>
+		<Control name="fn[175]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#2F"/></Control>
+		<Control name="fn[176]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#30"/></Control>
+		<Control name="fn[177]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#31"/></Control>
+		<Control name="fn[178]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#32"/></Control>
+		<Control name="fn[179]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#33"/></Control>
+		<Control name="fn[180]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#34"/></Control>
+		<Control name="fn[181]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#35"/></Control>
+		<Control name="fn[182]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#36"/></Control>
+		<Control name="fn[183]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#37"/></Control>
+		<Control name="fn[184]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#38"/></Control>
+		<Control name="fn[185]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#39"/></Control>
+		<Control name="fn[186]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#3A"/></Control>
+		<Control name="fn[187]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#3B"/></Control>
+		<Control name="fn[188]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#3C"/></Control>
+		<Control name="fn[189]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#3D"/></Control>
+		<Control name="fn[190]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#3E"/></Control>
+		<Control name="fn[191]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#3F"/></Control>
+		<Control name="fn[192]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#40"/></Control>
+		<Control name="fn[193]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#41"/></Control>
+		<Control name="fn[194]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#42"/></Control>
+		<Control name="fn[195]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#43"/></Control>
+		<Control name="fn[196]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#44"/></Control>
+		<Control name="fn[197]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#45"/></Control>
+		<Control name="fn[198]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#46"/></Control>
+		<Control name="fn[199]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#47"/></Control>
+		<Control name="fn[200]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#48"/></Control>
+		<Control name="fn[201]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#49"/></Control>
+		<Control name="fn[202]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#4A"/></Control>
+		<Control name="fn[203]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#4B"/></Control>
+		<Control name="fn[204]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#4C"/></Control>
+		<Control name="fn[205]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#4D"/></Control>
+		<Control name="fn[206]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#4E"/></Control>
+		<Control name="fn[207]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#4F"/></Control>
+		<Control name="fn[208]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#50"/></Control>
+		<Control name="fn[209]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#51"/></Control>
+		<Control name="fn[210]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#52"/></Control>
+		<Control name="fn[211]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#53"/></Control>
+		<Control name="fn[212]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#54"/></Control>
+		<Control name="fn[213]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#55"/></Control>
+		<Control name="fn[214]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#56"/></Control>
+		<Control name="fn[215]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#57"/></Control>
+		<Control name="fn[216]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#58"/></Control>
+		<Control name="fn[217]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#59"/></Control>
+		<Control name="fn[218]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#5A"/></Control>
+		<Control name="fn[219]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#5B"/></Control>
+		<Control name="fn[220]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#5C"/></Control>
+		<Control name="fn[221]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#5D"/></Control>
+		<Control name="fn[222]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#5E"/></Control>
+		<Control name="fn[223]" type="button" options="receive"><MidiMessage status="#B0" channel="#01" address="#5F"/></Control>
 	</Controls>
 
 	<Mappings>
 		<Global>
-			<Command control="pad[0]" command.category="Track"     command.name="Add Audio Track (stereo)"/>
-			<Command control="pad[1]" command.category="Edit"      command.name="Undo"/>
-			<Command control="pad[2]" command.category="Edit"      command.name="Redo"/>
-			<Command control="pad[3]" command.category="Edit"      command.name="Duplicate"/>
-			<Command control="pad[6]" command.category="Edit"      command.name="Delete"/>
-			<Command control="pad[7]" command.category="Track"     command.name="Duplicate"/>
+			<Command control="fn[0]" command.category="Edit" command.name="Undo"/>
+			<Command control="fn[1]" command.category="Edit" command.name="Redo"/>
+			<Command control="fn[2]" command.category="Edit" command.name="Split Loop"/>
+			<Command control="fn[3]" command.category="Edit" command.name="Split Range"/>
+			<Command control="fn[4]" command.category="Edit" command.name="Split at Cursor"/>
+			<Command control="fn[5]" command.category="Zoom" command.name="Zoom to Selection"/>
+			<Command control="fn[6]" command.category="Zoom" command.name="Zoom to Loop"/>
+			<Command control="fn[7]" command.category="Zoom" command.name="Toggle Zoom"/>
+			<Command control="fn[8]" command.category="Zoom" command.name="Track Height Tiny"/>
+			<Command control="fn[9]" command.category="Zoom" command.name="Track Height Normal"/>
+			<Command control="fn[10]" command.category="Zoom" command.name="Track Height Large"/>
+			<Command control="fn[11]" command.category="Track" command.name="Duplicate (complete)"/>
+			<Command control="fn[12]" command.category="Song" command.name="Show in Explorer/Finder"/>
+			<Command control="fn[13]" command.category="Event" command.name="Remove Gaps"/>
+			<Command control="fn[14]" command.category="Event" command.name="Merge Events"/>
+			<Command control="fn[15]" command.category="Audio" command.name="Reverse Audio"/>
+			<Command control="fn[16]" command.category="Track" command.name="Activate Previous Layer"/>
+			<Command control="fn[17]" command.category="Track" command.name="Activate Next Layer"/>
+			<Command control="fn[18]" command.category="Event" command.name="Bounce Selection"/>
+			<Command control="fn[19]" command.category="Event" command.name="Mixdown Selection"/>
+			<Command control="fn[20]" command.category="Audio" command.name="Render Event FX"/>
+			<Command control="fn[21]" command.category="Navigation" command.name="Previous Hotspot"/>
+			<Command control="fn[22]" command.category="Navigation" command.name="Next Hotspot"/>
+			<Command control="fn[23]" command.category="Zoom" command.name="Undo Zoom"/>
+			<Command control="fn[24]" command.category="Event" command.name="Crop to Content"/>
+			<Command control="fn[25]" command.category="Event" command.name="Trim Start to Cursor"/>
+			<Command control="fn[26]" command.category="Event" command.name="Trim End to Cursor"/>
+			<Command control="fn[27]" command.category="Musical Functions" command.name="Select Notes"/>
+			<Command control="fn[28]" command.category="Edit" command.name="Select from Start to Event"/>
+			<Command control="fn[29]" command.category="Edit" command.name="Select from Event to End"/>
+			<Command control="fn[30]" command.category="Edit" command.name="Deselect All"/>
+			<Command control="fn[31]" command.category="Musical Functions" command.name="Apply Scale"/>
+			<Command control="fn[32]" command.category="Edit" command.name="Move to Cursor"/>
+			<Command control="fn[33]" command.category="Event" command.name="Extend to Part End"/>
+			<Command control="fn[34]" command.category="Event" command.name="Toggle Mute"/>
+			<Command control="fn[35]" command.category="Edit" command.name="Invert Selection"/>
+			<Command control="fn[36]" command.category="Devices" command.name="All Notes Off"/>
+			<Command control="fn[37]" command.category="Zoom" command.name="Zoom Full"/>
+			<Command control="fn[38]" command.category="Audio" command.name="Strip Silence"/>
+			<Command control="fn[39]" command.category="Media" command.name="Copy External Files"/>
+			<Command control="fn[40]" command.category="Edit" command.name="Show All Tracks"/>
+			<Command control="fn[41]" command.category="Edit" command.name="Show Audio Tracks"/>
+			<Command control="fn[42]" command.category="Edit" command.name="Show Instrument Tracks"/>
+			<Command control="fn[43]" command.category="Edit" command.name="Show Enabled Tracks"/>
+			<Command control="fn[44]" command.category="Edit" command.name="Show Disabled Tracks"/>
+			<Command control="fn[45]" command.category="Edit" command.name="Show Selected Tracks"/>
+			<Command control="fn[46]" command.category="Edit" command.name="Show Muted Tracks"/>
+			<Command control="fn[47]" command.category="Edit" command.name="Show Empty Tracks"/>
+			<Command control="fn[48]" command.category="Edit" command.name="Show Soloed Tracks"/>
+			<Command control="fn[49]" command.category="Edit" command.name="Show Tracks with Events under Cursor"/>
+			<Command control="fn[50]" command.category="Edit" command.name="Show Tracks with Events in Loop Range"/>
+			<Command control="fn[51]" command.category="Track" command.name="Find Track"/>
+			<Command control="fn[52]" command.category="Console" command.name="Find Channel"/>
+			<Command control="fn[53]" command.category="Edit" command.name="Hide Enabled Tracks"/>
+			<Command control="fn[54]" command.category="Edit" command.name="Hide Audio Tracks"/>
+			<Command control="fn[55]" command.category="Edit" command.name="Hide Instrument Tracks"/>
+			<Command control="fn[56]" command.category="Edit" command.name="Hide Disabled Tracks"/>
+			<Command control="fn[57]" command.category="Edit" command.name="Hide Selected Tracks"/>
+			<Command control="fn[58]" command.category="Edit" command.name="Hide Muted Tracks"/>
+			<Command control="fn[59]" command.category="Edit" command.name="Hide Empty Tracks"/>
+			<Command control="fn[60]" command.category="Edit" command.name="Hide Soloed Tracks"/>
+			<Command control="fn[61]" command.category="Edit" command.name="Hide Tracks with Events under Cursor"/>
+			<Command control="fn[62]" command.category="Edit" command.name="Hide Tracks with Events in Loop Range"/>
+			<Command control="fn[63]" command.category="Show" command.name="Toggle Section Playback Mode Loop / Continue"/>
+			<Command control="fn[64]" command.category="Arranger" command.name="Stop at End of Bar"/>
+			<Command control="fn[65]" command.category="Arranger" command.name="Stop at End of Section"/>
+			<Command control="fn[66]" command.category="Show" command.name="Previous Setlist Item"/>
+			<Command control="fn[67]" command.category="Show" command.name="Next Setlist Item"/>
+			<Command control="fn[68]" command.category="Arranger" command.name="Goto Previous Section"/>
+			<Command control="fn[69]" command.category="Arranger" command.name="Goto Next Section"/>
+			<Command control="fn[70]" command.category="Arranger" command.name="Set Sync Mode Off"/>
+			<Command control="fn[71]" command.category="Arranger" command.name="Set Sync Mode 1 Bar"/>
+			<Command control="fn[72]" command.category="Arranger" command.name="Set Sync Mode 2 Bars"/>
+			<Command control="fn[73]" command.category="Arranger" command.name="Set Sync Mode 4 Bars"/>
+			<Command control="fn[74]" command.category="Arranger" command.name="Set Sync Mode End"/>
+			<Command control="fn[75]" command.category="Show" command.name="Previous Patch"/>
+			<Command control="fn[76]" command.category="Show" command.name="Next Patch"/>
+			<Command control="fn[77]" command.category="Show" command.name="Select Patch 1"/>
+			<Command control="fn[78]" command.category="Show" command.name="Select Patch 2"/>
+			<Command control="fn[79]" command.category="Show" command.name="Select Patch 3"/>
+			<Command control="fn[80]" command.category="Show" command.name="Select Patch 4"/>
+			<Command control="fn[81]" command.category="Show" command.name="Select Patch 5"/>
+			<Command control="fn[82]" command.category="Project" command.name="Update Mastering Files"/>
+			<Command control="fn[83]" command.category="Project" command.name="Detect Loudness"/>
+			<Command control="fn[84]" command.category="Project" command.name="Copy Metadata to all Tracks"/>
+			<Command control="fn[85]" command.category="Project" command.name="Transform to Rendered Audio"/>
+			<Command control="fn[86]" command.category="Audio" command.name="Normalize Audio"/>
+			<Command control="fn[87]" command.category="Edit" command.name="Undo Add Audio Track (stereo)"/>
+			<Command control="fn[88]" command.category="Edit" command.name="History"/>
+			<Command control="fn[89]" command.category="Edit" command.name="Delete Undo History"/>
+			<Command control="fn[90]" command.category="Edit" command.name="Cut"/>
+			<Command control="fn[91]" command.category="Edit" command.name="Copy"/>
+			<Command control="fn[92]" command.category="Edit" command.name="Paste"/>
+			<Command control="fn[93]" command.category="Edit" command.name="Paste at Original Position"/>
+			<Command control="fn[94]" command.category="Edit" command.name="Delete"/>
+			<Command control="fn[95]" command.category="Edit" command.name="Select"/>
+			<Command control="fn[96]" command.category="Edit" command.name="Duplicate"/>
+			<Command control="fn[97]" command.category="Edit" command.name="Duplicate Shared"/>
+			<Command control="fn[98]" command.category="Edit" command.name="Duplicate and Insert"/>
+			<Command control="fn[99]" command.category="Edit" command.name="Nudge"/>
+			<Command control="fn[100]" command.category="Edit" command.name="Split"/>
+			<Command control="fn[101]" command.category="Edit" command.name="Insert Silence"/>
+			<Command control="fn[102]" command.category="Edit" command.name="Delete Time"/>
+			<Command control="fn[103]" command.category="Event" command.name="Instrument Parts"/>
+			<Command control="fn[104]" command.category="Event" command.name="Rename Events"/>
+			<Command control="fn[105]" command.category="Event" command.name="Send to Back"/>
+			<Command control="fn[106]" command.category="Event" command.name="Send to Front"/>
+			<Command control="fn[107]" command.category="Event" command.name="Mute Events"/>
+			<Command control="fn[108]" command.category="Event" command.name="Unmute Events"/>
+			<Command control="fn[109]" command.category="Event" command.name="Add Arranger Section from Selection"/>
+			<Command control="fn[110]" command.category="Event" command.name="Bounce To New Track"/>
+			<Command control="fn[111]" command.category="Event" command.name="Bounce To New Track (Keep Speaker Format)"/>
+			<Command control="fn[112]" command.category="Event" command.name="Export Selection"/>
+			<Command control="fn[113]" command.category="Event" command.name="Select in Pool"/>
+			<Command control="fn[114]" command.category="Event" command.name="Split at Grid"/>
+			<Command control="fn[115]" command.category="Event" command.name="Spot"/>
+			<Command control="fn[116]" command.category="Event" command.name="Move To Origin"/>
+			<Command control="fn[117]" command.category="Event" command.name="Set Sync Point to Cursor"/>
+			<Command control="fn[118]" command.category="Event" command.name="Toggle Time Lock"/>
+			<Command control="fn[119]" command.category="Event" command.name="Toggle Edit Lock"/>
+			<Command control="fn[120]" command.category="Event" command.name="Separate Shared Copies"/>
+			<Command control="fn[121]" command.category="Event" command.name="Quantize"/>
+			<Command control="fn[122]" command.category="Event" command.name="Quantize 50%"/>
+			<Command control="fn[123]" command.category="Event" command.name="Quantize on Track"/>
+			<Command control="fn[124]" command.category="Event" command.name="Restore Timing"/>
+			<Command control="fn[125]" command.category="Audio" command.name="Separate Stems"/>
+			<Command control="fn[126]" command.category="Audio" command.name="Edit with Melodyne"/>
+			<Command control="fn[127]" command.category="Audio" command.name="Remove Melodyne"/>
+			<Command control="fn[128]" command.category="Audio" command.name="Fade In to Cursor"/>
+			<Command control="fn[129]" command.category="Audio" command.name="Fade Out from Cursor"/>
+			<Command control="fn[130]" command.category="Audio" command.name="Create Autofades"/>
+			<Command control="fn[131]" command.category="Audio" command.name="Create Crossfades"/>
+			<Command control="fn[132]" command.category="Audio" command.name="Decrease Volume"/>
+			<Command control="fn[133]" command.category="Audio" command.name="Increase Volume"/>
+			<Command control="fn[134]" command.category="Audio" command.name="Reset Gain Envelope"/>
+			<Command control="fn[135]" command.category="Audio" command.name="Detect Tempo"/>
+			<Command control="fn[136]" command.category="Audio" command.name="Detect Transients"/>
+			<Command control="fn[137]" command.category="Audio" command.name="Extract to Tempo Track"/>
+			<Command control="fn[138]" command.category="Audio" command.name="Remove Bend Markers"/>
+			<Command control="fn[139]" command.category="Audio" command.name="Split at Bend Markers"/>
+			<Command control="fn[140]" command.category="Audio" command.name="Detect Chords"/>
+			<Command control="fn[141]" command.category="Audio" command.name="Remove Chords"/>
+			<Command control="fn[142]" command.category="Audio" command.name="Extract to Chord Track"/>
+			<Command control="fn[143]" command.category="Audio" command.name="Apply Chords from Chord Track"/>
+			<Command control="fn[144]" command.category="Audio" command.name="Extract Key Signatures from Event"/>
+			<Command control="fn[145]" command.category="Audio" command.name="Merge to Audio Part"/>
+			<Command control="fn[146]" command.category="Audio" command.name="Dissolve Audio Part"/>
+			<Command control="fn[147]" command.category="Audio" command.name="New Clip Version"/>
+			<Command control="fn[148]" command.category="Audio" command.name="Send To new SampleOne"/>
+			<Command control="fn[149]" command.category="Audio" command.name="Send To new Impact"/>
+			<Command control="fn[150]" command.category="Track" command.name="Add Tracks"/>
+			<Command control="fn[151]" command.category="Track" command.name="Add Audio Track (mono)"/>
+			<Command control="fn[152]" command.category="Track" command.name="Add Audio Track (stereo)"/>
+			<Command control="fn[153]" command.category="Track" command.name="Add Instrument Track"/>
+			<Command control="fn[154]" command.category="Track" command.name="Add Automation Track"/>
+			<Command control="fn[155]" command.category="Track" command.name="Add Folder Track"/>
+			<Command control="fn[156]" command.category="Track" command.name="Add Tracks for all Inputs"/>
+			<Command control="fn[157]" command.category="Track" command.name="Add Bus for Selected Channels"/>
+			<Command control="fn[158]" command.category="Track" command.name="Add VCA for Selected Channels"/>
+			<Command control="fn[159]" command.category="Track" command.name="Pack Folder"/>
+			<Command control="fn[160]" command.category="Track" command.name="Collapse All Tracks"/>
+			<Command control="fn[161]" command.category="Track" command.name="Remove Track Automation"/>
+			<Command control="fn[162]" command.category="Track" command.name="Apply Track Names to Channels"/>
+			<Command control="fn[163]" command.category="Track" command.name="Freeze Global Transposition"/>
+			<Command control="fn[164]" command.category="Track" command.name="Remove Track"/>
+			<Command control="fn[165]" command.category="Track" command.name="Duplicate"/>
+			<Command control="fn[166]" command.category="Track" command.name="Store Track Preset"/>
+			<Command control="fn[167]" command.category="Track" command.name="Load Track Preset"/>
+			<Command control="fn[168]" command.category="Track" command.name="Group Selected Tracks"/>
+			<Command control="fn[169]" command.category="Track" command.name="Dissolve Group"/>
+			<Command control="fn[170]" command.category="Track" command.name="Transform"/>
+			<Command control="fn[171]" command.category="Track" command.name="Layers"/>
+			<Command control="fn[172]" command.category="Track" command.name="Controls"/>
+			<Command control="fn[173]" command.category="Track" command.name="Automation"/>
+			<Command control="fn[174]" command.category="Track" command.name="Edit Track"/>
+			<Command control="fn[175]" command.category="Track" command.name="Show in Console"/>
+			<Command control="fn[176]" command.category="Track" command.name="Show Automation"/>
+			<Command control="fn[177]" command.category="Track" command.name="Show Channel Editor"/>
+			<Command control="fn[178]" command.category="Track" command.name="Show Instrument Editor"/>
+			<Command control="fn[179]" command.category="Song" command.name="Import File"/>
+			<Command control="fn[180]" command.category="Song" command.name="Import Song Data"/>
+			<Command control="fn[181]" command.category="Song" command.name="Export Mixdown"/>
+			<Command control="fn[182]" command.category="Song" command.name="Export Stems"/>
+			<Command control="fn[183]" command.category="Song" command.name="Export Spatial Audio"/>
+			<Command control="fn[184]" command.category="Song" command.name="Export Video"/>
+			<Command control="fn[185]" command.category="Song" command.name="Send to Notion"/>
+			<Command control="fn[186]" command.category="Song" command.name="Print Score"/>
+			<Command control="fn[187]" command.category="Song" command.name="Update Mastering File"/>
+			<Command control="fn[188]" command.category="Song" command.name="Add to Project"/>
+			<Command control="fn[189]" command.category="Song" command.name="Add to Show"/>
+			<Command control="fn[190]" command.category="Song" command.name="Locate Missing Files"/>
+			<Command control="fn[191]" command.category="Song" command.name="Locate Missing Devices"/>
+			<Command control="fn[192]" command.category="Song" command.name="Remove Unused Files"/>
+			<Command control="fn[193]" command.category="Song" command.name="Copy External Files"/>
+			<Command control="fn[194]" command.category="Song" command.name="Show Media Folder in Finder"/>
+			<Command control="fn[195]" command.category="Song" command.name="Set Bar Offset to Cursor"/>
+			<Command control="fn[196]" command.category="Song" command.name="Set Time Offset to Cursor"/>
+			<Command control="fn[197]" command.category="Song" command.name="Set Frames at Cursor"/>
+			<Command control="fn[198]" command.category="Song" command.name="Song Setup"/>
+			<Command control="fn[199]" command.category="Song" command.name="Spatial Audio"/>
+			<Command control="fn[200]" command.category="Song" command.name="Song Information"/>
 		</Global>
 		<DeviceMapping device="TransportPanel">
-			<Command control="pad[4]" command.category="Transport" command.name="Start"/>
-			<Command control="pad[5]" command.category="Transport" command.name="Stop"/>
+			<Command control="fn[201]" command.category="Transport" command.name="Start"/>
+			<Command control="fn[202]" command.category="Transport" command.name="Stop"/>
+			<Command control="fn[203]" command.category="Transport" command.name="Return to Zero"/>
+			<Command control="fn[204]" command.category="Transport" command.name="Goto Time"/>
+			<Command control="fn[205]" command.category="Transport" command.name="Options"/>
+			<Command control="fn[206]" command.category="Transport" command.name="Sync to External Devices"/>
+			<Command control="fn[207]" command.category="Transport" command.name="External Sync Options"/>
+			<Command control="fn[208]" command.category="Transport" command.name="Loop Active"/>
+			<Command control="fn[209]" command.category="Transport" command.name="Loop Selection"/>
+			<Command control="fn[210]" command.category="Transport" command.name="Loop Selection Snapped"/>
+			<Command control="fn[211]" command.category="Transport" command.name="Goto Loop Start"/>
+			<Command control="fn[212]" command.category="Transport" command.name="Goto Loop End"/>
+			<Command control="fn[213]" command.category="Transport" command.name="Insert Marker"/>
+			<Command control="fn[214]" command.category="Transport" command.name="Goto Marker"/>
+			<Command control="fn[215]" command.category="Transport" command.name="Set Play Start Marker"/>
+			<Command control="fn[216]" command.category="Transport" command.name="Locate Selection"/>
+			<Command control="fn[217]" command.category="Transport" command.name="Locate Selection End"/>
+			<Command control="fn[218]" command.category="Transport" command.name="Set Start and End to Selection"/>
+			<Command control="fn[219]" command.category="Transport" command.name="Goto Next Marker"/>
+			<Command control="fn[220]" command.category="Transport" command.name="Goto Previous Marker"/>
+			<Command control="fn[221]" command.category="Transport" command.name="Goto Next Event"/>
+			<Command control="fn[222]" command.category="Transport" command.name="Goto Previous Event"/>
+			<Command control="fn[223]" command.category="Transport" command.name="Metronome Setup"/>
 		</DeviceMapping>
 	</Mappings>
 
