@@ -10,6 +10,7 @@ control surface (see docs/macros-todo.json) and need a separate trigger.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import time
 from pathlib import Path
@@ -50,8 +51,6 @@ class CommandDispatcher:
         import rtmidi
 
         from . import coremidi
-
-        import contextlib
 
         self._out = rtmidi.MidiOut()
         self._out.open_virtual_port(self.port_name)
