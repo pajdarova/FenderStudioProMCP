@@ -4,143 +4,173 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>StudioOneMcp — control Studio One with an LLM</title>
-<meta name="description" content="An MCP server that turns PreSonus Studio One into an AI-controllable DAW instrument — fire any built-in command by name over MIDI. 224 commands, verified." />
+<meta name="description" content="An MCP server that turns PreSonus Studio One into an AI-controllable DAW instrument — fire any built-in command by name over MIDI." />
 <meta property="og:title" content="StudioOneMcp — control Studio One with an LLM" />
 <meta property="og:description" content="Turn Studio One into an AI-controllable DAW instrument. Fire any built-in command by name over MIDI." />
 <meta property="og:type" content="website" />
-<meta name="theme-color" content="#0b0c10" />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230b0c10%22/><path d=%22M28 62 V38 M42 70 V30 M56 66 V34 M70 58 V42%22 stroke=%22%235eead4%22 stroke-width=%228%22 stroke-linecap=%22round%22/></svg>" />
+<meta name="theme-color" content="#191510" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,700,500&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23191510%22/><g stroke-linecap=%22round%22 stroke-width=%229%22><path d=%22M30 66 V34%22 stroke=%22%238ea63f%22/><path d=%22M50 72 V28%22 stroke=%22%23f0a03c%22/><path d=%22M70 60 V40%22 stroke=%22%23d1462f%22/></g></svg>" />
 <style>
   :root{
-    --bg:#0b0c10;--bg2:#111319;--card:#15171f;--line:#232634;
-    --ink:#e8ebf2;--muted:#9aa3b2;--dim:#6b7280;
-    --a1:#5eead4;--a2:#7c5cff;--a3:#ff5c8a;
-    --grad:linear-gradient(100deg,var(--a1),var(--a2) 55%,var(--a3));
-    --radius:16px;--max:1040px;
-    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    --bg:#191510; --bg2:#20190f; --card:#241d13; --raised:#2b2216; --line:#3a2e1e;
+    --ink:#f4ede0; --muted:#b6a789; --dim:#8a7b62;
+    --amber:#f0a63c; --amber2:#e8843a; --red:#d1462f; --green:#9aad45;
+    --signal:linear-gradient(90deg,var(--green),var(--amber) 58%,var(--red));
+    --radius:14px; --max:1060px;
+    --display:"Cabinet Grotesk",-apple-system,Georgia,serif;
+    --body:"General Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --mono:"Space Mono",ui-monospace,Menlo,monospace;
   }
   *{box-sizing:border-box}html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-  a{color:var(--a1);text-decoration:none}a:hover{text-decoration:underline}
-  .wrap{max-width:var(--max);margin:0 auto;padding:0 22px}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;position:relative}
+  /* film-grain overlay */
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.05;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px;position:relative;z-index:2}
+  a{color:var(--amber);text-decoration:none}a:hover{color:var(--amber2)}
   .mono{font-family:var(--mono)}
-  header{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:rgba(11,12,16,.72);border-bottom:1px solid var(--line)}
-  .nav{display:flex;align-items:center;justify-content:space-between;height:60px}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:700}
-  .dot{width:16px;height:16px;border-radius:50%;background:var(--grad);box-shadow:0 0 18px rgba(124,92,255,.6)}
-  .navlinks{display:flex;gap:22px;align-items:center;font-size:14px;color:var(--muted)}
-  .navlinks a{color:var(--muted)}.navlinks a:hover{color:var(--ink);text-decoration:none}
+  /* meter strip motif */
+  .meter{height:5px;border-radius:99px;background:var(--signal);opacity:.9}
+
+  header{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:rgba(25,21,16,.8);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .brand{display:flex;align-items:center;gap:11px;font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:-.2px}
+  .knob{width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 50% 35%,var(--raised),#120e08);border:1px solid var(--line);position:relative;box-shadow:0 0 12px rgba(240,166,60,.25)}
+  .knob::after{content:"";position:absolute;left:50%;top:3px;width:2px;height:6px;background:var(--amber);transform:translateX(-50%);border-radius:2px}
+  .navlinks{display:flex;gap:24px;align-items:center;font-size:14.5px;color:var(--muted);font-weight:500}
+  .navlinks a{color:var(--muted)}.navlinks a:hover{color:var(--ink)}
   @media(max-width:640px){.navlinks .hide{display:none}}
-  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:12px;font-weight:600;font-size:15px;border:1px solid var(--line);color:var(--ink);background:var(--card);transition:.18s;white-space:nowrap}
-  .btn:hover{text-decoration:none;transform:translateY(-1px);border-color:#39405a}
-  .btn.primary{background:var(--grad);color:#0b0c10;border:none;box-shadow:0 10px 30px -10px rgba(124,92,255,.6)}
-  .hero{position:relative;padding:80px 0 44px;overflow:hidden}
-  .glow{position:absolute;inset:-30% -10% auto -10%;height:520px;pointer-events:none;background:radial-gradient(60% 60% at 30% 20%,rgba(94,234,212,.16),transparent 60%),radial-gradient(50% 50% at 80% 10%,rgba(124,92,255,.20),transparent 60%);filter:blur(6px)}
-  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--a1);border:1px solid var(--line);padding:6px 12px;border-radius:999px;background:var(--bg2)}
-  h1{font-size:clamp(34px,5.2vw,56px);line-height:1.04;margin:18px 0 12px;letter-spacing:-.5px;font-weight:800;max-width:16ch}
-  h1 .accent{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .sub{font-size:clamp(16px,2.2vw,19px);color:var(--muted);max-width:56ch}
-  .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
-  .note{margin-top:14px;font-size:13px;color:var(--dim)}
-  .term{margin-top:30px;background:#0d0f16;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.7)}
-  .term .bar{display:flex;gap:7px;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--bg2)}
-  .term .bar i{width:11px;height:11px;border-radius:50%}
-  .term pre{margin:0;padding:18px 20px;font-family:var(--mono);font-size:13.5px;line-height:1.7;overflow-x:auto;color:#cfe9e2}
-  .term .u{color:var(--a2)}.term .o{color:var(--muted)}.term .ok{color:var(--a1)}
-  section{padding:54px 0;border-top:1px solid var(--line)}
-  .kicker{font-family:var(--mono);font-size:12.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--a2)}
-  h2{font-size:clamp(23px,3.4vw,32px);margin:8px 0 6px;letter-spacing:-.4px;font-weight:800}
-  .lead{color:var(--muted);max-width:62ch;margin:0}
-  .stats{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px}
-  .stat{flex:1;min-width:150px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
-  .stat b{display:block;font-size:30px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.1}
-  .stat span{color:var(--muted);font-size:13.5px}
-  .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:26px}
+
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:11px;font-weight:600;font-size:15px;font-family:var(--body);border:1px solid var(--line);color:var(--ink);background:var(--card);transition:.18s;white-space:nowrap}
+  .btn:hover{transform:translateY(-1px);border-color:#54432b;color:var(--ink)}
+  .btn.primary{background:linear-gradient(180deg,var(--amber),var(--amber2));color:#241300;border:none;box-shadow:0 8px 26px -8px rgba(240,166,60,.55)}
+  .btn.primary:hover{filter:brightness(1.05)}
+
+  .hero{position:relative;padding:82px 0 46px}
+  .glow{position:absolute;inset:-20% -10% auto -10%;height:460px;pointer-events:none;z-index:0;
+    background:radial-gradient(50% 60% at 22% 15%,rgba(240,166,60,.14),transparent 60%),radial-gradient(46% 50% at 82% 5%,rgba(209,70,47,.12),transparent 60%)}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--amber);border:1px solid var(--line);padding:6px 13px;border-radius:99px;background:var(--bg2)}
+  h1{font-family:var(--display);font-size:clamp(38px,6vw,66px);line-height:.98;margin:20px 0 14px;letter-spacing:-1px;font-weight:800;max-width:15ch}
+  h1 em{font-style:normal;color:var(--amber)}
+  .sub{font-size:clamp(16px,2.2vw,19px);color:var(--muted);max-width:54ch}
+  .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+  .note{margin-top:16px;font-size:13px;color:var(--dim);font-family:var(--mono)}
+
+  /* console/terminal card with fader rail */
+  .console{margin-top:34px;display:grid;grid-template-columns:64px 1fr;background:#15110b;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 34px 70px -34px rgba(0,0,0,.8)}
+  .rail{background:var(--bg2);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:space-around;padding:18px 0}
+  .fader{width:6px;height:64px;background:#0f0b06;border-radius:4px;position:relative}
+  .fader::after{content:"";position:absolute;left:-6px;width:18px;height:12px;border-radius:3px;background:linear-gradient(180deg,#3a2e1e,#1a140c);border:1px solid #4a3a24}
+  .fader.f1::after{top:8px}.fader.f2::after{top:30px}.fader.f3::after{top:20px}
+  .console .body{padding:0}
+  .console .bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);color:var(--dim);font-family:var(--mono);font-size:12px}
+  .console .bar i{width:10px;height:10px;border-radius:50%}
+  .console pre{margin:0;padding:18px 20px;font-family:var(--mono);font-size:13.5px;line-height:1.75;overflow-x:auto;color:#e7d9bf}
+  .console .u{color:var(--amber)}.console .o{color:var(--dim)}.console .ok{color:var(--green)}
+
+  section{padding:56px 0;border-top:1px solid var(--line)}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--red)}
+  h2{font-family:var(--display);font-size:clamp(26px,3.6vw,38px);margin:10px 0 8px;letter-spacing:-.5px;font-weight:700}
+  .lead{color:var(--muted);max-width:60ch;margin:0}
+
+  .stats{display:flex;gap:14px;flex-wrap:wrap;margin-top:28px}
+  .stat{flex:1;min-width:150px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden}
+  .stat .meter{position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:0}
+  .stat b{display:block;font-family:var(--display);font-size:34px;color:var(--amber);line-height:1}
+  .stat span{color:var(--muted);font-size:13.5px;display:block;margin-top:6px}
+  .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-top:26px}
   @media(max-width:640px){.cards{grid-template-columns:1fr}}
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;transition:.18s}
-  .card:hover{border-color:#39405a;transform:translateY(-2px)}
-  .card h3{margin:0 0 6px;font-size:16.5px}.card p{margin:0;color:var(--muted);font-size:14px}
-  .tag{font-family:var(--mono);font-size:11px;color:var(--a1);border:1px solid var(--line);padding:2px 8px;border-radius:999px;margin-left:6px}
+  .card:hover{border-color:#54432b;transform:translateY(-2px)}
+  .card h3{font-family:var(--display);margin:0 0 6px;font-size:17px;font-weight:600}
+  .card p{margin:0;color:var(--muted);font-size:14px}
+  .tag{font-family:var(--mono);font-size:10.5px;color:var(--amber);border:1px solid var(--line);padding:2px 8px;border-radius:99px;margin-left:6px;letter-spacing:.5px}
+
   .steps{counter-reset:s;display:grid;gap:12px;margin-top:24px}
-  .step{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
-  .step .n{counter-increment:s;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-weight:800;color:#0b0c10;background:var(--grad)}
+  .step{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .step .n{counter-increment:s;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-family:var(--display);font-weight:800;color:#241300;background:linear-gradient(180deg,var(--amber),var(--amber2))}
   .step .n::before{content:counter(s)}
-  .step h4{margin:2px 0 3px;font-size:15.5px}.step p{margin:0;color:var(--muted);font-size:13.5px}
-  code{font-family:var(--mono);font-size:12.5px;background:var(--bg2);border:1px solid var(--line);padding:2px 7px;border-radius:6px;color:#cfe9e2}
-  .callout{margin-top:22px;background:linear-gradient(180deg,rgba(124,92,255,.08),transparent);border:1px solid var(--line);border-left:3px solid var(--a2);border-radius:12px;padding:16px 20px;color:var(--muted);font-size:14px}
+  .step h4{font-family:var(--display);margin:1px 0 3px;font-size:15.5px;font-weight:600}.step p{margin:0;color:var(--muted);font-size:13.5px}
+  code{font-family:var(--mono);font-size:12.5px;background:var(--bg2);border:1px solid var(--line);padding:2px 7px;border-radius:6px;color:#e7d9bf}
+  .callout{margin-top:22px;background:linear-gradient(180deg,rgba(240,166,60,.07),transparent);border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:12px;padding:16px 20px;color:var(--muted);font-size:14px}
+
   footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--dim);font-size:13.5px}
   .foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
 </style>
 </head>
 <body>
 <header><div class="wrap nav">
-  <div class="brand"><span class="dot"></span> StudioOneMcp</div>
+  <div class="brand"><span class="knob"></span> StudioOneMcp</div>
   <nav class="navlinks">
-    <a class="hide" href="#how">How</a><a class="hide" href="#setup">Setup</a>
-    <a class="hide" href="#vision">Vision</a>
+    <a class="hide" href="#how">How</a><a class="hide" href="#setup">Setup</a><a class="hide" href="#vision">Vision</a>
     <a href="https://github.com/tiwadara/StudioOneMcp">GitHub ↗</a>
   </nav>
 </div></header>
 
 <div class="hero"><div class="glow"></div><div class="wrap">
-  <span class="eyebrow">MCP · DAW-controller instrument</span>
-  <h1>Control Studio One with an <span class="accent">LLM</span></h1>
-  <p class="sub">An MCP server that turns PreSonus Studio One into an AI-controllable instrument — fire <strong>any built-in command by name</strong>, over MIDI. Built for production: editing, MIDI manipulation, mixing, effects, export.</p>
+  <span class="eyebrow">◍ MCP · DAW-controller instrument</span>
+  <h1>Play your DAW like an <em>instrument</em></h1>
+  <p class="sub">An MCP server that turns PreSonus Studio One into an AI-controllable instrument — fire <strong>any built-in command by name</strong>, over MIDI. Built for production: editing, MIDI, mixing, effects, export.</p>
   <div class="cta">
     <a class="btn primary" href="https://github.com/tiwadara/StudioOneMcp">Get it on GitHub</a>
-    <a class="btn" href="https://github.com/tiwadara/StudioOneMcp/issues">Roadmap / Issues</a>
+    <a class="btn" href="https://github.com/tiwadara/StudioOneMcp/issues">Roadmap</a>
   </div>
-  <p class="note">Unofficial community project · MIT · macOS (Studio One 7). Not affiliated with PreSonus.</p>
-  <div class="term">
-    <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
-    <pre><span class="o"># from your LLM / MCP client</span>
-<span class="u">▸</span> studio_one_run_command(<span class="ok">"Split Range"</span>)      <span class="o">→ Ran 'Split Range' [Edit]</span>
-<span class="u">▸</span> studio_one_run_command(<span class="ok">"Duplicate"</span>)         <span class="o">→ Ran 'Duplicate' [Track]</span>
-<span class="u">▸</span> studio_one_run_command(<span class="ok">"Bounce Selection"</span>)  <span class="o">→ Ran 'Bounce Selection' [Event]</span>
-<span class="u">▸</span> studio_one_list_commands(<span class="ok">"quantize"</span>)       <span class="o">→ 7 commands…</span></pre>
+  <p class="note">unofficial · MIT · macOS / Studio One 7 · not affiliated with PreSonus</p>
+  <div class="console">
+    <div class="rail"><span class="fader f1"></span><span class="fader f2"></span><span class="fader f3"></span></div>
+    <div class="body">
+      <div class="bar"><i style="background:#d1462f"></i><i style="background:#f0a63c"></i><i style="background:#9aad45"></i> &nbsp;llm → studio one</div>
+      <pre><span class="o"># drive the DAW by name from your MCP client</span>
+<span class="u">▸</span> run_command(<span class="ok">"Split Range"</span>)        <span class="o">→ ✓ Split Range [Edit]</span>
+<span class="u">▸</span> run_command(<span class="ok">"Add Instrument Track"</span>) <span class="o">→ ✓ [Track]</span>
+<span class="u">▸</span> run_command(<span class="ok">"Bounce Selection"</span>)     <span class="o">→ ✓ [Event]</span>
+<span class="u">▸</span> list_commands(<span class="ok">"quantize"</span>)         <span class="o">→ 7 commands…</span></pre>
+    </div>
   </div>
 </div></div>
 
 <section id="how"><div class="wrap">
-  <div class="kicker">How it works</div>
+  <div class="kicker">Signal flow</div>
   <h2>No API? No problem.</h2>
   <p class="lead">Studio One has no public remote API, so StudioOneMcp drives it through four push-based paths — with a MIDI→command control surface as the reliable backbone.</p>
   <div class="stats">
-    <div class="stat"><b>224</b><span>built-in commands, dispatchable by name — verified end-to-end</span></div>
-    <div class="stat"><b>4</b><span>control paths (MIDI→command · MCU · menu automation · macros)</span></div>
-    <div class="stat"><b>0</b><span>public API required — it's all push-based</span></div>
+    <div class="stat"><b>224</b><span>built-in commands, by name — verified end-to-end</span><div class="meter"></div></div>
+    <div class="stat"><b>4</b><span>control paths: MIDI→command · MCU · menus · macros</span><div class="meter"></div></div>
+    <div class="stat"><b>0</b><span>public API required — all push-based</span><div class="meter"></div></div>
   </div>
   <div class="cards">
-    <div class="card"><h3>MIDI → command <span class="tag">backbone</span></h3><p>A control surface maps MIDI CCs to Studio One <code>&lt;Command&gt;</code>s. The MCP sends a CC → the command fires. Reliable, no Accessibility.</p></div>
+    <div class="card"><h3>MIDI → command <span class="tag">backbone</span></h3><p>A control surface maps MIDI CCs to Studio One <code>&lt;Command&gt;</code>s. Send a CC → the command fires. Reliable, no Accessibility.</p></div>
     <div class="card"><h3>MCU MIDI</h3><p>Faders, pan, mute, solo, transport via the built-in Mackie Control Universal surface.</p></div>
-    <div class="card"><h3>Menu / keyboard automation</h3><p>Clicks menus &amp; sends shortcuts via System Events; verifies actions via the Edit▸Undo label.</p></div>
+    <div class="card"><h3>Menu automation</h3><p>Clicks menus &amp; sends shortcuts via System Events; verifies each via the Edit▸Undo label.</p></div>
     <div class="card"><h3>Macro generation</h3><p>Writes <code>.studioonemacro</code> files for command sequences with no shortcut.</p></div>
   </div>
-  <div class="callout"><strong>Scope:</strong> the 224 mapped commands are Studio One <em>built-ins</em>. User macros don't dispatch from a control surface (they need a keyboard/Command-Bar trigger) — tracked on the roadmap.</div>
+  <div class="callout"><strong>Scope:</strong> the 224 mapped commands are Studio One <em>built-ins</em>. User macros don't dispatch from a control surface — they need a keyboard/Command-Bar trigger, tracked on the roadmap.</div>
 </div></section>
 
 <section id="setup"><div class="wrap">
-  <div class="kicker">Setup</div>
+  <div class="kicker">Patch it in</div>
   <h2>Four steps</h2>
   <div class="steps">
     <div class="step"><div class="n"></div><div><h4>Install</h4><p><code>pip install -e ".[dev]"</code> in the repo (Python 3.10+).</p></div></div>
-    <div class="step"><div class="n"></div><div><h4>Install the control surface</h4><p>Copy <code>studio-one-devices/StudioOneMCPPads/</code> into Studio One's User Devices, add it in External Devices, set <strong>Receive From = StudioOneMCP</strong> (no Send To).</p></div></div>
-    <div class="step"><div class="n"></div><div><h4>Run the server</h4><p><code>studio-one-mcp --port-name StudioOneMCP</code> — it opens the virtual port Studio One binds to.</p></div></div>
-    <div class="step"><div class="n"></div><div><h4>Connect your MCP client</h4><p>Point Claude Desktop (or any MCP client) at the server and start driving your DAW by name.</p></div></div>
+    <div class="step"><div class="n"></div><div><h4>Install the control surface</h4><p>Copy <code>studio-one-devices/StudioOneMCPPads/</code> into Studio One's User Devices, add it in External Devices, set <strong>Receive From = StudioOneMCP</strong>.</p></div></div>
+    <div class="step"><div class="n"></div><div><h4>Run the server</h4><p><code>studio-one-mcp --port-name StudioOneMCP</code> — opens the virtual port Studio One binds to.</p></div></div>
+    <div class="step"><div class="n"></div><div><h4>Connect your MCP client</h4><p>Point Claude Desktop (or any MCP client) at it and drive your DAW by name.</p></div></div>
   </div>
 </div></section>
 
 <section id="vision"><div class="wrap">
-  <div class="kicker">Vision</div>
+  <div class="kicker">Where it's going</div>
   <h2>A DAW-controller instrument</h2>
-  <p class="lead">Production first — an assistant that quantizes, edits, inserts plugins, bounces and exports on request. And a north-star: <strong>AI-assisted mixing</strong> — riding faders, throwing effects, transitioning songs, with Studio One's launcher quantize handling the timing so the AI works at the musical level.</p>
-  <div class="cta" style="margin-top:22px"><a class="btn" href="https://github.com/tiwadara/StudioOneMcp/issues/1">Read the vision issue →</a></div>
+  <p class="lead">Production first — an assistant that quantizes, edits, inserts plugins, bounces and exports on request. And a north-star: <strong>AI-assisted mixing</strong> — riding faders, throwing effects, transitioning songs, with the launcher's quantize handling the timing so the AI works at the musical level.</p>
+  <div class="cta" style="margin-top:22px"><a class="btn" href="https://github.com/tiwadara/StudioOneMcp/issues/1">Read the vision →</a></div>
 </div></section>
 
-<footer><div class="wrap foot">
-  <div><div class="brand" style="margin-bottom:10px"><span class="dot"></span> StudioOneMcp</div>Unofficial community project · MIT License.<br/>Not affiliated with or endorsed by PreSonus.</div>
+<footer><div class="wrap"><div class="meter" style="margin-bottom:26px;max-width:180px"></div><div class="foot">
+  <div><div class="brand" style="margin-bottom:10px;font-size:17px"><span class="knob"></span> StudioOneMcp</div>Unofficial community project · MIT License.<br/>Not affiliated with or endorsed by PreSonus.</div>
   <a class="btn" href="https://github.com/tiwadara/StudioOneMcp">View source ↗</a>
-</div></footer>
+</div></div></footer>
 </body>
 </html>
