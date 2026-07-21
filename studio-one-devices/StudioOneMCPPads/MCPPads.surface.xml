@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ControlSurface>
+
+	<!-- Controls use CC #40-#47 on channel 1 (status #B0). -->
+	<!-- Python bridge sends CC val=127 (press) / val=0 (release). -->
+	<Controls>
+		<Control name="pad[0]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#40"/></Control>
+		<Control name="pad[1]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#41"/></Control>
+		<Control name="pad[2]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#42"/></Control>
+		<Control name="pad[3]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#43"/></Control>
+		<Control name="pad[4]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#44"/></Control>
+		<Control name="pad[5]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#45"/></Control>
+		<Control name="pad[6]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#46"/></Control>
+		<Control name="pad[7]" type="button" options="receive"><MidiMessage status="#B0" channel="#00" address="#47"/></Control>
+	</Controls>
+
+	<Mappings>
+		<Global>
+			<Command control="pad[0]" command.category="Track"     command.name="Add Audio Track (stereo)"/>
+			<Command control="pad[1]" command.category="Edit"      command.name="Undo"/>
+			<Command control="pad[2]" command.category="Edit"      command.name="Redo"/>
+			<Command control="pad[3]" command.category="Edit"      command.name="Duplicate"/>
+			<Command control="pad[6]" command.category="Edit"      command.name="Delete"/>
+			<Command control="pad[7]" command.category="Track"     command.name="Duplicate"/>
+		</Global>
+		<DeviceMapping device="TransportPanel">
+			<Command control="pad[4]" command.category="Transport" command.name="Start"/>
+			<Command control="pad[5]" command.category="Transport" command.name="Stop"/>
+		</DeviceMapping>
+	</Mappings>
+
+</ControlSurface>

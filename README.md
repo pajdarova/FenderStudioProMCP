@@ -1,129 +1,127 @@
 # StudioOneMcp
 
-An MCP (Model Context Protocol) server that lets an LLM control PreSonus Studio One.
-It drives Studio One three push-based ways: **keyboard automation** (the main
-path — most actions), **macro generation** (commands with no shortcut), and
-**MCU MIDI** (faders, pan, transport).
+**Control PreSonus Studio One with an LLM** — an MCP (Model Context Protocol) server that
+turns Studio One into an AI-controllable DAW instrument. Aimed at **production** workflows
+(editing, MIDI manipulation, mixing, effects, export), with a longer-term vision of
+AI-assisted **live-set** control.
 
-👉 **See [SETUP.md](SETUP.md) for setup** — keyboard automation needs only a single
-macOS Accessibility toggle; macros need nothing; MCU MIDI is optional.
+> Community project, work in progress. Not affiliated with or endorsed by PreSonus.
 
-## Quick Start
+---
 
-### 1. Prerequisites
+## How it controls Studio One
 
-- Studio One 5 or later
-- Python 3.10+
-- A virtual MIDI loopback port named **`StudioOneMCP`**
-  - **macOS**: Use the built-in IAC Driver (Audio MIDI Setup → IAC Driver → add bus)
-  - **Linux**: `sudo modprobe snd-virmidi` or use loopMIDI-compatible tool
-  - **Windows**: Install [loopMIDI](https://www.tobias-erichsen.de/software/loopmidi.html)
+Studio One has no public remote-control API, so StudioOneMcp drives it through four
+complementary, **push-based** paths — each proven to work on Studio One 7 (macOS):
 
-### 2. Configure Studio One
+| Path | What it does | Needs |
+|---|---|---|
+| **MIDI → command dispatch** ⭐ | A user control-surface (`StudioOneMCP Pads`) maps MIDI CCs/notes to Studio One **commands and macros**. The MCP sends MIDI on a virtual port → the command fires. Reliable, no Accessibility. | Virtual port + surface bound to *Receive From* |
+| **MCU MIDI** | Faders, pan, mute, solo, transport via the built-in Mackie Control Universal surface | Virtual port + MCU surface |
+| **Menu / keyboard automation** | Clicks Studio One menu items and sends shortcuts via macOS System Events; verifies actions via the Edit▸Undo label | macOS Accessibility |
+| **Macro generation** | Writes `.studioonemacro` files for command sequences with no shortcut | Nothing |
 
-1. Open **Options → External Devices** (macOS: **Preferences → External Devices**)
-2. Click **Add** → **New Control Surface**
-3. Set **Type** = `Mackie Control Universal`
-4. Set **Receive From** = `StudioOneMCP`
-5. Click **OK**
+⭐ **The MIDI → command path is the backbone.** It's confirmed working: the MCP sends a CC
+on the `StudioOneMCP` virtual port and Studio One fires the mapped command (e.g. *Add Audio
+Track*, verified via the Edit▸Undo label). Every Studio One command and every installed
+macro can be reached this way — see the catalog below.
 
-### 3. Install the Server
+---
 
+## Function catalog
+
+Studio One's command surface is enumerated into [`docs/function-catalog.json`](docs/function-catalog.json):
+
+- **194 built-in commands** (Edit, Event, Audio, Transport, Track, Song, File, View — top level)
+- **221 macros** (the installed macro library — quantize, humanize, velocity, articulations, chords, tempo, add-EQ/compressor, export, …)
+- **= 415 functions**, mappable to MIDI (notes/CCs × 16 channels ≈ 2000 slots)
+
+Mapping all 415 to MIDI + exposing them as named MCP tools is the current build — see
+[Issues](../../issues).
+
+---
+
+## Setup
+
+### 1. Install
 ```bash
-pip install studio-one-mcp
-# or from source:
-git clone https://github.com/tiwadara/studioonemcp
-cd studioonemcp
-pip install -e ".[dev]"
+git clone https://github.com/tiwadara/StudioOneMcp
+cd StudioOneMcp
+python -m venv .venv && ./.venv/bin/pip install -e ".[dev]"
 ```
 
-### 4. Add to Claude Desktop
+### 2. Virtual MIDI port
+StudioOneMcp opens a virtual port named **`StudioOneMCP`** (pinned to a fixed uniqueID so
+Studio One re-binds to it every launch). Just run the server — the port appears. (On
+Windows/Linux, use a loopback such as loopMIDI / `snd-virmidi` named `StudioOneMCP`.)
 
-Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
+### 3. Install the control surface (MIDI → command)
+Copy `studio-one-devices/StudioOneMCPPads/` into your Studio One **User Devices** folder:
+```
+~/Library/Application Support/PreSonus/Studio One 7/User Devices/StudioOneMCPPads/
+```
+Then in **Studio One ▸ Settings ▸ External Devices ▸ Add…** pick **StudioOneMCP ▸
+StudioOneMCP Pads**, and set **Receive From = `StudioOneMCP`**. Leave **Send To** empty
+(the surface is receive-only). Relaunch Studio One so it scans the device.
 
+### 4. (Optional) MCU surface for faders/transport
+External Devices ▸ Add ▸ **Mackie Control Universal** ▸ Receive From = `StudioOneMCP`.
+
+### 5. (Optional) Accessibility for menu/keyboard automation
+System Settings ▸ Privacy & Security ▸ **Accessibility** → enable your MCP host app.
+
+### 6. Add to your MCP client (e.g. Claude Desktop)
 ```json
 {
   "mcpServers": {
-    "studio-one": {
-      "command": "studio-one-mcp",
-      "args": ["--port-name", "StudioOneMCP"]
-    }
+    "studio-one": { "command": "studio-one-mcp", "args": ["--port-name", "StudioOneMCP"] }
   }
 }
 ```
 
-Restart Claude Desktop, open a Studio One project, and start talking to your DAW.
-
 ---
 
-## Available Tools
+## Available tools (current)
 
-### Transport
+**Transport:** play · stop · record · rewind · fast-forward · toggle-loop · save · undo · redo
+**Mixer (MCU):** set-fader · toggle-mute · toggle-solo · toggle-rec-arm · select-channel · set-pan
+**Automation:** add tracks · new song · save-as · toggle mixer/browser/editor · zoom · quantize · split · …
+**Macros:** generate & run `.studioonemacro` command sequences
 
-| Tool | Description |
-|------|-------------|
-| `transport_play` | Start playback |
-| `transport_stop` | Stop playback |
-| `transport_record` | Start recording |
-| `transport_rewind` | Rewind |
-| `transport_fast_forward` | Fast forward |
-| `transport_toggle_loop` | Toggle loop/cycle mode |
-| `transport_save` | Save the current project |
-| `transport_undo` | Undo last action |
-| `transport_redo` | Redo last undone action |
-
-### Mixer
-
-| Tool | Args | Description |
-|------|------|-------------|
-| `mixer_set_fader` | `channel` (0–7 or `"master"`), `level` (0–100) | Set fader level |
-| `mixer_toggle_mute` | `channel` (0–7) | Toggle channel mute |
-| `mixer_toggle_solo` | `channel` (0–7) | Toggle channel solo |
-| `mixer_toggle_rec_arm` | `channel` (0–7) | Toggle record arm |
-| `mixer_select_channel` | `channel` (0–7) | Select/focus a channel strip |
-| `mixer_set_pan` | `channel` (0–7), `pan` (−64 to +63) | Adjust pan position |
+Mapping the full 415-function catalog to named tools is in progress.
 
 ---
 
 ## Architecture
 
 ```
-LLM / MCP Client
-      │  (JSON-RPC over stdio or SSE)
-      ▼
-MCP Server (server.py)     ← tool registration, arg validation
-      │
-MidiBridge (midi_bridge.py) ← MCU MIDI encoding, virtual port management
-      │
-Virtual MIDI port  ──────────────────► Studio One (MCU surface)
+LLM / MCP client
+   │ JSON-RPC (stdio)
+   ▼
+MCP server (server.py) ── tool registration, arg validation
+   │
+   ├─ MidiBridge (midi_bridge.py) ─┐
+   │   MCU + CC command dispatch   │  virtual port "StudioOneMCP"
+   ├─ CoreMIDI pin (coremidi.py) ──┘  (pinned uniqueID)  ──► Studio One
+   │                                       surfaces: StudioOneMCP Pads (commands), MCU (mixer)
+   ├─ Automation (keystrokes.py)  ──► System Events (menus / shortcuts)
+   └─ Macro writer (macro_writer.py) ──► ~/Documents/Studio One/Macros
 ```
-
-See [docs/phase1-mcu-bridge.md](docs/phase1-mcu-bridge.md) for the full MCU protocol
-reference and setup details.
 
 ---
 
 ## Roadmap
 
-- **Phase 1** ✅ — MCU MIDI bridge (transport + 8-channel mixer)
-- **Phase 2** — UCNET protocol integration for full bidirectional state access
-  (track names, plugin parameters, tempo, markers). See [docs/phase2-ucnet.md](docs/phase2-ucnet.md).
-
----
+Tracked in [GitHub Issues](../../issues). Highlights:
+- Expand the pad surface to the full MIDI → function map (all 415)
+- Named MCP tools to trigger any function ("quantize to 1/16", "add EQ + comp", "export stems")
+- **Vision:** AI DAW-controller for autonomous mixing — songs, faders, effects, transitions
+- Feedback/sensing (MCU meters, state model) for level-aware decisions
 
 ## Development
-
 ```bash
-# Run tests
-pytest
-
-# Lint
-ruff check src tests
-
-# Type check
-mypy src
+pytest ; ruff check src tests ; mypy src
 ```
 
 ## License
-
 MIT
