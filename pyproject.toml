@@ -40,7 +40,6 @@ dev = [
 
 [project.scripts]
 studio-one-mcp = "studio_one_mcp.server:main"
-studio-one-ucnet-probe = "studio_one_mcp.ucnet.probe:main"
 
 [project.urls]
 Repository = "https://github.com/tiwadara/studioonemcp"

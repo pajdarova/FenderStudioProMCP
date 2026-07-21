@@ -23,11 +23,10 @@ def _build_server(bridge: MidiBridge, automation: bool = True) -> Server:
     """Construct and configure the MCP server with all tools registered."""
     server = Server("studio-one-mcp")
 
-    from studio_one_mcp.ipc_bridge import IPCBridge
     from studio_one_mcp.tools.automation import _automation_tools
     from studio_one_mcp.tools.automation import _dispatch as _automation_dispatch
-    from studio_one_mcp.tools.ipc_tools import _dispatch as _ipc_dispatch
-    from studio_one_mcp.tools.ipc_tools import _ipc_tools
+    from studio_one_mcp.tools.commands import _command_tools
+    from studio_one_mcp.tools.commands import _dispatch as _command_dispatch
     from studio_one_mcp.tools.macro_tools import _dispatch as _macro_dispatch
     from studio_one_mcp.tools.macro_tools import _macro_tools
     from studio_one_mcp.tools.mixer import _dispatch as _mixer_dispatch
@@ -35,15 +34,14 @@ def _build_server(bridge: MidiBridge, automation: bool = True) -> Server:
     from studio_one_mcp.tools.transport import _dispatch as _transport_dispatch
     from studio_one_mcp.tools.transport import _transport_tools
 
-    ipc = IPCBridge()
     transport_names = {t.name for t in _transport_tools()}
     auto_names = {t.name for t in _automation_tools()} if automation else set()
     macro_names = {t.name for t in _macro_tools()}
-    ipc_names = {t.name for t in _ipc_tools()}
+    command_names = {t.name for t in _command_tools()}
 
     @server.list_tools()  # type: ignore[no-untyped-call, untyped-decorator]
     async def handle_list_tools() -> list[types.Tool]:
-        tools = _transport_tools() + _mixer_tools() + _macro_tools() + _ipc_tools()
+        tools = _transport_tools() + _mixer_tools() + _macro_tools() + _command_tools()
         if automation:
             tools += _automation_tools()
         return tools
@@ -57,8 +55,8 @@ def _build_server(bridge: MidiBridge, automation: bool = True) -> Server:
                 return await _automation_dispatch(name, arguments)
             if name in macro_names:
                 return await _macro_dispatch(name, arguments)
-            if name in ipc_names:
-                return await _ipc_dispatch(name, arguments, ipc)
+            if name in command_names:
+                return await _command_dispatch(name, arguments, bridge)
             return await _mixer_dispatch(name, arguments, bridge)
         except (ValueError, MidiBridgeError) as exc:
             log.error("Tool %r failed: %s", name, exc)
@@ -118,7 +116,7 @@ def main(
     no_automation: bool,
     debug: bool,
 ) -> None:
-    """Studio One MCP Server — MCU MIDI + Extension IPC bridge."""
+    """Studio One MCP Server — MCU MIDI + keyboard automation + macro generation."""
     logging.basicConfig(
         level=logging.DEBUG if debug else logging.INFO,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",

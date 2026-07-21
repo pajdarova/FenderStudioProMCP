@@ -99,6 +99,17 @@ class MidiBridge:
         except Exception as exc:
             raise MidiBridgeError(f"Failed to open virtual MIDI port '{self._port_name}': {exc}") from exc
 
+        # macOS: pin a stable uniqueID so a saved Studio One device registration
+        # (see surface_installer) keeps binding to this port across restarts.
+        # rtmidi otherwise assigns a fresh random ID each launch. Best-effort.
+        try:
+            from studio_one_mcp.coremidi import pin_unique_id
+
+            if pin_unique_id(self._port_name):
+                log.info("Pinned uniqueID for port %s", self._port_name)
+        except Exception as exc:  # never block MIDI on this
+            log.debug("Could not pin port uniqueID: %s", exc)
+
     def close(self) -> None:
         """Close the virtual MIDI port."""
         if self._out is not None:
@@ -140,6 +151,15 @@ class MidiBridge:
         self._note_on(note, 127, channel)
         time.sleep(self._message_delay)
         self._note_off(note, channel)
+
+    def press_cc(self, cc: int, channel: int = 0) -> None:
+        """Momentary CC press (127) then release (0).
+
+        Fires a command mapped on the StudioOneMCP Pads surface (CC → <Command>).
+        """
+        self._send([0xB0 | (channel & 0x0F), cc, 127])
+        time.sleep(self._message_delay)
+        self._send([0xB0 | (channel & 0x0F), cc, 0])
 
     def _pitch_bend(self, value: int, channel: int = 0) -> None:
         """Send a 14-bit pitch-bend message on the given MIDI channel."""

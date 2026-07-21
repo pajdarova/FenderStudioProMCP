@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DeviceDefinition
+	vendor="StudioOneMCP"
+	name="StudioOneMCP Pads"
+	classID="{D1C2B3A4-5566-4778-99AA-BBCCDDEEFF01}"
+	category="Keyboard"
+	nativeCode="KeyboardDevice"
+	surfaceFile="MCPPads.surface.xml"
+/>
