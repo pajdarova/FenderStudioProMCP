@@ -83,12 +83,14 @@ System Settings ▸ Privacy & Security ▸ **Accessibility** → enable your MCP
 
 ## Available tools (current)
 
-**Transport:** play · stop · record · rewind · fast-forward · toggle-loop · save · undo · redo
-**Mixer (MCU):** set-fader · toggle-mute · toggle-solo · toggle-rec-arm · select-channel · set-pan
-**Automation:** add tracks · new song · save-as · toggle mixer/browser/editor · zoom · quantize · split · …
-**Macros:** generate & run `.studioonemacro` command sequences
+- **`studio_one_run_command(name)`** ⭐ — fire **any of 224 built-in Studio One commands** by name (Edit, Track, Event, Audio, Song, Transport, Zoom, Show, Arranger, …). Case-insensitive, unique partial match accepted. e.g. `"Duplicate"`, `"Split Range"`, `"Find Track"`, `"Bounce Selection"`. **Verified working end-to-end.**
+- **`studio_one_list_commands(filter)`** — discover command names.
+- **Transport:** play · stop · record · rewind · fast-forward · toggle-loop · save · undo · redo
+- **Mixer (MCU):** set-fader · toggle-mute · toggle-solo · toggle-rec-arm · select-channel · set-pan
+- **Automation:** add tracks · new song · save-as · toggle mixer/browser/editor · zoom · split · …
+- **Macros:** generate `.studioonemacro` sequences
 
-Mapping the full 415-function catalog to named tools is in progress.
+> **Note:** the 224 mapped commands are Studio One *built-ins* (they dispatch from a control surface). User **macros** (139 in `docs/macros-todo.json`) do **not** dispatch from a surface — they need a keyboard/Command-Bar trigger, tracked in [#3](../../issues/3).
 
 ---
 
