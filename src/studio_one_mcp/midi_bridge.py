@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import platform
 import time
 from collections.abc import Generator
 from contextlib import contextmanager
@@ -89,26 +90,60 @@ class MidiBridge:
     # ------------------------------------------------------------------
 
     def open(self) -> None:
-        """Open the virtual MIDI output port."""
+        """Open the MIDI output port.
+
+        On macOS and Linux a virtual port is created on the fly. The Windows
+        backend of python-rtmidi (WinMM) cannot create virtual ports, so there
+        we attach to an already existing loopback port instead — created by
+        loopMIDI, LoopBe1 or a comparable tool and named after ``port_name``.
+        """
         if self._out is not None:
             return
         try:
             self._out = rtmidi.MidiOut()
-            self._out.open_virtual_port(self._port_name)
-            log.info("Opened virtual MIDI port: %s", self._port_name)
+            if platform.system() == "Windows":
+                self._open_existing_port()
+            else:
+                self._out.open_virtual_port(self._port_name)
+                log.info("Opened virtual MIDI port: %s", self._port_name)
+        except MidiBridgeError:
+            self._out = None
+            raise
         except Exception as exc:
-            raise MidiBridgeError(f"Failed to open virtual MIDI port '{self._port_name}': {exc}") from exc
+            self._out = None
+            raise MidiBridgeError(f"Failed to open MIDI port '{self._port_name}': {exc}") from exc
 
-        # macOS: pin a stable uniqueID so a saved Studio One device registration
-        # (see surface_installer) keeps binding to this port across restarts.
-        # rtmidi otherwise assigns a fresh random ID each launch. Best-effort.
-        try:
-            from studio_one_mcp.coremidi import pin_unique_id
+        # macOS only: pin a stable uniqueID so a saved Studio One device
+        # registration keeps binding to this port across restarts. rtmidi
+        # otherwise assigns a fresh random ID each launch. Best-effort.
+        if platform.system() == "Darwin":
+            try:
+                from studio_one_mcp.coremidi import pin_unique_id
 
-            if pin_unique_id(self._port_name):
-                log.info("Pinned uniqueID for port %s", self._port_name)
-        except Exception as exc:  # never block MIDI on this
-            log.debug("Could not pin port uniqueID: %s", exc)
+                if pin_unique_id(self._port_name):
+                    log.info("Pinned uniqueID for port %s", self._port_name)
+            except Exception as exc:  # never block MIDI on this
+                log.debug("Could not pin port uniqueID: %s", exc)
+
+    def _open_existing_port(self) -> None:
+        """Attach to an existing output port whose name contains ``port_name``.
+
+        Windows has no virtual-port support, so the loopback port must already
+        exist before the server starts.
+        """
+        assert self._out is not None
+        available = self._out.get_ports()
+        wanted = self._port_name.lower()
+        for index, name in enumerate(available):
+            if wanted in name.lower():
+                self._out.open_port(index)
+                log.info("Opened existing MIDI port %d: %s", index, name)
+                return
+        raise MidiBridgeError(
+            f"No MIDI output port matching '{self._port_name}' was found. "
+            f"On Windows, create a loopback port with that name first "
+            f"(loopMIDI). Available ports: {available or 'none'}"
+        )
 
     def close(self) -> None:
         """Close the virtual MIDI port."""

@@ -30,18 +30,31 @@ class PluginNotFoundError(Exception):
 # Path helpers
 # ---------------------------------------------------------------------------
 
+# Candidate user-data folder names, newest first. Fender Studio Pro 8 is the
+# rebranded Studio One; the exact folder name is unverified, so several
+# spellings are probed and non-existent ones are simply skipped.
+_VERSION_DIRS = (
+    "Fender Studio Pro 8",
+    "Fender Studio Pro",
+    "Studio One 8",
+    "Studio One 7",
+    "Studio One 6",
+    "Studio One 5",
+)
+
+
 def _prefs_dirs() -> list[Path]:
     """Return candidate PreSonus user-data directories in priority order."""
     system = platform.system()
     candidates: list[Path] = []
     if system == "Darwin":
         base = Path.home() / "Library" / "Application Support" / "PreSonus"
-        for ver in ("Studio One 7", "Studio One 6", "Studio One 5"):
+        for ver in _VERSION_DIRS:
             candidates.append(base / ver)
     elif system == "Windows":
         import os
         base = Path(os.environ.get("APPDATA", str(Path.home())))
-        for ver in ("Studio One 7", "Studio One 6", "Studio One 5"):
+        for ver in _VERSION_DIRS:
             candidates.append(base / "PreSonus" / ver)
     return candidates
 

@@ -11,147 +11,552 @@
   "actions": {
     "add_audio_track": {
       "description": "Add a new audio track (uses Add Tracks dialog with default = Audio)",
-      "mac":     {"keys": ["t"], "delay_ms": 350, "dialog": {"confirm": ["return"]}},
-      "windows": {"keys": ["t"], "delay_ms": 350, "dialog": {"confirm": ["return"]}},
-      "linux":   {"keys": ["t"], "delay_ms": 350, "dialog": {"confirm": ["Return"]}}
+      "mac": {
+        "keys": [
+          "t"
+        ],
+        "delay_ms": 350,
+        "dialog": {
+          "confirm": [
+            "return"
+          ]
+        },
+        "command": "Track|Add Audio Track (stereo)"
+      },
+      "windows": {
+        "keys": [
+          "t"
+        ],
+        "delay_ms": 350,
+        "dialog": {
+          "confirm": [
+            "return"
+          ]
+        },
+        "command": "Track|Add Audio Track (stereo)"
+      },
+      "linux": {
+        "keys": [
+          "t"
+        ],
+        "delay_ms": 350,
+        "dialog": {
+          "confirm": [
+            "Return"
+          ]
+        },
+        "command": "Track|Add Audio Track (stereo)"
+      }
     },
     "add_instrument_track": {
       "description": "Add a new instrument track. Assign Ctrl+Shift+Cmd+I in Studio One Preferences → Keyboard Shortcuts → 'Add Instrument Track'.",
-      "mac":     {"keys": ["ctrl+shift+cmd+i"], "custom": true, "delay_ms": 350, "dialog": {"confirm": ["return"]}},
-      "windows": {"keys": ["ctrl+shift+alt+i"], "custom": true, "delay_ms": 350, "dialog": {"confirm": ["return"]}},
-      "linux":   {"keys": ["ctrl+shift+alt+i"], "custom": true, "delay_ms": 350, "dialog": {"confirm": ["Return"]}}
+      "mac": {
+        "keys": [
+          "ctrl+shift+cmd+i"
+        ],
+        "custom": true,
+        "delay_ms": 350,
+        "dialog": {
+          "confirm": [
+            "return"
+          ]
+        },
+        "command": "Track|Add Instrument Track"
+      },
+      "windows": {
+        "keys": [
+          "ctrl+shift+alt+i"
+        ],
+        "custom": true,
+        "delay_ms": 350,
+        "dialog": {
+          "confirm": [
+            "return"
+          ]
+        },
+        "command": "Track|Add Instrument Track"
+      },
+      "linux": {
+        "keys": [
+          "ctrl+shift+alt+i"
+        ],
+        "custom": true,
+        "delay_ms": 350,
+        "dialog": {
+          "confirm": [
+            "Return"
+          ]
+        },
+        "command": "Track|Add Instrument Track"
+      }
     },
     "add_bus_track": {
       "description": "Add a bus/FX channel. Assign Ctrl+Shift+Cmd+B in Studio One Preferences → Keyboard Shortcuts → 'Add Bus Channel'.",
-      "mac":     {"keys": ["ctrl+shift+cmd+b"], "custom": true},
-      "windows": {"keys": ["ctrl+shift+alt+b"], "custom": true},
-      "linux":   {"keys": ["ctrl+shift+alt+b"], "custom": true}
+      "mac": {
+        "keys": [
+          "ctrl+shift+cmd+b"
+        ],
+        "custom": true,
+        "command": "Console|Add Bus Channel"
+      },
+      "windows": {
+        "keys": [
+          "ctrl+shift+alt+b"
+        ],
+        "custom": true,
+        "command": "Console|Add Bus Channel"
+      },
+      "linux": {
+        "keys": [
+          "ctrl+shift+alt+b"
+        ],
+        "custom": true,
+        "command": "Console|Add Bus Channel"
+      }
     },
     "duplicate_track": {
       "description": "Duplicate the currently selected track",
-      "mac":     {"keys": ["cmd+d"]},
-      "windows": {"keys": ["ctrl+d"]},
-      "linux":   {"keys": ["ctrl+d"]}
+      "mac": {
+        "keys": [
+          "cmd+d"
+        ],
+        "command": "Track|Duplicate"
+      },
+      "windows": {
+        "keys": [
+          "ctrl+d"
+        ],
+        "command": "Track|Duplicate"
+      },
+      "linux": {
+        "keys": [
+          "ctrl+d"
+        ],
+        "command": "Track|Duplicate"
+      }
     },
     "delete_selected": {
       "description": "Delete the selected track or event",
-      "mac":     {"keys": ["backspace"]},
-      "windows": {"keys": ["Delete"]},
-      "linux":   {"keys": ["Delete"]}
+      "mac": {
+        "keys": [
+          "backspace"
+        ],
+        "command": "Edit|Delete"
+      },
+      "windows": {
+        "keys": [
+          "Delete"
+        ],
+        "command": "Edit|Delete"
+      },
+      "linux": {
+        "keys": [
+          "Delete"
+        ],
+        "command": "Edit|Delete"
+      }
     },
     "undo": {
       "description": "Undo the last action",
-      "mac":     {"keys": ["cmd+z"]},
-      "windows": {"keys": ["ctrl+z"]},
-      "linux":   {"keys": ["ctrl+z"]}
+      "mac": {
+        "keys": [
+          "cmd+z"
+        ],
+        "command": "Edit|Undo"
+      },
+      "windows": {
+        "keys": [
+          "ctrl+z"
+        ],
+        "command": "Edit|Undo"
+      },
+      "linux": {
+        "keys": [
+          "ctrl+z"
+        ],
+        "command": "Edit|Undo"
+      }
     },
     "redo": {
       "description": "Redo the last undone action",
-      "mac":     {"keys": ["cmd+shift+z"]},
-      "windows": {"keys": ["ctrl+shift+z"]},
-      "linux":   {"keys": ["ctrl+shift+z"]}
+      "mac": {
+        "keys": [
+          "cmd+shift+z"
+        ],
+        "command": "Edit|Redo"
+      },
+      "windows": {
+        "keys": [
+          "ctrl+shift+z"
+        ],
+        "command": "Edit|Redo"
+      },
+      "linux": {
+        "keys": [
+          "ctrl+shift+z"
+        ],
+        "command": "Edit|Redo"
+      }
     },
     "save": {
       "description": "Save the current song",
-      "mac":     {"keys": ["cmd+s"]},
-      "windows": {"keys": ["ctrl+s"]},
-      "linux":   {"keys": ["ctrl+s"]}
+      "mac": {
+        "keys": [
+          "cmd+s"
+        ],
+        "command": "File|Save"
+      },
+      "windows": {
+        "keys": [
+          "ctrl+s"
+        ],
+        "command": "File|Save"
+      },
+      "linux": {
+        "keys": [
+          "ctrl+s"
+        ],
+        "command": "File|Save"
+      }
     },
     "save_as": {
       "description": "Save the current song as a new file",
-      "mac":     {"keys": ["cmd+shift+s"]},
-      "windows": {"keys": ["ctrl+shift+s"]},
-      "linux":   {"keys": ["ctrl+shift+s"]}
+      "mac": {
+        "keys": [
+          "cmd+shift+s"
+        ],
+        "command": "File|Save As"
+      },
+      "windows": {
+        "keys": [
+          "ctrl+shift+s"
+        ],
+        "command": "File|Save As"
+      },
+      "linux": {
+        "keys": [
+          "ctrl+shift+s"
+        ],
+        "command": "File|Save As"
+      }
     },
     "new_song": {
       "description": "Create a new song (opens template dialog)",
-      "mac":     {"keys": ["cmd+n"]},
-      "windows": {"keys": ["ctrl+n"]},
-      "linux":   {"keys": ["ctrl+n"]}
+      "mac": {
+        "keys": [
+          "cmd+n"
+        ],
+        "command": "File|New"
+      },
+      "windows": {
+        "keys": [
+          "ctrl+n"
+        ],
+        "command": "File|New"
+      },
+      "linux": {
+        "keys": [
+          "ctrl+n"
+        ],
+        "command": "File|New"
+      }
     },
     "toggle_mixer": {
       "description": "Show/hide the Mixer panel",
-      "mac":     {"keys": ["f3"]},
-      "windows": {"keys": ["f3"]},
-      "linux":   {"keys": ["F3"]}
+      "mac": {
+        "keys": [
+          "f3"
+        ],
+        "command": "View|Console"
+      },
+      "windows": {
+        "keys": [
+          "f3"
+        ],
+        "command": "View|Console"
+      },
+      "linux": {
+        "keys": [
+          "F3"
+        ],
+        "command": "View|Console"
+      }
     },
     "toggle_browser": {
       "description": "Show/hide the Browser panel",
-      "mac":     {"keys": ["f5"]},
-      "windows": {"keys": ["f5"]},
-      "linux":   {"keys": ["F5"]}
+      "mac": {
+        "keys": [
+          "f5"
+        ],
+        "command": "View|Browser"
+      },
+      "windows": {
+        "keys": [
+          "f5"
+        ],
+        "command": "View|Browser"
+      },
+      "linux": {
+        "keys": [
+          "F5"
+        ],
+        "command": "View|Browser"
+      }
     },
     "toggle_editor": {
       "description": "Show/hide the Piano Roll / Audio Editor",
-      "mac":     {"keys": ["f2"]},
-      "windows": {"keys": ["f2"]},
-      "linux":   {"keys": ["F2"]}
+      "mac": {
+        "keys": [
+          "f2"
+        ],
+        "command": "View|Editor"
+      },
+      "windows": {
+        "keys": [
+          "f2"
+        ],
+        "command": "View|Editor"
+      },
+      "linux": {
+        "keys": [
+          "F2"
+        ],
+        "command": "View|Editor"
+      }
     },
     "select_all": {
       "description": "Select all tracks or events in the current context",
-      "mac":     {"keys": ["cmd+a"]},
-      "windows": {"keys": ["ctrl+a"]},
-      "linux":   {"keys": ["ctrl+a"]}
+      "mac": {
+        "keys": [
+          "cmd+a"
+        ],
+        "command": "Edit|Select All"
+      },
+      "windows": {
+        "keys": [
+          "ctrl+a"
+        ],
+        "command": "Edit|Select All"
+      },
+      "linux": {
+        "keys": [
+          "ctrl+a"
+        ],
+        "command": "Edit|Select All"
+      }
     },
     "zoom_in": {
       "description": "Zoom in on the timeline",
-      "mac":     {"keys": ["ctrl+="]},
-      "windows": {"keys": ["ctrl+="]},
-      "linux":   {"keys": ["ctrl+equal"]}
+      "mac": {
+        "keys": [
+          "ctrl+="
+        ],
+        "command": "Zoom|Zoom In"
+      },
+      "windows": {
+        "keys": [
+          "ctrl+="
+        ],
+        "command": "Zoom|Zoom In"
+      },
+      "linux": {
+        "keys": [
+          "ctrl+equal"
+        ],
+        "command": "Zoom|Zoom In"
+      }
     },
     "zoom_out": {
       "description": "Zoom out on the timeline",
-      "mac":     {"keys": ["ctrl+-"]},
-      "windows": {"keys": ["ctrl+-"]},
-      "linux":   {"keys": ["ctrl+minus"]}
+      "mac": {
+        "keys": [
+          "ctrl+-"
+        ],
+        "command": "Zoom|Zoom Out"
+      },
+      "windows": {
+        "keys": [
+          "ctrl+-"
+        ],
+        "command": "Zoom|Zoom Out"
+      },
+      "linux": {
+        "keys": [
+          "ctrl+minus"
+        ],
+        "command": "Zoom|Zoom Out"
+      }
     },
     "zoom_to_fit": {
       "description": "Zoom to fit all content in view",
-      "mac":     {"keys": ["shift+f"]},
-      "windows": {"keys": ["shift+f"]},
-      "linux":   {"keys": ["shift+f"]}
+      "mac": {
+        "keys": [
+          "shift+f"
+        ],
+        "command": "Zoom|Zoom Full"
+      },
+      "windows": {
+        "keys": [
+          "shift+f"
+        ],
+        "command": "Zoom|Zoom Full"
+      },
+      "linux": {
+        "keys": [
+          "shift+f"
+        ],
+        "command": "Zoom|Zoom Full"
+      }
     },
     "toggle_loop": {
       "description": "Toggle loop playback on/off",
-      "mac":     {"keys": ["cmd+l"]},
-      "windows": {"keys": ["ctrl+l"]},
-      "linux":   {"keys": ["ctrl+l"]}
+      "mac": {
+        "keys": [
+          "cmd+l"
+        ],
+        "command": "Transport|Toggle Loop"
+      },
+      "windows": {
+        "keys": [
+          "ctrl+l"
+        ],
+        "command": "Transport|Toggle Loop"
+      },
+      "linux": {
+        "keys": [
+          "ctrl+l"
+        ],
+        "command": "Transport|Toggle Loop"
+      }
     },
     "go_to_start": {
       "description": "Move playhead to the beginning of the song",
-      "mac":     {"keys": ["home"]},
-      "windows": {"keys": ["home"]},
-      "linux":   {"keys": ["Home"]}
+      "mac": {
+        "keys": [
+          "home"
+        ],
+        "command": "Navigation|Start"
+      },
+      "windows": {
+        "keys": [
+          "home"
+        ],
+        "command": "Navigation|Start"
+      },
+      "linux": {
+        "keys": [
+          "Home"
+        ],
+        "command": "Navigation|Start"
+      }
     },
     "go_to_end": {
       "description": "Move playhead to the end of the song",
-      "mac":     {"keys": ["end"]},
-      "windows": {"keys": ["end"]},
-      "linux":   {"keys": ["End"]}
+      "mac": {
+        "keys": [
+          "end"
+        ],
+        "command": "Navigation|End"
+      },
+      "windows": {
+        "keys": [
+          "end"
+        ],
+        "command": "Navigation|End"
+      },
+      "linux": {
+        "keys": [
+          "End"
+        ],
+        "command": "Navigation|End"
+      }
     },
     "split_at_playhead": {
       "description": "Split selected event(s) at playhead position",
-      "mac":     {"keys": ["s"]},
-      "windows": {"keys": ["s"]},
-      "linux":   {"keys": ["s"]}
+      "mac": {
+        "keys": [
+          "s"
+        ],
+        "command": "Edit|Split"
+      },
+      "windows": {
+        "keys": [
+          "s"
+        ],
+        "command": "Edit|Split"
+      },
+      "linux": {
+        "keys": [
+          "s"
+        ],
+        "command": "Edit|Split"
+      }
     },
     "quantize": {
       "description": "Quantize selected MIDI notes to the current grid",
-      "mac":     {"keys": ["q"]},
-      "windows": {"keys": ["q"]},
-      "linux":   {"keys": ["q"]}
+      "mac": {
+        "keys": [
+          "q"
+        ],
+        "command": "Event|Quantize"
+      },
+      "windows": {
+        "keys": [
+          "q"
+        ],
+        "command": "Event|Quantize"
+      },
+      "linux": {
+        "keys": [
+          "q"
+        ],
+        "command": "Event|Quantize"
+      }
     },
     "open_preferences": {
       "description": "Open Studio One Preferences / Options",
-      "mac":     {"keys": ["cmd+,"]},
-      "windows": {"keys": ["ctrl+,"]},
-      "linux":   {"keys": ["ctrl+comma"]}
+      "mac": {
+        "keys": [
+          "cmd+,"
+        ],
+        "command": "Application|Options"
+      },
+      "windows": {
+        "keys": [
+          "ctrl+,"
+        ],
+        "command": "Application|Options"
+      },
+      "linux": {
+        "keys": [
+          "ctrl+comma"
+        ],
+        "command": "Application|Options"
+      }
     },
     "add_audio_track_mono": {
       "description": "Add a mono audio track without dialog. Assign Ctrl+Shift+Cmd+M in Studio One Preferences → Keyboard Shortcuts → Track → 'Add Audio Track (mono)'.",
-      "mac":     {"keys": ["ctrl+shift+cmd+m"], "custom": true},
-      "windows": {"keys": ["ctrl+shift+alt+m"], "custom": true},
-      "linux":   {"keys": ["ctrl+shift+alt+m"], "custom": true}
+      "mac": {
+        "keys": [
+          "ctrl+shift+cmd+m"
+        ],
+        "custom": true,
+        "command": "Track|Add Audio Track (mono)"
+      },
+      "windows": {
+        "keys": [
+          "ctrl+shift+alt+m"
+        ],
+        "custom": true,
+        "command": "Track|Add Audio Track (mono)"
+      },
+      "linux": {
+        "keys": [
+          "ctrl+shift+alt+m"
+        ],
+        "custom": true,
+        "command": "Track|Add Audio Track (mono)"
+      }
     }
   }
 }
