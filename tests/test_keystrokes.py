@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import platform
 from pathlib import Path
 from unittest.mock import patch
 
@@ -98,6 +99,7 @@ class TestPlatformKey:
             assert _platform_key() == "linux"
 
 
+@pytest.mark.skipif(platform.system() != "Windows", reason="_win32() needs ctypes.WinDLL")
 class TestSendUnicodeText:
     def test_sends_keyeventf_unicode_down_and_up_per_char(self):
         w = _win32()

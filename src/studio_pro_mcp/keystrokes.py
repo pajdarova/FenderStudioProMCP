@@ -9,7 +9,11 @@ import os
 import platform
 import time
 from pathlib import Path
-from typing import Any
+from types import ModuleType
+from typing import TYPE_CHECKING, Any, Protocol, cast
+
+if TYPE_CHECKING:
+    import ctypes as _ctypes_module
 
 log = logging.getLogger(__name__)
 
@@ -249,7 +253,23 @@ def _vk_for_key(key: str) -> int:
     raise KeystrokeError(f"No Windows virtual-key code known for {key!r}.")
 
 
-def _win32():
+class _Win32Bindings(Protocol):
+    """Shape of the namespace ``_win32()`` returns.
+
+    Purely a typing aid — ``ctypes``/``wintypes`` can't be imported at module
+    level without breaking importability on macOS/Linux, so this describes
+    the lazily-built object's shape without importing anything at runtime.
+    """
+
+    ctypes: ModuleType
+    wintypes: ModuleType
+    user32: _ctypes_module.WinDLL
+    kernel32: _ctypes_module.WinDLL
+    INPUT: type[_ctypes_module.Structure]
+    KEYBDINPUT: type[_ctypes_module.Structure]
+
+
+def _win32() -> _Win32Bindings:
     """Lazily build the ctypes bindings and structures used for SendInput.
 
     Imported on demand so the module stays importable on macOS and Linux.
@@ -257,7 +277,7 @@ def _win32():
     global _WIN32_CACHE
     cached = globals().get("_WIN32_CACHE")
     if cached is not None:
-        return cached
+        return cast("_Win32Bindings", cached)
 
     import ctypes
     from ctypes import wintypes
@@ -304,7 +324,7 @@ def _win32():
         },
     )()
     globals()["_WIN32_CACHE"] = ns
-    return ns
+    return cast("_Win32Bindings", ns)
 
 
 def _find_window(titles: tuple[str, ...]) -> int:

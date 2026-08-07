@@ -142,7 +142,7 @@ def find_endpoint(direction: str, name: str) -> int:
     for i in range(n):
         ep = get(i)
         if m.name_of(ep) == name:
-            return ep
+            return int(ep)
     return 0
 
 
@@ -162,4 +162,4 @@ def pin_unique_id(name: str, uid: int = MCP_PORT_UNIQUE_ID) -> bool:
     if not ep:
         return False
     status = m.cm.MIDIObjectSetIntegerProperty(ep, m.kUID, uid)
-    return status == 0
+    return bool(status == 0)
