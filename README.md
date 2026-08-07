@@ -125,5 +125,15 @@ Tracked in [GitHub Issues](../../issues). Highlights:
 pytest ; ruff check src tests ; mypy src
 ```
 
+## Credits
+
+FenderStudioProMCP began as a fork of
+[tiwadara/StudioOneMcp](https://github.com/tiwadara/StudioOneMcp) (MIT
+licensed), which established the MIDI/MCU control-surface approach to driving
+Studio One from an MCP server. This repository has since been substantially
+rewritten: Windows support, adaptation to the Fender Studio Pro rebrand, an
+MCP SDK 2.0 upgrade with dual stdio/HTTP transport, and a command catalog
+generated per-user from `.keyscheme` exports.
+
 ## License
-MIT
+MIT — see [LICENSE](LICENSE).
