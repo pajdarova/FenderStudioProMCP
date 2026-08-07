@@ -60,6 +60,11 @@ ignore = ["E501"]
 
 [tool.mypy]
 python_version = "3.10"
+# keystrokes.py's Windows automation path uses ctypes.WinDLL, which typeshed
+# only exposes under the win32-conditional stubs. Pin the platform so mypy
+# behaves the same on CI (ubuntu-latest) as on a Windows dev machine, instead
+# of silently gaining/losing errors depending on which OS runs it.
+platform = "win32"
 strict = true
 files = ["src"]
 

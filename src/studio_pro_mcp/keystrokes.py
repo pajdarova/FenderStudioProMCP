@@ -263,8 +263,11 @@ class _Win32Bindings(Protocol):
 
     ctypes: ModuleType
     wintypes: ModuleType
-    user32: _ctypes_module.WinDLL
-    kernel32: _ctypes_module.WinDLL
+    # ctypes.WinDLL only exists in typeshed's win32-conditional stubs, so
+    # mypy running with a non-Windows --platform (e.g. CI on ubuntu-latest)
+    # can't resolve it. Any keeps this Protocol checkable on every platform.
+    user32: Any
+    kernel32: Any
     INPUT: type[_ctypes_module.Structure]
     KEYBDINPUT: type[_ctypes_module.Structure]
 
