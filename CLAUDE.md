@@ -198,6 +198,21 @@ question (§4) — keep it around, don't productionize it.
   Confirmed via `git stash` that this predates every change made this
   session. Not yet fixed — needs the fixture updated to mock
   `get_ports()`/`open_port()` realistically for the Windows branch.
+  **Confirmed inverted on CI (2026-08-07, run `31213666859`, commit
+  `859af61`):** these same 59 tests pass cleanly on `ubuntu-latest`, because
+  `MidiBridge.open()` takes the `open_virtual_port()` branch there (Windows
+  can't create virtual ports, Linux can), which the mock fixture matches
+  correctly. So: **green on CI, broken on the machine this project actually
+  targets.** Don't read a green CI run as proof these paths work on Windows —
+  they're testing a code path Windows never executes.
+- **mypy on CI needed `platform = "win32"` pinned in `[tool.mypy]`
+  (2026-08-07).** Without it, mypy's target platform silently follows
+  whatever OS runs it — `ctypes.WinDLL` only exists in typeshed's
+  win32-conditional stubs, so `mypy src` passed on this Windows dev machine
+  while failing on `ubuntu-latest` CI with `Module has no attribute
+  "WinDLL"`. Reproduce platform-dependent mypy issues locally with
+  `mypy src --platform linux` rather than assuming a passing local run means
+  CI will pass too — it doesn't, for anything touching `ctypes` Windows APIs.
 - `keymap.json` defaults are unreliable; prefer the generated
   `shortcuts.json`/`catalog`.
 - Do not assume a shortcut works because it's in `keymap.json` — `s` sent
