@@ -1,10 +1,12 @@
-# HISTORY.md — session history
+# MEMORY.md — session history & memory index
 
 Narrative log of decisions made across Claude Code sessions on this project,
 for picking the work back up on a different machine. `CLAUDE.md` is the
 current-state handoff (what exists now, what's unverified); this file is the
 **why**, in order, so you don't have to reconstruct it from `git log` or
-re-explain context to a fresh session.
+re-explain context to a fresh session. Also indexes `memory/` (see bottom).
+
+Supersedes `HISTORY.md`, which this file replaces.
 
 ---
 
@@ -20,7 +22,7 @@ defaults turned out to be wrong on this installation. Also produced
 dispatch was shelved upstream and likely collides with Mackie Control on the
 shared port. Full detail in the git history before `7f9a500`.
 
-## 2026-08-07 — This session
+## 2026-08-07 — Long session: SDK 2.0, Ctrl+K dispatch, rebrand
 
 ### 1. Per-user command catalog
 
@@ -57,8 +59,10 @@ this fork. The user then split this project off `pajdarova/StudioOneMcp` into
 its own repo, `pajdarova/FenderStudioProMCP` (already MIT-licensed on
 GitHub) — merged with `--allow-unrelated-histories -X ours` so the new repo's
 initial commit stays in the history and this project's LICENSE (with
-attribution) wins the merge. Local `main` now tracks `fender/main`; the old
-`windows-support` branch stays local, tracking `origin` (the old fork), untouched.
+attribution) wins the merge. Local `main` now tracks `fender/main`. The old
+`pajdarova/StudioOneMcp` fork was later deleted by the user once full history
+preservation was verified (`git log fender/main..origin/*` empty on both
+`main` and `windows-support`).
 
 ### 4. Ctrl+K command-palette dispatch replaces MIDI-CC — confirmed live
 
@@ -90,23 +94,77 @@ Renamed package/CLI/env-vars/docs to `studio_pro_mcp` / `studio-pro-mcp` /
 MIDI port name/default (`StudioOneMCP`) and `studio-one-devices/StudioOneMCPPads/`
 — a loopMIDI port and a Studio Pro External Device are already bound to that
 exact name on this machine, and renaming it is scoped into the pending
-3-port split (below), not a find-and-replace.
+3-port split (see `TASKS.md`), not a find-and-replace.
+
+### 6. CI was never actually green — fixed the real reasons
+
+Pushing to the new repo surfaced that `mypy --strict` had been failing on CI
+(`ubuntu-latest`) since Windows support landed, unnoticed because local
+sessions only compared "error count vs. before my change," not exit code.
+Two distinct causes, both platform-divergence traps:
+
+- **mypy:** `ctypes.WinDLL` only exists in typeshed's win32-conditional
+  stubs. Reproduced locally with `mypy src --platform linux`; fixed by
+  pinning `platform = "win32"` in `[tool.mypy]` so CI and a Windows dev
+  machine see the same stubs regardless of which OS actually runs mypy.
+  Also deleted `src/studio_pro_mcp/commands.py` — the old MIDI-CC
+  dispatcher, unreferenced since §4, whose `Any`-leaking `load_map()` was
+  one of the mypy failures.
+- **pytest:** the inverse trap. `test_tools_transport.py`/`test_tools_mixer.py`
+  fail locally on this Windows machine (`MidiBridge._open_existing_port()`,
+  the Windows-only loopback-attach path, doesn't match how the `bridge`
+  fixture mocks `rtmidi.MidiOut`) but **pass cleanly on Linux CI**, because
+  `MidiBridge.open()` takes the `open_virtual_port()` branch there instead.
+  So: green CI is not proof these MIDI paths work on Windows — they test a
+  code path Windows never executes. Fixture still needs fixing; tracked in
+  `TASKS.md`... actually not yet added there either — see Open items below.
+
+### 7. Project state moved fully into this repo
+
+Two follow-ups after the rename, both about not depending on any single
+machine's local state:
+
+- `TASKS.md` and `memory/glossary.md` added directly to this repo (previously
+  the open items lived in `C:\Users\adp\test\TASKS.md`, which isn't a git
+  repo — the user considered making it one, then decided project state
+  belongs in the project's own repo instead, since that's what already syncs
+  across her machines via `git pull`/`push`).
+- `C:\Users\adp\test` itself confirmed to be an onboarding/practice space
+  from getting familiar with Claude Code, not a real project — recorded in
+  the assistant's own cross-session memory so future sessions don't
+  over-weight it.
+
+### 8. Brainstorm: overlay panel + MIDI/audio round-trip
+
+Design discussion, not implementation — full writeup in
+`memory/brainstorm_panel.md`. Headline conclusions: a global-hotkey overlay
+panel is a natural client for the `--transport http` work (§2); dragging
+content *out* of FSP via OS drag-and-drop is a confirmed dead end from an
+earlier session; `Event|Export Selection` sidesteps the "what's currently
+selected" problem (no API for that) by dispatching a command that acts on
+the selection instead of introspecting it — **user confirmed this works
+live**, with the caveat that the export format must be set to **MIDI file**,
+not **MIDI loop**.
 
 ---
 
-## Open items (tracked in `TASKS.md`, `C:\Users\adp\test\TASKS.md` — outside this repo)
+## Open items
 
-- **Untested:** whether `studio_one_run_command` can fire the 8 commands whose
-  `.keyscheme` shortcut didn't translate (multimedia keys, `#`) — Ctrl+K
-  dispatch only needs the readable label, not the shortcut, so this may
-  already be moot, just unverified.
-- **Planned:** split the single `StudioOneMCP` MIDI port into three —
-  `StudioPro-DAW` (Mackie Control), `StudioPro-MIDI` (note read/write, ties
-  into the still-uncommitted `songreader.py`), `StudioPro-SURF`
-  (command-surface dispatch — no functional code currently uses this path,
-  superseded by Ctrl+K). Needs its own plan; touches `midi_bridge.py`,
-  `coremidi.py`, `tools/mixer.py`, `tools/transport.py`, and the
-  `studio-one-devices/` surface files.
+(Previously said "tracked in `C:\Users\adp\test\TASKS.md`" — stale as of §7;
+they're in this repo's own `TASKS.md` now.)
+
+- Whether `studio_one_run_command` can fire the 8 commands whose `.keyscheme`
+  shortcut didn't translate (multimedia keys, `#`) — likely moot since
+  Ctrl+K dispatch only needs the label, but unverified.
+- The 3-port MIDI split (`StudioPro-DAW`/`StudioPro-MIDI`/`StudioPro-SURF`).
+- Linux (low priority) — Fender Studio Pro has native virtual-MIDI support
+  there, but the Ctrl+K keystroke path doesn't exist for Linux at all yet
+  (only a stale, un-exercised `xdotool` branch).
+- **Not yet added to `TASKS.md`:** fix the `bridge` test fixture so
+  `test_tools_transport.py`/`test_tools_mixer.py` actually exercise the
+  Windows `_open_existing_port()` path correctly (§6).
+- Overlay panel + MIDI export/import round-trip — see §8 and
+  `memory/brainstorm_panel.md`, nothing decided on implementation yet.
 
 ## Roadmap not yet started
 
@@ -114,4 +172,14 @@ From the original five-item ask (2026-08-07): #1 (dual transport) and #2 (SDK
 upgrade) done (§2 above); #3 (LLM dispatch) done for built-in commands and
 partially verified for macros (§4); #4 (finish the MIDI control path) folded
 into the port-split item above; #5 (read/transform audio — MIDI via
-`songreader.py`, WAV unstarted) not begun.
+`songreader.py` plus the `Export Selection` approach from §8, WAV unstarted)
+not begun.
+
+---
+
+## Index of `memory/`
+
+- `memory/glossary.md` — decoder ring for project-specific terms (`.keyscheme`,
+  catalog, Ctrl+K palette, MCU, loopMIDI, `StudioOneMCP`, External Device).
+- `memory/brainstorm_panel.md` — design discussion for a global-hotkey
+  overlay panel + MIDI/audio round-trip with FSP (§8 above).

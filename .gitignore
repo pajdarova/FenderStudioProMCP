@@ -17,3 +17,5 @@ htmlcov/
 .claude/
 .shortcuts.json
 *.keyscheme
+*.mid
+*.wav
