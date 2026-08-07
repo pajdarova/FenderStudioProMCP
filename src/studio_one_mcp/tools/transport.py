@@ -20,47 +20,47 @@ def _transport_tools() -> list[Tool]:
         Tool(
             name="transport_play",
             description="Start playback in Studio One.",
-            inputSchema={"type": "object", "properties": {}, "required": []},
+            input_schema={"type": "object", "properties": {}, "required": []},
         ),
         Tool(
             name="transport_stop",
             description="Stop playback in Studio One.",
-            inputSchema={"type": "object", "properties": {}, "required": []},
+            input_schema={"type": "object", "properties": {}, "required": []},
         ),
         Tool(
             name="transport_record",
             description="Start recording in Studio One (arms and rolls transport).",
-            inputSchema={"type": "object", "properties": {}, "required": []},
+            input_schema={"type": "object", "properties": {}, "required": []},
         ),
         Tool(
             name="transport_rewind",
             description="Rewind the transport position in Studio One.",
-            inputSchema={"type": "object", "properties": {}, "required": []},
+            input_schema={"type": "object", "properties": {}, "required": []},
         ),
         Tool(
             name="transport_fast_forward",
             description="Fast-forward the transport position in Studio One.",
-            inputSchema={"type": "object", "properties": {}, "required": []},
+            input_schema={"type": "object", "properties": {}, "required": []},
         ),
         Tool(
             name="transport_toggle_loop",
             description="Toggle loop (cycle) mode on or off in Studio One.",
-            inputSchema={"type": "object", "properties": {}, "required": []},
+            input_schema={"type": "object", "properties": {}, "required": []},
         ),
         Tool(
             name="transport_save",
             description="Save the current Studio One project.",
-            inputSchema={"type": "object", "properties": {}, "required": []},
+            input_schema={"type": "object", "properties": {}, "required": []},
         ),
         Tool(
             name="transport_undo",
             description="Undo the last action in Studio One.",
-            inputSchema={"type": "object", "properties": {}, "required": []},
+            input_schema={"type": "object", "properties": {}, "required": []},
         ),
         Tool(
             name="transport_redo",
             description="Redo the last undone action in Studio One.",
-            inputSchema={"type": "object", "properties": {}, "required": []},
+            input_schema={"type": "object", "properties": {}, "required": []},
         ),
     ]
 

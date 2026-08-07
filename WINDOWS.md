@@ -30,30 +30,14 @@ py -m venv .venv
 The README's install line (`./.venv/bin/pip`) is a POSIX path; on Windows use
 `.\.venv\Scripts\pip`.
 
-### Pin the MCP SDK
+### MCP SDK version
 
-`mcp` 2.0 removed the low-level decorator API (`Server.list_tools()`,
-`Server.call_tool()`) that `server.py` relies on, so a fresh install crashes at
-startup with:
+`server.py` targets `mcp>=2.0.0`, which replaced the old decorator API
+(`@server.list_tools()`, `@server.call_tool()`) with constructor callbacks
+(`Server(..., on_list_tools=..., on_call_tool=...)`). No pin needed — a plain
+`pip install -e .` resolves the current `mcp` release.
 
-```
-AttributeError: 'Server' object has no attribute 'list_tools'
-```
-
-Constrain the dependency in `pyproject.toml`:
-
-```toml
-dependencies = [
-    "mcp>=1.0.0,<2",
-    "python-rtmidi>=1.5.0",
-    "anyio>=4.0.0",
-    "click>=8.1.0",
-]
-```
-
-Release 1.29.0 is the last of the 1.x line and supports Python 3.10 through 3.14.
-
-### Register with an MCP client
+### Register with an MCP client (stdio)
 
 `%APPDATA%\Claude\claude_desktop_config.json`:
 
@@ -68,7 +52,23 @@ Release 1.29.0 is the last of the 1.x line and supports Python 3.10 through 3.14
 ```
 
 Use the absolute path to the executable inside the virtual environment; a bare
-command name will not be found.
+command name will not be found. This is the `--transport stdio` default —
+Claude Desktop and most MCP clients speak this.
+
+### Local HTTP transport
+
+For a local LLM or any client that speaks Streamable HTTP instead of stdio,
+run the server with `--transport http`:
+
+```powershell
+.\.venv\Scripts\studio-one-mcp.exe --transport http --http-port 8765
+```
+
+This serves the same tools at `http://127.0.0.1:8765/mcp`. `--http-host` and
+`--http-port` override the defaults; the server binds to `127.0.0.1` only —
+DNS-rebinding protection is enabled automatically for localhost. Both
+transports build the identical tool set from the same `MidiBridge`; pick one
+per server process, not both at once.
 
 ## Keystroke automation
 

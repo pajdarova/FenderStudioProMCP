@@ -46,7 +46,7 @@ def _automation_tools() -> list[Tool]:
         Tool(
             name="auto_add_audio_track",
             description="Add a new audio track to the current song.",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_add_instrument_track",
@@ -55,7 +55,7 @@ def _automation_tools() -> list[Tool]:
                 "Requires a custom shortcut (Ctrl+Shift+Cmd+I) assigned once in "
                 "Studio One Preferences → Keyboard Shortcuts."
             ),
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_add_bus_track",
@@ -63,102 +63,102 @@ def _automation_tools() -> list[Tool]:
                 "Add a bus/FX channel. "
                 "Requires a custom shortcut (Ctrl+Shift+Cmd+B) assigned in Preferences."
             ),
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_duplicate_track",
             description="Duplicate the currently selected track.",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_delete_selected",
             description="Delete the currently selected track or event.",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_undo",
             description="Undo the last action in Studio One.",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_redo",
             description="Redo the last undone action in Studio One.",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_save",
             description="Save the current song.",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_save_as",
             description="Open the Save As dialog for the current song.",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_new_song",
             description="Open the New Song dialog in Studio One.",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_toggle_mixer",
             description="Show or hide the Studio One Mixer panel (F3).",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_toggle_browser",
             description="Show or hide the Studio One Browser panel (F5).",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_toggle_editor",
             description="Show or hide the Piano Roll / Audio Editor (F2).",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_select_all",
             description="Select all tracks or events in the current context.",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_zoom_in",
             description="Zoom in on the arrangement timeline.",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_zoom_out",
             description="Zoom out on the arrangement timeline.",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_zoom_to_fit",
             description="Zoom to fit all content in the arrangement view.",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_toggle_loop",
             description="Toggle loop (cycle) playback on or off.",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_go_to_start",
             description="Move the playhead to the start of the song.",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_go_to_end",
             description="Move the playhead to the end of the song.",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_split_at_playhead",
             description="Split selected event(s) at the current playhead position.",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_quantize",
             description="Quantize selected MIDI notes to the current quantize grid.",
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
         Tool(
             name="auto_add_audio_track_mono",
@@ -167,7 +167,7 @@ def _automation_tools() -> list[Tool]:
                 "Requires a custom shortcut (Ctrl+Shift+Cmd+M on Mac) assigned once in "
                 "Studio One Preferences → Keyboard Shortcuts → Track → 'Add Audio Track (mono)'."
             ),
-            inputSchema=_NO_ARGS,
+            input_schema=_NO_ARGS,
         ),
     ]
 

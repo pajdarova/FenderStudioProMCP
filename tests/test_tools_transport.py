@@ -36,7 +36,7 @@ class TestToolList:
 
     def test_all_tools_have_empty_input_schema(self):
         for tool in _transport_tools():
-            assert tool.inputSchema["required"] == []
+            assert tool.input_schema["required"] == []
 
 
 class TestDispatch:

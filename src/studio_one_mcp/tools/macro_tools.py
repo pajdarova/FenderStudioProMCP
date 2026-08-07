@@ -23,7 +23,7 @@ def _macro_tools() -> list[Tool]:
                 "(AudioSynth, AudioEffect, MusicEffect). "
                 "Pass an optional 'category' to filter results."
             ),
-            inputSchema={
+            input_schema={
                 "type": "object",
                 "properties": {
                     "category": {
@@ -43,7 +43,7 @@ def _macro_tools() -> list[Tool]:
                 "it on the selected channel. The macro appears in the Studio One toolbar "
                 "under the MCP group. No shortcut required."
             ),
-            inputSchema={
+            input_schema={
                 "type": "object",
                 "properties": {
                     "name": {

@@ -28,7 +28,7 @@ def _command_tools() -> list[Tool]:
                 "Case-insensitive; a unique partial match is accepted. "
                 "Use studio_one_list_commands to discover names."
             ),
-            inputSchema={
+            input_schema={
                 "type": "object",
                 "properties": {"name": {"type": "string", "description": "Command name"}},
                 "required": ["name"],
@@ -37,7 +37,7 @@ def _command_tools() -> list[Tool]:
         Tool(
             name="studio_one_list_commands",
             description="List available Studio One commands, optionally filtered by a search term.",
-            inputSchema={
+            input_schema={
                 "type": "object",
                 "properties": {"filter": {"type": "string", "description": "Substring filter"}},
                 "required": [],

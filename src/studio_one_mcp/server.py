@@ -5,13 +5,14 @@ from __future__ import annotations
 import asyncio
 import logging
 import sys
+from collections.abc import Sequence
 from typing import Any
 
 import click
 import mcp.server.stdio
 import mcp.types as types
-from mcp.server import NotificationOptions, Server
-from mcp.server.models import InitializationOptions
+from mcp.server import Server
+from mcp.server.context import ServerRequestContext
 
 from studio_one_mcp import __version__
 from studio_one_mcp.midi_bridge import MidiBridge, MidiBridgeError
@@ -19,14 +20,14 @@ from studio_one_mcp.midi_bridge import MidiBridge, MidiBridgeError
 log = logging.getLogger(__name__)
 
 
-def _build_server(bridge: MidiBridge, automation: bool = True) -> Server:
+def _build_server(bridge: MidiBridge, automation: bool = True) -> Server[None]:
     """Construct and configure the MCP server with all tools registered."""
-    server = Server("studio-one-mcp")
-
     from studio_one_mcp.tools.automation import _automation_tools
     from studio_one_mcp.tools.automation import _dispatch as _automation_dispatch
     from studio_one_mcp.tools.commands import _command_tools
     from studio_one_mcp.tools.commands import _dispatch as _command_dispatch
+    from studio_one_mcp.tools.keyscheme_tools import _dispatch as _keyscheme_dispatch
+    from studio_one_mcp.tools.keyscheme_tools import _keyscheme_tools
     from studio_one_mcp.tools.macro_tools import _dispatch as _macro_dispatch
     from studio_one_mcp.tools.macro_tools import _macro_tools
     from studio_one_mcp.tools.mixer import _dispatch as _mixer_dispatch
@@ -38,45 +39,73 @@ def _build_server(bridge: MidiBridge, automation: bool = True) -> Server:
     auto_names = {t.name for t in _automation_tools()} if automation else set()
     macro_names = {t.name for t in _macro_tools()}
     command_names = {t.name for t in _command_tools()}
+    keyscheme_names = {t.name for t in _keyscheme_tools()}
 
-    @server.list_tools()  # type: ignore[no-untyped-call, untyped-decorator]
-    async def handle_list_tools() -> list[types.Tool]:
-        tools = _transport_tools() + _mixer_tools() + _macro_tools() + _command_tools()
+    async def _on_list_tools(
+        _ctx: ServerRequestContext[None],
+        _params: types.PaginatedRequestParams | None,
+    ) -> types.ListToolsResult:
+        tools = (
+            _transport_tools()
+            + _mixer_tools()
+            + _macro_tools()
+            + _command_tools()
+            + _keyscheme_tools()
+        )
         if automation:
             tools += _automation_tools()
-        return tools
+        return types.ListToolsResult(tools=tools)
 
-    @server.call_tool()  # type: ignore[untyped-decorator]
-    async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[types.TextContent]:
+    async def _on_call_tool(
+        _ctx: ServerRequestContext[None],
+        params: types.CallToolRequestParams,
+    ) -> types.CallToolResult:
+        name = params.name
+        arguments: dict[str, Any] = params.arguments or {}
+        content: Sequence[types.ContentBlock]
         try:
             if name in transport_names:
-                return await _transport_dispatch(name, arguments, bridge)
-            if name in auto_names:
-                return await _automation_dispatch(name, arguments)
-            if name in macro_names:
-                return await _macro_dispatch(name, arguments)
-            if name in command_names:
-                return await _command_dispatch(name, arguments, bridge)
-            return await _mixer_dispatch(name, arguments, bridge)
+                content = await _transport_dispatch(name, arguments, bridge)
+            elif name in auto_names:
+                content = await _automation_dispatch(name, arguments)
+            elif name in macro_names:
+                content = await _macro_dispatch(name, arguments)
+            elif name in command_names:
+                content = await _command_dispatch(name, arguments, bridge)
+            elif name in keyscheme_names:
+                content = await _keyscheme_dispatch(name, arguments)
+            else:
+                content = await _mixer_dispatch(name, arguments, bridge)
         except (ValueError, MidiBridgeError) as exc:
             log.error("Tool %r failed: %s", name, exc)
-            return [types.TextContent(type="text", text=f"ERROR: {exc}")]
+            return types.CallToolResult(
+                content=[types.TextContent(type="text", text=f"ERROR: {exc}")],
+                is_error=True,
+            )
+        return types.CallToolResult(content=list(content))
 
-    return server
+    return Server(
+        "studio-one-mcp",
+        version=__version__,
+        on_list_tools=_on_list_tools,
+        on_call_tool=_on_call_tool,
+    )
 
 
 async def _run_stdio(bridge: MidiBridge, automation: bool = True) -> None:
     server = _build_server(bridge, automation)
-    init_opts = InitializationOptions(
-        server_name="studio-one-mcp",
-        server_version=__version__,
-        capabilities=server.get_capabilities(
-            notification_options=NotificationOptions(),
-            experimental_capabilities={},
-        ),
-    )
+    init_opts = server.create_initialization_options()
     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
         await server.run(read_stream, write_stream, init_opts)
+
+
+async def _run_http(bridge: MidiBridge, automation: bool, host: str, port: int) -> None:
+    import uvicorn
+
+    server = _build_server(bridge, automation)
+    app = server.streamable_http_app(host=host)
+    config = uvicorn.Config(app, host=host, port=port, log_level="info")
+    await uvicorn.Server(config).serve()
 
 
 # ---------------------------------------------------------------------------
@@ -107,6 +136,26 @@ async def _run_stdio(bridge: MidiBridge, automation: bool = True) -> None:
     is_flag=True,
     help="Disable OS-level keyboard automation tools (use when server runs remotely).",
 )
+@click.option(
+    "--transport",
+    type=click.Choice(["stdio", "http"]),
+    default="stdio",
+    show_default=True,
+    help="stdio for MCP clients like Claude Desktop; http to serve a local Streamable HTTP endpoint.",
+)
+@click.option(
+    "--http-host",
+    default="127.0.0.1",
+    show_default=True,
+    help="Host to bind when --transport=http.",
+)
+@click.option(
+    "--http-port",
+    default=8765,
+    show_default=True,
+    type=int,
+    help="Port to bind when --transport=http.",
+)
 @click.option("--debug", is_flag=True, help="Enable debug logging.")
 @click.version_option(__version__)
 def main(
@@ -114,6 +163,9 @@ def main(
     message_delay: float,
     list_ports: bool,
     no_automation: bool,
+    transport: str,
+    http_host: str,
+    http_port: int,
     debug: bool,
 ) -> None:
     """Studio One MCP Server — MCU MIDI + keyboard automation + macro generation."""
@@ -143,10 +195,15 @@ def main(
     mode = f"MCU MIDI (port='{port_name}')"
     if not no_automation:
         mode += " + automation"
+    if transport == "http":
+        mode += f" + HTTP on http://{http_host}:{http_port}/mcp"
     click.echo(f"Studio One MCP server v{__version__} — {mode}", err=True)
 
     try:
-        asyncio.run(_run_stdio(bridge, not no_automation))
+        if transport == "http":
+            asyncio.run(_run_http(bridge, not no_automation, http_host, http_port))
+        else:
+            asyncio.run(_run_stdio(bridge, not no_automation))
     except KeyboardInterrupt:
         pass
     finally:

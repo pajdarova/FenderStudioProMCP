@@ -37,8 +37,8 @@ class TestToolList:
 
     def test_set_fader_schema_requires_channel_and_level(self):
         tool = next(t for t in _mixer_tools() if t.name == "mixer_set_fader")
-        assert "channel" in tool.inputSchema["required"]
-        assert "level" in tool.inputSchema["required"]
+        assert "channel" in tool.input_schema["required"]
+        assert "level" in tool.input_schema["required"]
 
 
 class TestSetFader:

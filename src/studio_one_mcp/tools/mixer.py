@@ -31,7 +31,7 @@ def _mixer_tools() -> list[Tool]:
                 "Set the fader level of a mixer channel or the master fader. "
                 "Level 0 = minimum (−∞ dB), 100 = maximum (+12 dB), ~75 ≈ 0 dB."
             ),
-            inputSchema={
+            input_schema={
                 "type": "object",
                 "properties": {
                     "channel": {
@@ -58,7 +58,7 @@ def _mixer_tools() -> list[Tool]:
         Tool(
             name="mixer_toggle_mute",
             description="Toggle the mute button on a mixer channel strip.",
-            inputSchema={
+            input_schema={
                 "type": "object",
                 "properties": {"channel": channel_schema},
                 "required": ["channel"],
@@ -67,7 +67,7 @@ def _mixer_tools() -> list[Tool]:
         Tool(
             name="mixer_toggle_solo",
             description="Toggle the solo button on a mixer channel strip.",
-            inputSchema={
+            input_schema={
                 "type": "object",
                 "properties": {"channel": channel_schema},
                 "required": ["channel"],
@@ -76,7 +76,7 @@ def _mixer_tools() -> list[Tool]:
         Tool(
             name="mixer_toggle_rec_arm",
             description="Toggle the record-arm button on a mixer channel strip.",
-            inputSchema={
+            input_schema={
                 "type": "object",
                 "properties": {"channel": channel_schema},
                 "required": ["channel"],
@@ -85,7 +85,7 @@ def _mixer_tools() -> list[Tool]:
         Tool(
             name="mixer_select_channel",
             description="Select (focus) a mixer channel strip in Studio One.",
-            inputSchema={
+            input_schema={
                 "type": "object",
                 "properties": {"channel": channel_schema},
                 "required": ["channel"],
@@ -98,7 +98,7 @@ def _mixer_tools() -> list[Tool]:
                 "pan=0 sends a center/reset tick; positive values pan right, negative pan left. "
                 "Range −64 to +63."
             ),
-            inputSchema={
+            input_schema={
                 "type": "object",
                 "properties": {
                     "channel": channel_schema,
@@ -118,7 +118,7 @@ def _mixer_tools() -> list[Tool]:
                 "Return the optimistic (last-sent) mixer state cached by the MCP server. "
                 "Because MCU is write-only, these values reflect commands sent, not confirmed DAW state."
             ),
-            inputSchema={"type": "object", "properties": {}, "required": []},
+            input_schema={"type": "object", "properties": {}, "required": []},
         ),
         Tool(
             name="mixer_bank_left",
@@ -126,7 +126,7 @@ def _mixer_tools() -> list[Tool]:
                 "Shift the MCU fader bank one step left (show the previous 8 channels). "
                 "Has no effect if already at bank 0 (channels 1–8)."
             ),
-            inputSchema={"type": "object", "properties": {}, "required": []},
+            input_schema={"type": "object", "properties": {}, "required": []},
         ),
         Tool(
             name="mixer_bank_right",
@@ -134,7 +134,7 @@ def _mixer_tools() -> list[Tool]:
                 "Shift the MCU fader bank one step right (show the next 8 channels). "
                 "Has no effect if already at the last bank."
             ),
-            inputSchema={"type": "object", "properties": {}, "required": []},
+            input_schema={"type": "object", "properties": {}, "required": []},
         ),
         Tool(
             name="mixer_goto_bank",
@@ -142,7 +142,7 @@ def _mixer_tools() -> list[Tool]:
                 "Jump directly to a specific MCU bank (0–7), where bank 0 = channels 1–8, "
                 "bank 1 = channels 9–16, … bank 7 = channels 57–64."
             ),
-            inputSchema={
+            input_schema={
                 "type": "object",
                 "properties": {
                     "bank": {
@@ -160,7 +160,7 @@ def _mixer_tools() -> list[Tool]:
             description=(
                 "Return the current MCU bank number and the absolute channel range it shows."
             ),
-            inputSchema={"type": "object", "properties": {}, "required": []},
+            input_schema={"type": "object", "properties": {}, "required": []},
         ),
     ]
 
