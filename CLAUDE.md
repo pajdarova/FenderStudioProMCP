@@ -1,3 +1,24 @@
+# Basic commands
+
+## Preferences
+
+- CLAUDE.md, MEMORY.md + memory/ are kept directly in the project folder for portability between machines and are integral part of the repository
+
+- Files in the repository are in US English even that the conversation is in a different language
+
+
+## Instructions
+
+- At the start of a session, read this file and MEMORY.md (if it exists). The MEMORY.md should contain an index and short description of files in memory/ directory.
+
+- At the end of the work, record very important new facts/decisions here and other in memory/. Update the index MEMORY.md.
+
+- After brainstorming (Claude as sparring partner/advisor/opponent), summarize the key conclusions and decisions into a separate file in memory/ (e.g. memory/brainstorm_<topic>.md) — not the full transcript of the discussion, just the substance. Update the index MEMORY.md.
+
+- Write detailed documentation of code into the source files. If the documentation is missing, add it.
+
+
+
 # CLAUDE.md — project state
 
 Working notes for Claude Code sessions on this repository. Written 2026-08-07.
