@@ -83,8 +83,18 @@ dispatches through this path, so it inherits the problem.
 
 `Help|Find Command`, bound to `Ctrl+K`, expects the readable name (e.g.
 `Add 4th above`), not the internal Base64 identifier. This reaches all 1751
-commands/471 macros without any control surface. Needs text entry via
-`KEYEVENTF_UNICODE` (layout-independent) in `keystrokes.py` — not yet built.
+commands/471 macros without any control surface. Built in `keystrokes.py`
+(`run_via_command_palette()`, `KEYEVENTF_UNICODE` text entry) and wired into
+`studio_one_run_command` (§5 #3). **Confirmed working end-to-end on the real
+DAW (2026-08-07):** dispatched `Undo` through the live MCP server — Ctrl+K
+opened, `Undo` was typed, Enter ran the top/only match directly, no extra
+selection step needed. This is the first command-dispatch path in the
+project's history to be confirmed working; MIDI-CC dispatch (below) never
+was.
+
+Not yet confirmed: whether `Save New Version...` needs the extra Enter
+`confirm_dialog=True` sends for a name dialog, and whether macros (not just
+built-in commands) resolve and fire the same way.
 
 ### `.keyscheme` beats the HTML export
 
@@ -118,11 +128,17 @@ Five asks, not yet sequenced or scoped in detail:
    typing need the new name) — updated across all six `tools/*.py` modules
    and their tests. Zero changes to tool *dispatch logic* — only the
    constructor keyword and `server.py`'s registration shape changed.
-3. **LLM-driven dispatch with minimal user involvement**, built on `Ctrl+K` +
-   the generated catalog (§3, §4): user describes intent in natural language,
-   LLM resolves it to catalog entries and fires them. For non-trivial/risky
-   operations, snapshot first — a `.song` backup copy, or (preferred, since
-   Fender Studio Pro supports it) create a new song version before acting.
+3. **DONE (2026-08-07), core path confirmed live.** `tools/commands.py`
+   rewritten: `studio_one_run_command`/`studio_one_list_commands` now resolve
+   against `keyscheme.load_catalog()` (1751 commands + 471 macros, not the
+   224-built-in/0-macro `docs/midi-map.json`) and dispatch through
+   `keystrokes.run_via_command_palette()` instead of MIDI CC. New tool
+   `studio_one_save_new_version` (`File|Save New Version...`, catalog lookup)
+   for the "snapshot before risky work" ask — explicitly LLM-invoked before
+   complex multi-step changes, not automatic per-command. Confirmed on the
+   live DAW: `studio_one_run_command("Undo")` actually undid the last action.
+   Not yet confirmed: `Save New Version...`'s dialog-confirm behavior, and
+   macro dispatch (only a built-in command has been fire-tested so far).
 4. **Finish the MIDI control path** the upstream author started (§4) — worth
    one real experiment now that ports would be split (§7 old roadmap: MCU /
    command / notes on separate loopback ports) rather than sharing one.

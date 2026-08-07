@@ -71,7 +71,7 @@ def _build_server(bridge: MidiBridge, automation: bool = True) -> Server[None]:
             elif name in macro_names:
                 content = await _macro_dispatch(name, arguments)
             elif name in command_names:
-                content = await _command_dispatch(name, arguments, bridge)
+                content = await _command_dispatch(name, arguments)
             elif name in keyscheme_names:
                 content = await _keyscheme_dispatch(name, arguments)
             else:

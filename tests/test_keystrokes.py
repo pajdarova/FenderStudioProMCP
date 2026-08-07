@@ -13,8 +13,11 @@ from studio_one_mcp.keystrokes import (
     KeystrokeError,
     _combo_to_applescript,
     _platform_key,
+    _send_unicode_text,
     _split_combo,
+    _win32,
     load_keymap,
+    run_via_command_palette,
 )
 
 
@@ -93,6 +96,58 @@ class TestPlatformKey:
     def test_linux_maps_to_linux(self):
         with patch("platform.system", return_value="Linux"):
             assert _platform_key() == "linux"
+
+
+class TestSendUnicodeText:
+    def test_sends_keyeventf_unicode_down_and_up_per_char(self):
+        w = _win32()
+        calls: list[tuple[int, int, int]] = []
+
+        def fake_send_input(count, array, _size):
+            for i in range(count):
+                calls.append((array[i].ki.wVk, array[i].ki.wScan, array[i].ki.dwFlags))
+            return count
+
+        keyeventf_unicode = 0x0004
+        keyeventf_keyup = 0x0002
+        with patch.object(w.user32, "SendInput", side_effect=fake_send_input):
+            _send_unicode_text("A!")
+
+        assert calls == [
+            (0, ord("A"), keyeventf_unicode),
+            (0, ord("A"), keyeventf_unicode | keyeventf_keyup),
+            (0, ord("!"), keyeventf_unicode),
+            (0, ord("!"), keyeventf_unicode | keyeventf_keyup),
+        ]
+
+    def test_raises_on_short_send(self):
+        w = _win32()
+        with (
+            patch.object(w.user32, "SendInput", return_value=0),
+            pytest.raises(KeystrokeError, match="failed to type"),
+        ):
+            _send_unicode_text("x")
+
+
+class TestRunViaCommandPalette:
+    @pytest.mark.asyncio
+    async def test_non_windows_raises(self):
+        with (
+            patch("platform.system", return_value="Darwin"),
+            pytest.raises(KeystrokeError, match="Windows-only"),
+        ):
+            await run_via_command_palette("Undo")
+
+    @pytest.mark.asyncio
+    async def test_windows_delegates_to_blocking_helper(self):
+        with (
+            patch("platform.system", return_value="Windows"),
+            patch(
+                "studio_one_mcp.keystrokes._run_via_command_palette_blocking"
+            ) as mock_blocking,
+        ):
+            await run_via_command_palette("Add EQ", confirm_dialog=True)
+        mock_blocking.assert_called_once_with("Studio One", "Add EQ", confirm_dialog=True)
 
 
 class TestLoadKeymap:

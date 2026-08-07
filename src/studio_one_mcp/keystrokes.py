@@ -409,6 +409,39 @@ def _send_key_events(vk_codes: list[int], key_up: bool) -> None:
         )
 
 
+def _send_unicode_text(text: str) -> None:
+    """Type literal Unicode text via SendInput, bypassing virtual-key mapping.
+
+    Unlike ``_send_key_events``, this doesn't go through a keyboard layout at
+    all (``KEYEVENTF_UNICODE``), so punctuation in command names (``Save New
+    Version...``) can't hit the OEM-key layout problem the shortcut path works
+    around in ``keyscheme.py``.
+    """
+    w = _win32()
+    ctypes = w.ctypes
+    input_type_keyboard = 1
+    keyeventf_unicode = 0x0004
+    keyeventf_keyup = 0x0002
+
+    for ch in text:
+        code = ord(ch)
+        for flags in (keyeventf_unicode, keyeventf_unicode | keyeventf_keyup):
+            array = (w.INPUT * 1)()
+            array[0].type = input_type_keyboard
+            array[0].ki = w.KEYBDINPUT(
+                wVk=0,
+                wScan=code,
+                dwFlags=flags,
+                time=0,
+                dwExtraInfo=0,
+            )
+            sent = w.user32.SendInput(1, array, ctypes.sizeof(w.INPUT))
+            if sent != 1:
+                raise KeystrokeError(
+                    f"SendInput failed to type {ch!r} (error {ctypes.get_last_error()})."
+                )
+
+
 def _press_combo(combo: str) -> None:
     """Press and release one shortcut such as 'ctrl+shift+z'."""
     mods, key = _split_combo(combo)
@@ -460,6 +493,45 @@ def _send_windows_blocking(app_name: str, action: dict[str, Any]) -> None:
 async def _send_windows(app_name: str, action: dict[str, Any]) -> None:
     """Send the shortcut to the DAW window without blocking the event loop."""
     await asyncio.to_thread(_send_windows_blocking, app_name, action)
+
+
+def _run_via_command_palette_blocking(
+    app_name: str, text: str, *, confirm_dialog: bool
+) -> None:
+    hwnd = _find_window(_window_titles(app_name))
+    _focus_window(hwnd)
+    time.sleep(0.1)
+
+    _press_combo("ctrl+k")
+    time.sleep(0.2)
+    _send_unicode_text(text)
+    time.sleep(0.15)
+    _press_combo("return")
+
+    if confirm_dialog:
+        time.sleep(0.4)
+        _press_combo("return")
+
+
+async def run_via_command_palette(text: str, *, confirm_dialog: bool = False) -> None:
+    """Run *text* (a command or macro's readable name) via the DAW's Ctrl+K palette.
+
+    Windows-only for now — macOS/Linux automation still goes through the
+    AppleScript/xdotool shortcut paths.
+
+    Unverified: whether Enter runs the top/only search result directly, and
+    whether ``confirm_dialog`` commands (e.g. "Save New Version...") need the
+    second Enter this sends for a name-confirmation dialog. Needs a real-DAW
+    smoke test.
+    """
+    if platform.system() != "Windows":
+        raise KeystrokeError("Command-palette dispatch is Windows-only for now.")
+
+    keymap = load_keymap()
+    app_name: str = keymap.get("app_name", {}).get("windows", "Studio One")
+    await asyncio.to_thread(
+        _run_via_command_palette_blocking, app_name, text, confirm_dialog=confirm_dialog
+    )
 
 
 def _resolve_keys(action_name: str, plat_action: dict[str, Any]) -> list[str]:
