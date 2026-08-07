@@ -1,4 +1,4 @@
-"""Tests for studio_one_mcp.tools.keyscheme_tools."""
+"""Tests for studio_pro_mcp.tools.keyscheme_tools."""
 from __future__ import annotations
 
 import base64
@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from studio_one_mcp.tools.keyscheme_tools import _dispatch, _keyscheme_tools
+from studio_pro_mcp.tools.keyscheme_tools import _dispatch, _keyscheme_tools
 
 _SAMPLE = """<?xml version="1.0" encoding="UTF-8"?>
 <Commands name="Studio App">
@@ -71,7 +71,7 @@ class TestGenerateCatalog:
     @pytest.mark.asyncio
     async def test_no_autodiscovery_result_reports_error(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setattr(
-            "studio_one_mcp.tools.keyscheme_tools.discover_keyscheme", lambda: None
+            "studio_pro_mcp.tools.keyscheme_tools.discover_keyscheme", lambda: None
         )
         result = await _dispatch("studio_one_generate_command_catalog", {})
         assert "ERROR" in result[0].text

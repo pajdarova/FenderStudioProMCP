@@ -1,6 +1,6 @@
 # Windows support
 
-StudioOneMcp was written against macOS. This document covers the changes that
+FenderStudioProMCP was written against macOS. This document covers the changes that
 make it run on Windows, plus a tool that reads the DAW's own keyboard-shortcut
 file so the keystroke path uses each user's actual shortcuts.
 
@@ -21,8 +21,8 @@ sender was missing.
 ## Install
 
 ```powershell
-git clone https://github.com/tiwadara/StudioOneMcp
-cd StudioOneMcp
+git clone https://github.com/pajdarova/FenderStudioProMCP
+cd FenderStudioProMCP
 py -m venv .venv
 .\.venv\Scripts\pip install -e .
 ```
@@ -44,8 +44,8 @@ The README's install line (`./.venv/bin/pip`) is a POSIX path; on Windows use
 ```json
 {
   "mcpServers": {
-    "studio-one": {
-      "command": "C:\\path\\to\\StudioOneMcp\\.venv\\Scripts\\studio-one-mcp.exe"
+    "studio-pro": {
+      "command": "C:\\path\\to\\FenderStudioProMCP\\.venv\\Scripts\\studio-pro-mcp.exe"
     }
   }
 }
@@ -61,7 +61,7 @@ For a local LLM or any client that speaks Streamable HTTP instead of stdio,
 run the server with `--transport http`:
 
 ```powershell
-.\.venv\Scripts\studio-one-mcp.exe --transport http --http-port 8765
+.\.venv\Scripts\studio-pro-mcp.exe --transport http --http-port 8765
 ```
 
 This serves the same tools at `http://127.0.0.1:8765/mcp`. `--http-host` and
@@ -90,7 +90,7 @@ Fender Studio Pro, Studio Pro, Fender Studio, Studio One
 Override the search with an environment variable:
 
 ```powershell
-$env:STUDIO_ONE_MCP_WINDOW_TITLE = "Studio Pro"
+$env:STUDIO_PRO_MCP_WINDOW_TITLE = "Studio Pro"
 ```
 
 ### Verify
@@ -98,7 +98,7 @@ $env:STUDIO_ONE_MCP_WINDOW_TITLE = "Studio Pro"
 With the DAW running and a song open:
 
 ```powershell
-.\.venv\Scripts\python -c "import asyncio; from studio_one_mcp.keystrokes import send_action; asyncio.run(send_action('save'))"
+.\.venv\Scripts\python -c "import asyncio; from studio_pro_mcp.keystrokes import send_action; asyncio.run(send_action('save'))"
 ```
 
 The DAW should come forward and save.
@@ -115,24 +115,24 @@ from *Preferences → Keyboard Shortcuts* — and writes a `shortcuts.json` that
 `keystrokes.py` consults first.
 
 ```powershell
-.\.venv\Scripts\python -m studio_one_mcp.keyscheme
+.\.venv\Scripts\python -m studio_pro_mcp.keyscheme
 ```
 
 With no argument the file is auto-discovered under the DAW's user-data folders.
 Otherwise pass a path:
 
 ```powershell
-.\.venv\Scripts\python -m studio_one_mcp.keyscheme "C:\path\Studio_Pro.keyscheme"
+.\.venv\Scripts\python -m studio_pro_mcp.keyscheme "C:\path\Studio_Pro.keyscheme"
 ```
 
-Output goes to `%USERPROFILE%\.studio_one_mcp\shortcuts.json`, overridable with
-`STUDIO_ONE_MCP_SHORTCUTS`. Regenerate after changing shortcuts in the DAW.
+Output goes to `%USERPROFILE%\.studio_pro_mcp\shortcuts.json`, overridable with
+`STUDIO_PRO_MCP_SHORTCUTS`. Regenerate after changing shortcuts in the DAW.
 
 Inspect what was parsed:
 
 ```powershell
-.\.venv\Scripts\python -m studio_one_mcp.keyscheme --list Zoom
-.\.venv\Scripts\python -m studio_one_mcp.keyscheme --verbose
+.\.venv\Scripts\python -m studio_pro_mcp.keyscheme --list Zoom
+.\.venv\Scripts\python -m studio_pro_mcp.keyscheme --verbose
 ```
 
 ### Resolution order
@@ -201,7 +201,7 @@ server reports the available ports rather than crashing.
 ## Troubleshooting
 
 **No window found** — the title does not match. Set
-`STUDIO_ONE_MCP_WINDOW_TITLE` to a substring of the actual title.
+`STUDIO_PRO_MCP_WINDOW_TITLE` to a substring of the actual title.
 
 **Could not bring the window to the foreground** — usually a privilege
 mismatch. Run the MCP client and the DAW at the same elevation level.

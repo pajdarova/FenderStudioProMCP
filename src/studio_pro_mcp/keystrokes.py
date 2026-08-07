@@ -63,7 +63,7 @@ class KeystrokeError(Exception):
 
 
 def _keymap_path() -> Path:
-    override = os.environ.get("STUDIO_ONE_MCP_KEYMAP")
+    override = os.environ.get("STUDIO_PRO_MCP_KEYMAP")
     return Path(override) if override else _DEFAULT_KEYMAP
 
 
@@ -74,7 +74,7 @@ def load_keymap() -> dict[str, Any]:
             return json.load(fh)  # type: ignore[no-any-return]
     except FileNotFoundError as exc:
         raise KeystrokeError(
-            f"Keymap not found: {path}. Set STUDIO_ONE_MCP_KEYMAP to override."
+            f"Keymap not found: {path}. Set STUDIO_PRO_MCP_KEYMAP to override."
         ) from exc
     except json.JSONDecodeError as exc:
         raise KeystrokeError(f"Invalid keymap JSON at {path}: {exc}") from exc
@@ -338,7 +338,7 @@ def _find_window(titles: tuple[str, ...]) -> int:
     if not matches:
         raise KeystrokeError(
             f"No window found matching any of {titles}. Is the DAW running? "
-            "Set STUDIO_ONE_MCP_WINDOW_TITLE to override the search."
+            "Set STUDIO_PRO_MCP_WINDOW_TITLE to override the search."
         )
     matches.sort(key=lambda item: item[0])
     return matches[0][1]
@@ -460,7 +460,7 @@ def _press_combo(combo: str) -> None:
 
 
 def _window_titles(app_name: str) -> tuple[str, ...]:
-    override = os.environ.get("STUDIO_ONE_MCP_WINDOW_TITLE")
+    override = os.environ.get("STUDIO_PRO_MCP_WINDOW_TITLE")
     if override:
         return (override,)
     titles = [app_name] if app_name else []
@@ -545,7 +545,7 @@ def _resolve_keys(action_name: str, plat_action: dict[str, Any]) -> list[str]:
     command = plat_action.get("command")
     if command:
         try:
-            from studio_one_mcp.keyscheme import load_shortcuts
+            from studio_pro_mcp.keyscheme import load_shortcuts
 
             combos = load_shortcuts().get(command)
         except Exception as exc:  # a broken config must not break the fallback
@@ -568,13 +568,13 @@ def _resolve_keys(action_name: str, plat_action: dict[str, Any]) -> list[str]:
 
 async def send_command(category: str, name: str) -> None:
     """Send the user's shortcut for one DAW command, e.g. ``("Edit", "Undo")``."""
-    from studio_one_mcp.keyscheme import load_shortcuts
+    from studio_pro_mcp.keyscheme import load_shortcuts
 
     combos = load_shortcuts().get(f"{category}|{name}")
     if not combos:
         raise KeystrokeError(
             f"No shortcut known for command {category}|{name}. Generate the "
-            "shortcut config with 'python -m studio_one_mcp.keyscheme' and make "
+            "shortcut config with 'python -m studio_pro_mcp.keyscheme' and make "
             "sure the command has a shortcut assigned in the DAW."
         )
 
@@ -594,7 +594,7 @@ async def send_command(category: str, name: str) -> None:
 async def send_action(action_name: str) -> None:
     """Send the keystrokes for *action_name* to Studio One.
 
-    Reads keymap.json (or STUDIO_ONE_MCP_KEYMAP override) each call so edits
+    Reads keymap.json (or STUDIO_PRO_MCP_KEYMAP override) each call so edits
     take effect without restarting the server.
 
     Raises

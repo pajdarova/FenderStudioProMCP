@@ -118,7 +118,7 @@ class MidiBridge:
         # otherwise assigns a fresh random ID each launch. Best-effort.
         if platform.system() == "Darwin":
             try:
-                from studio_one_mcp.coremidi import pin_unique_id
+                from studio_pro_mcp.coremidi import pin_unique_id
 
                 if pin_unique_id(self._port_name):
                     log.info("Pinned uniqueID for port %s", self._port_name)

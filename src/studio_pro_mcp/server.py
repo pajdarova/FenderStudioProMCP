@@ -1,4 +1,4 @@
-"""Entry point for the Studio One MCP server."""
+"""Entry point for the Studio Pro MCP server."""
 
 from __future__ import annotations
 
@@ -14,26 +14,26 @@ import mcp.types as types
 from mcp.server import Server
 from mcp.server.context import ServerRequestContext
 
-from studio_one_mcp import __version__
-from studio_one_mcp.midi_bridge import MidiBridge, MidiBridgeError
+from studio_pro_mcp import __version__
+from studio_pro_mcp.midi_bridge import MidiBridge, MidiBridgeError
 
 log = logging.getLogger(__name__)
 
 
 def _build_server(bridge: MidiBridge, automation: bool = True) -> Server[None]:
     """Construct and configure the MCP server with all tools registered."""
-    from studio_one_mcp.tools.automation import _automation_tools
-    from studio_one_mcp.tools.automation import _dispatch as _automation_dispatch
-    from studio_one_mcp.tools.commands import _command_tools
-    from studio_one_mcp.tools.commands import _dispatch as _command_dispatch
-    from studio_one_mcp.tools.keyscheme_tools import _dispatch as _keyscheme_dispatch
-    from studio_one_mcp.tools.keyscheme_tools import _keyscheme_tools
-    from studio_one_mcp.tools.macro_tools import _dispatch as _macro_dispatch
-    from studio_one_mcp.tools.macro_tools import _macro_tools
-    from studio_one_mcp.tools.mixer import _dispatch as _mixer_dispatch
-    from studio_one_mcp.tools.mixer import _mixer_tools
-    from studio_one_mcp.tools.transport import _dispatch as _transport_dispatch
-    from studio_one_mcp.tools.transport import _transport_tools
+    from studio_pro_mcp.tools.automation import _automation_tools
+    from studio_pro_mcp.tools.automation import _dispatch as _automation_dispatch
+    from studio_pro_mcp.tools.commands import _command_tools
+    from studio_pro_mcp.tools.commands import _dispatch as _command_dispatch
+    from studio_pro_mcp.tools.keyscheme_tools import _dispatch as _keyscheme_dispatch
+    from studio_pro_mcp.tools.keyscheme_tools import _keyscheme_tools
+    from studio_pro_mcp.tools.macro_tools import _dispatch as _macro_dispatch
+    from studio_pro_mcp.tools.macro_tools import _macro_tools
+    from studio_pro_mcp.tools.mixer import _dispatch as _mixer_dispatch
+    from studio_pro_mcp.tools.mixer import _mixer_tools
+    from studio_pro_mcp.tools.transport import _dispatch as _transport_dispatch
+    from studio_pro_mcp.tools.transport import _transport_tools
 
     transport_names = {t.name for t in _transport_tools()}
     auto_names = {t.name for t in _automation_tools()} if automation else set()
@@ -85,7 +85,7 @@ def _build_server(bridge: MidiBridge, automation: bool = True) -> Server[None]:
         return types.CallToolResult(content=list(content))
 
     return Server(
-        "studio-one-mcp",
+        "studio-pro-mcp",
         version=__version__,
         on_list_tools=_on_list_tools,
         on_call_tool=_on_call_tool,
@@ -117,7 +117,7 @@ async def _run_http(bridge: MidiBridge, automation: bool, host: str, port: int) 
     "--port-name",
     default="StudioOneMCP",
     show_default=True,
-    envvar="STUDIO_ONE_MCP_PORT",
+    envvar="STUDIO_PRO_MCP_PORT",
     help="Name of the virtual MIDI output port to create.",
 )
 @click.option(
@@ -168,7 +168,7 @@ def main(
     http_port: int,
     debug: bool,
 ) -> None:
-    """Studio One MCP Server — MCU MIDI + keyboard automation + macro generation."""
+    """Studio Pro MCP Server — MCU MIDI + keyboard automation + macro generation."""
     logging.basicConfig(
         level=logging.DEBUG if debug else logging.INFO,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -197,7 +197,7 @@ def main(
         mode += " + automation"
     if transport == "http":
         mode += f" + HTTP on http://{http_host}:{http_port}/mcp"
-    click.echo(f"Studio One MCP server v{__version__} — {mode}", err=True)
+    click.echo(f"Studio Pro MCP server v{__version__} — {mode}", err=True)
 
     try:
         if transport == "http":

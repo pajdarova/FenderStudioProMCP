@@ -8,7 +8,7 @@ from typing import Any
 
 from mcp.types import TextContent, Tool
 
-from studio_one_mcp.midi_bridge import MidiBridge
+from studio_pro_mcp.midi_bridge import MidiBridge
 
 log = logging.getLogger(__name__)
 

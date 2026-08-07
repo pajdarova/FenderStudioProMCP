@@ -1,4 +1,4 @@
-# StudioOneMcp
+# FenderStudioProMCP
 
 **Control PreSonus Studio One with an LLM** — an MCP (Model Context Protocol) server that
 turns Studio One into an AI-controllable DAW instrument. Aimed at **production** workflows
@@ -11,7 +11,7 @@ AI-assisted **live-set** control.
 
 ## How it controls Studio One
 
-Studio One has no public remote-control API, so StudioOneMcp drives it through four
+Studio One has no public remote-control API, so FenderStudioProMCP drives it through four
 complementary, **push-based** paths — each proven to work on Studio One 7 (macOS):
 
 | Path | What it does | Needs |
@@ -45,13 +45,13 @@ Mapping all 415 to MIDI + exposing them as named MCP tools is the current build 
 
 ### 1. Install
 ```bash
-git clone https://github.com/tiwadara/StudioOneMcp
-cd StudioOneMcp
+git clone https://github.com/pajdarova/FenderStudioProMCP
+cd FenderStudioProMCP
 python -m venv .venv && ./.venv/bin/pip install -e ".[dev]"
 ```
 
 ### 2. Virtual MIDI port
-StudioOneMcp opens a virtual port named **`StudioOneMCP`** (pinned to a fixed uniqueID so
+FenderStudioProMCP opens a virtual port named **`StudioOneMCP`** (pinned to a fixed uniqueID so
 Studio One re-binds to it every launch). Just run the server — the port appears. (On
 Windows/Linux, use a loopback such as loopMIDI / `snd-virmidi` named `StudioOneMCP`.)
 
@@ -74,7 +74,7 @@ System Settings ▸ Privacy & Security ▸ **Accessibility** → enable your MCP
 ```json
 {
   "mcpServers": {
-    "studio-one": { "command": "studio-one-mcp", "args": ["--port-name", "StudioOneMCP"] }
+    "studio-pro": { "command": "studio-pro-mcp", "args": ["--port-name", "StudioOneMCP"] }
   }
 }
 ```

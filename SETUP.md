@@ -1,6 +1,6 @@
 # Setup
 
-StudioOneMcp controls Studio One through three push-based mechanisms. You only
+FenderStudioProMCP controls Studio One through three push-based mechanisms. You only
 need to set up the ones you want to use — **keyboard automation alone covers
 most actions** and is the quickest to get running.
 
@@ -15,8 +15,8 @@ most actions** and is the quickest to get running.
 ## 1. Install the server
 
 ```bash
-git clone https://github.com/tiwadara/StudioOneMcp
-cd StudioOneMcp
+git clone https://github.com/pajdarova/FenderStudioProMCP
+cd FenderStudioProMCP
 pip install -e .
 ```
 
@@ -26,7 +26,7 @@ Add it to your MCP client (e.g. Claude Desktop —
 ```json
 {
   "mcpServers": {
-    "studio-one": { "command": "studio-one-mcp" }
+    "studio-pro": { "command": "studio-pro-mcp" }
   }
 }
 ```
@@ -40,7 +40,7 @@ The server sends keyboard shortcuts to Studio One via macOS. This needs
 
 1. Open **System Settings → Privacy & Security → Accessibility**.
 2. Turn **on** the app that launches the MCP server — usually your MCP client
-   (e.g. **Claude**), or your terminal if you run `studio-one-mcp` manually.
+   (e.g. **Claude**), or your terminal if you run `studio-pro-mcp` manually.
    - If it isn't listed, click **+**, add the app, then toggle it on.
 3. **Quit and reopen that app** so the permission takes effect.
 

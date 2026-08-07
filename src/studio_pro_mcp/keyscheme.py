@@ -1,5 +1,5 @@
 """Read a Fender Studio Pro / Studio One ``.keyscheme`` file and turn it into a
-shortcut configuration that :mod:`studio_one_mcp.keystrokes` can consume.
+shortcut configuration that :mod:`studio_pro_mcp.keystrokes` can consume.
 
 The ``.keyscheme`` file is plain XML written by the DAW whenever the user
 exports (or edits) a keyboard-shortcut scheme::
@@ -18,9 +18,9 @@ Command line
 ------------
 ::
 
-    python -m studio_one_mcp.keyscheme                     # auto-discover + write
-    python -m studio_one_mcp.keyscheme scheme.keyscheme -o shortcuts.json
-    python -m studio_one_mcp.keyscheme --list Zoom         # inspect matches
+    python -m studio_pro_mcp.keyscheme                     # auto-discover + write
+    python -m studio_pro_mcp.keyscheme scheme.keyscheme -o shortcuts.json
+    python -m studio_pro_mcp.keyscheme --list Zoom         # inspect matches
 """
 from __future__ import annotations
 
@@ -284,7 +284,7 @@ def parse_keyscheme(path: str | Path) -> dict[str, Any]:
 
 def discover_keyscheme() -> Path | None:
     """Look for a ``.keyscheme`` file in the DAW's user-data folders."""
-    from studio_one_mcp.plugin_db import _prefs_dirs
+    from studio_pro_mcp.plugin_db import _prefs_dirs
 
     candidates: list[Path] = []
     for directory in _prefs_dirs():
@@ -297,10 +297,10 @@ def discover_keyscheme() -> Path | None:
 
 def default_config_path() -> Path:
     """Where the generated shortcut config is written and read from."""
-    override = os.environ.get("STUDIO_ONE_MCP_SHORTCUTS")
+    override = os.environ.get("STUDIO_PRO_MCP_SHORTCUTS")
     if override:
         return Path(override)
-    return Path.home() / ".studio_one_mcp" / "shortcuts.json"
+    return Path.home() / ".studio_pro_mcp" / "shortcuts.json"
 
 
 def load_shortcuts(path: str | Path | None = None) -> dict[str, list[str]]:
@@ -341,7 +341,7 @@ def load_catalog(path: str | Path | None = None) -> dict[str, dict[str, Any]]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        prog="python -m studio_one_mcp.keyscheme",
+        prog="python -m studio_pro_mcp.keyscheme",
         description="Convert a Studio Pro .keyscheme file into shortcuts.json.",
     )
     parser.add_argument("keyscheme", nargs="?", help="Path to the .keyscheme file.")

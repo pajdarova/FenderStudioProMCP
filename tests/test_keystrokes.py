@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 import pytest
 
-from studio_one_mcp.keystrokes import (
+from studio_pro_mcp.keystrokes import (
     _AS_KEY_CODES,
     KeystrokeError,
     _combo_to_applescript,
@@ -143,7 +143,7 @@ class TestRunViaCommandPalette:
         with (
             patch("platform.system", return_value="Windows"),
             patch(
-                "studio_one_mcp.keystrokes._run_via_command_palette_blocking"
+                "studio_pro_mcp.keystrokes._run_via_command_palette_blocking"
             ) as mock_blocking,
         ):
             await run_via_command_palette("Add EQ", confirm_dialog=True)
@@ -172,13 +172,13 @@ class TestLoadKeymap:
         keymap_file = tmp_path / "custom_keymap.json"
         keymap_file.write_text(json.dumps(custom))
 
-        with patch.dict("os.environ", {"STUDIO_ONE_MCP_KEYMAP": str(keymap_file)}):
+        with patch.dict("os.environ", {"STUDIO_PRO_MCP_KEYMAP": str(keymap_file)}):
             km = load_keymap()
         assert "my_action" in km["actions"]
 
     def test_missing_keymap_raises(self, tmp_path: Path):
         with (
-            patch.dict("os.environ", {"STUDIO_ONE_MCP_KEYMAP": str(tmp_path / "nope.json")}),
+            patch.dict("os.environ", {"STUDIO_PRO_MCP_KEYMAP": str(tmp_path / "nope.json")}),
             pytest.raises(KeystrokeError, match="Keymap not found"),
         ):
             load_keymap()
@@ -187,7 +187,7 @@ class TestLoadKeymap:
         bad = tmp_path / "bad.json"
         bad.write_text("{not valid json")
         with (
-            patch.dict("os.environ", {"STUDIO_ONE_MCP_KEYMAP": str(bad)}),
+            patch.dict("os.environ", {"STUDIO_PRO_MCP_KEYMAP": str(bad)}),
             pytest.raises(KeystrokeError, match="Invalid keymap JSON"),
         ):
             load_keymap()
@@ -198,8 +198,8 @@ class TestToolDispatcher:
     async def test_known_tool_returns_ok(self):
         from unittest.mock import AsyncMock, patch
 
-        from studio_one_mcp.tools.automation import _dispatch
-        with patch("studio_one_mcp.tools.automation.send_action", new_callable=AsyncMock) as mock_send:
+        from studio_pro_mcp.tools.automation import _dispatch
+        with patch("studio_pro_mcp.tools.automation.send_action", new_callable=AsyncMock) as mock_send:
             result = await _dispatch("auto_undo", {})
         mock_send.assert_awaited_once_with("undo")
         assert result[0].text.startswith("OK")
@@ -208,9 +208,9 @@ class TestToolDispatcher:
     async def test_keystroke_error_returns_error_text(self):
         from unittest.mock import AsyncMock, patch
 
-        from studio_one_mcp.tools.automation import _dispatch
+        from studio_pro_mcp.tools.automation import _dispatch
         with patch(
-            "studio_one_mcp.tools.automation.send_action",
+            "studio_pro_mcp.tools.automation.send_action",
             new_callable=AsyncMock,
             side_effect=KeystrokeError("xdotool not found"),
         ):
@@ -219,6 +219,6 @@ class TestToolDispatcher:
 
     @pytest.mark.asyncio
     async def test_unknown_tool_raises(self):
-        from studio_one_mcp.tools.automation import _dispatch
+        from studio_pro_mcp.tools.automation import _dispatch
         with pytest.raises(ValueError, match="Unknown automation tool"):
             await _dispatch("auto_nonexistent", {})

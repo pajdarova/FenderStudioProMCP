@@ -159,10 +159,10 @@ Install loopMIDI (Tobias Erichsen) and create a port named "StudioOneMCP"
 pip install -e ".[dev]"
 
 # Start as stdio MCP server (for Claude Desktop / claude CLI)
-studio-one-mcp
+studio-pro-mcp
 
 # Start with SSE transport for web clients
-studio-one-mcp --transport sse --port 8765
+studio-pro-mcp --transport sse --port 8765
 ```
 
 Add to `claude_desktop_config.json`:
@@ -170,7 +170,7 @@ Add to `claude_desktop_config.json`:
 {
   "mcpServers": {
     "studio-one": {
-      "command": "studio-one-mcp",
+      "command": "studio-pro-mcp",
       "args": ["--port-name", "StudioOneMCP"]
     }
   }

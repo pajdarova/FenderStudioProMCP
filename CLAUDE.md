@@ -8,15 +8,24 @@ Superseded an earlier undated handoff that existed only in chat, not on disk.
 
 ## 1. What this project is
 
-A fork of `tiwadara/StudioOneMcp`, an MCP server that lets an LLM drive a DAW.
-The upstream project targets macOS only. This fork adds Windows support and is
-drifting toward a different architecture.
+FenderStudioProMCP, an MCP server that lets an LLM drive a DAW. Originated as
+a fork of `tiwadara/StudioOneMcp` (macOS-only); this project has since added
+Windows support, an MCP SDK 2.0 upgrade with dual stdio/HTTP transport, and
+Ctrl+K command-palette dispatch, and now lives in its own repository (2026-08-07).
+
+Python package/CLI renamed `studio_one_mcp` → `studio_pro_mcp` /
+`studio-pro-mcp` in the same pass (2026-08-07). The MIDI port name/default
+(`StudioOneMCP`) and the `studio-one-devices/StudioOneMCPPads` control-surface
+files were deliberately left unchanged — a loopMIDI port and a Studio Pro
+External Device are already bound to that name on this machine; renaming
+those is scoped into the pending 3-port split (see TASKS.md in the
+productivity project, `C:\Users\adp\test\TASKS.md`).
 
 | | |
 |---|---|
-| Fork | `https://github.com/pajdarova/StudioOneMcp` (`origin`) |
-| Upstream | `https://github.com/tiwadara/StudioOneMcp` (`upstream`) |
-| Branch | `windows-support` |
+| Repo | `https://github.com/pajdarova/FenderStudioProMCP` (`fender`, tracked by local `main`) |
+| Old fork (superseded) | `https://github.com/pajdarova/StudioOneMcp` (`origin`, branch `windows-support`) |
+| Upstream | `https://github.com/tiwadara/StudioOneMcp` (credited in LICENSE/README, not a configured remote) |
 | Local path | `C:\Users\adp\Documents\_DEVEL_\FenderStudioProMCP` |
 | Licence | MIT |
 

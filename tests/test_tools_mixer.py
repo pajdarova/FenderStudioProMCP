@@ -7,15 +7,15 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from studio_one_mcp.tools.mixer import _dispatch, _mixer_tools
+from studio_pro_mcp.tools.mixer import _dispatch, _mixer_tools
 
 
 @pytest.fixture()
 def bridge():
-    with patch("studio_one_mcp.midi_bridge.rtmidi.MidiOut") as mock_cls:
+    with patch("studio_pro_mcp.midi_bridge.rtmidi.MidiOut") as mock_cls:
         mock_out = MagicMock()
         mock_cls.return_value = mock_out
-        from studio_one_mcp.midi_bridge import MidiBridge
+        from studio_pro_mcp.midi_bridge import MidiBridge
         b = MidiBridge(port_name="Test", message_delay=0)
         b.open()
         yield b

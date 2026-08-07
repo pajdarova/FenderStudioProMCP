@@ -1,10 +1,10 @@
-"""Tests for studio_one_mcp.keyscheme."""
+"""Tests for studio_pro_mcp.keyscheme."""
 from __future__ import annotations
 
 import base64
 from pathlib import Path
 
-from studio_one_mcp.keyscheme import decode_macro_name, parse_keyscheme
+from studio_pro_mcp.keyscheme import decode_macro_name, parse_keyscheme
 
 # ---------------------------------------------------------------------------
 # Tests for decode_macro_name

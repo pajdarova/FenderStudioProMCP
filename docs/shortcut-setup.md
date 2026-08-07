@@ -1,6 +1,6 @@
 # Studio One Keyboard Shortcut Setup
 
-StudioOneMcp's automation tools send keystrokes to Studio One. Most actions use
+FenderStudioProMCP's automation tools send keystrokes to Studio One. Most actions use
 Studio One's built-in default shortcuts and work out of the box. A few actions
 that don't have defaults need a one-time manual assignment.
 
@@ -51,7 +51,7 @@ additional setup required.
 
 ## Customising the mapping
 
-Edit `src/studio_one_mcp/keymap.json` (or point `STUDIO_ONE_MCP_KEYMAP` to
+Edit `src/studio_pro_mcp/keymap.json` (or point `STUDIO_PRO_MCP_KEYMAP` to
 your own copy) to remap any action. The structure is:
 
 ```json
@@ -78,5 +78,5 @@ For actions that open a dialog and need a confirmation keypress:
 ```
 
 `delay_ms` is how long to wait before sending the confirm key (gives the dialog
-time to open). Set `STUDIO_ONE_MCP_KEYMAP=/path/to/your/keymap.json` to use a
+time to open). Set `STUDIO_PRO_MCP_KEYMAP=/path/to/your/keymap.json` to use a
 custom file without modifying the package.

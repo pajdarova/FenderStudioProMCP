@@ -6,8 +6,8 @@ from typing import Any
 
 from mcp.types import TextContent, Tool
 
-from studio_one_mcp.macro_writer import MacroCommand, macro_command_name, write_macro
-from studio_one_mcp.plugin_db import PluginNotFoundError, find_plugin, list_plugins
+from studio_pro_mcp.macro_writer import MacroCommand, macro_command_name, write_macro
+from studio_pro_mcp.plugin_db import PluginNotFoundError, find_plugin, list_plugins
 
 # ---------------------------------------------------------------------------
 # Tool definitions

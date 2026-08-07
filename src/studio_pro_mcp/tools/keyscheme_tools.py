@@ -14,7 +14,7 @@ from typing import Any
 
 from mcp.types import TextContent, Tool
 
-from studio_one_mcp.keyscheme import (
+from studio_pro_mcp.keyscheme import (
     KeySchemeError,
     default_config_path,
     discover_keyscheme,
@@ -54,7 +54,7 @@ def _keyscheme_tools() -> list[Tool]:
                         "type": "string",
                         "description": (
                             "Where to write the generated catalog. Defaults to "
-                            "~/.studio_one_mcp/shortcuts.json (or $STUDIO_ONE_MCP_SHORTCUTS)."
+                            "~/.studio_pro_mcp/shortcuts.json (or $STUDIO_PRO_MCP_SHORTCUTS)."
                         ),
                     },
                 },

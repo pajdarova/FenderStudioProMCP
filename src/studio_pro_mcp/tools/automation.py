@@ -6,7 +6,7 @@ from typing import Any
 
 from mcp.types import TextContent, Tool
 
-from studio_one_mcp.keystrokes import KeystrokeError, send_action
+from studio_pro_mcp.keystrokes import KeystrokeError, send_action
 
 # ---------------------------------------------------------------------------
 # Tool → keymap action mapping

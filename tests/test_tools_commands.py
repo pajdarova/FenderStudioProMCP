@@ -1,12 +1,12 @@
-"""Tests for studio_one_mcp.tools.commands."""
+"""Tests for studio_pro_mcp.tools.commands."""
 from __future__ import annotations
 
 from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from studio_one_mcp.keystrokes import KeystrokeError
-from studio_one_mcp.tools.commands import _command_tools, _dispatch, resolve
+from studio_pro_mcp.keystrokes import KeystrokeError
+from studio_pro_mcp.tools.commands import _command_tools, _dispatch, resolve
 
 _CATALOG = {
     "Edit|Undo": {"label": "Undo", "package": None, "shortcut": "ctrl+z"},
@@ -57,9 +57,9 @@ class TestDispatch:
     @pytest.mark.asyncio
     async def test_run_command_calls_palette_with_label(self) -> None:
         with (
-            patch("studio_one_mcp.tools.commands.load_catalog", return_value=_CATALOG),
+            patch("studio_pro_mcp.tools.commands.load_catalog", return_value=_CATALOG),
             patch(
-                "studio_one_mcp.tools.commands.run_via_command_palette", new_callable=AsyncMock
+                "studio_pro_mcp.tools.commands.run_via_command_palette", new_callable=AsyncMock
             ) as mock_palette,
         ):
             result = await _dispatch("studio_one_run_command", {"name": "undo"})
@@ -69,22 +69,22 @@ class TestDispatch:
 
     @pytest.mark.asyncio
     async def test_run_command_unknown_reports_error(self) -> None:
-        with patch("studio_one_mcp.tools.commands.load_catalog", return_value=_CATALOG):
+        with patch("studio_pro_mcp.tools.commands.load_catalog", return_value=_CATALOG):
             result = await _dispatch("studio_one_run_command", {"name": "nope"})
         assert result[0].text.startswith("ERROR")
 
     @pytest.mark.asyncio
     async def test_run_command_ambiguous_reports_candidates(self) -> None:
-        with patch("studio_one_mcp.tools.commands.load_catalog", return_value=_CATALOG):
+        with patch("studio_pro_mcp.tools.commands.load_catalog", return_value=_CATALOG):
             result = await _dispatch("studio_one_run_command", {"name": "duplicate track"})
         assert "Ambiguous" in result[0].text
 
     @pytest.mark.asyncio
     async def test_run_command_keystroke_error_reports_error(self) -> None:
         with (
-            patch("studio_one_mcp.tools.commands.load_catalog", return_value=_CATALOG),
+            patch("studio_pro_mcp.tools.commands.load_catalog", return_value=_CATALOG),
             patch(
-                "studio_one_mcp.tools.commands.run_via_command_palette",
+                "studio_pro_mcp.tools.commands.run_via_command_palette",
                 new_callable=AsyncMock,
                 side_effect=KeystrokeError("no window"),
             ),
@@ -94,23 +94,23 @@ class TestDispatch:
 
     @pytest.mark.asyncio
     async def test_list_commands_filters(self) -> None:
-        with patch("studio_one_mcp.tools.commands.load_catalog", return_value=_CATALOG):
+        with patch("studio_pro_mcp.tools.commands.load_catalog", return_value=_CATALOG):
             result = await _dispatch("studio_one_list_commands", {"filter": "duplicate"})
         assert "2 command(s)" in result[0].text
         assert "Duplicate Track" in result[0].text
 
     @pytest.mark.asyncio
     async def test_list_commands_no_filter_returns_all(self) -> None:
-        with patch("studio_one_mcp.tools.commands.load_catalog", return_value=_CATALOG):
+        with patch("studio_pro_mcp.tools.commands.load_catalog", return_value=_CATALOG):
             result = await _dispatch("studio_one_list_commands", {})
         assert f"{len(_CATALOG)} command(s)" in result[0].text
 
     @pytest.mark.asyncio
     async def test_save_new_version_uses_confirm_dialog(self) -> None:
         with (
-            patch("studio_one_mcp.tools.commands.load_catalog", return_value=_CATALOG),
+            patch("studio_pro_mcp.tools.commands.load_catalog", return_value=_CATALOG),
             patch(
-                "studio_one_mcp.tools.commands.run_via_command_palette", new_callable=AsyncMock
+                "studio_pro_mcp.tools.commands.run_via_command_palette", new_callable=AsyncMock
             ) as mock_palette,
         ):
             result = await _dispatch("studio_one_save_new_version", {})
@@ -119,7 +119,7 @@ class TestDispatch:
 
     @pytest.mark.asyncio
     async def test_empty_catalog_reports_error(self) -> None:
-        with patch("studio_one_mcp.tools.commands.load_catalog", return_value={}):
+        with patch("studio_pro_mcp.tools.commands.load_catalog", return_value={}):
             result = await _dispatch("studio_one_run_command", {"name": "undo"})
         assert result[0].text.startswith("ERROR")
         assert "generate_command_catalog" in result[0].text

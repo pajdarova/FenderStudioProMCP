@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>StudioOneMcp — control Studio One with an LLM</title>
+<title>FenderStudioProMCP — control Studio One with an LLM</title>
 <meta name="description" content="An MCP server that turns PreSonus Studio One into an AI-controllable DAW instrument — fire any built-in command by name over MIDI." />
-<meta property="og:title" content="StudioOneMcp — control Studio One with an LLM" />
+<meta property="og:title" content="FenderStudioProMCP — control Studio One with an LLM" />
 <meta property="og:description" content="Turn Studio One into an AI-controllable DAW instrument. Fire any built-in command by name over MIDI." />
 <meta name="theme-color" content="#e7e8e2" />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -96,11 +96,11 @@
 <header><div class="wrap nav">
   <div class="brand">
     <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#1b1c18" stroke-width="1.6"><circle cx="9" cy="10" r="6"/><path d="M9 10 V5" stroke="#d0432a"/><rect x="18" y="4" width="4" height="18"/><rect x="16.5" y="12" width="7" height="4" fill="#1b1c18"/></svg>
-    StudioOneMcp
+    FenderStudioProMCP
   </div>
   <nav class="navlinks">
     <a class="hide" href="#how">How</a><a class="hide" href="#setup">Setup</a><a class="hide" href="#vision">Vision</a>
-    <a href="https://github.com/tiwadara/StudioOneMcp">GitHub ↗</a>
+    <a href="https://github.com/pajdarova/FenderStudioProMCP">GitHub ↗</a>
   </nav>
 </div></header>
 
@@ -110,8 +110,8 @@
     <h1>Play your DAW like an instrument.</h1>
     <p class="sub">An MCP server that turns PreSonus Studio One into an AI-controllable instrument — fire <strong>any built-in command by name</strong>, over MIDI. Built for production: editing, MIDI, mixing, effects, export.</p>
     <div class="cta">
-      <a class="btn red" href="https://github.com/tiwadara/StudioOneMcp">Get it on GitHub</a>
-      <a class="btn o" href="https://github.com/tiwadara/StudioOneMcp/issues">Roadmap</a>
+      <a class="btn red" href="https://github.com/pajdarova/FenderStudioProMCP">Get it on GitHub</a>
+      <a class="btn o" href="https://github.com/pajdarova/FenderStudioProMCP/issues">Roadmap</a>
     </div>
     <p class="note tick">UNOFFICIAL · MIT · macOS / STUDIO ONE 7 · NOT AFFILIATED WITH PRESONUS</p>
   </div>
@@ -129,7 +129,7 @@
 
 <section id="how"><div class="wrap">
   <div class="shead"><div><div class="fig">Fig. 01 — Signal flow</div><h2>No API? No problem.</h2></div><span class="tick">REV 0.1</span></div>
-  <p class="lead">Studio One has no public remote API, so StudioOneMcp drives it through four push-based paths — with a MIDI→command control surface as the reliable backbone.</p>
+  <p class="lead">Studio One has no public remote API, so FenderStudioProMCP drives it through four push-based paths — with a MIDI→command control surface as the reliable backbone.</p>
 
   <svg class="diagram" viewBox="0 0 1000 90" fill="none" stroke="#1b1c18" stroke-width="1.4" style="margin:26px 0 4px" font-family="Space Mono" font-size="12">
     <rect x="2" y="26" width="150" height="38" fill="#eef0e9"/><text x="77" y="50" text-anchor="middle" fill="#1b1c18" stroke="none">LLM / MCP</text>
@@ -159,7 +159,7 @@
   <div class="steps">
     <div class="step"><div class="n">01</div><div class="c"><h4>Install</h4><p><code>pip install -e ".[dev]"</code> in the repo (Python 3.10+).</p></div></div>
     <div class="step"><div class="n">02</div><div class="c"><h4>Install the control surface</h4><p>Copy <code>studio-one-devices/StudioOneMCPPads/</code> into Studio One's User Devices, add it in External Devices, set <strong>Receive From = StudioOneMCP</strong>.</p></div></div>
-    <div class="step"><div class="n">03</div><div class="c"><h4>Run the server</h4><p><code>studio-one-mcp --port-name StudioOneMCP</code> — opens the virtual port Studio One binds to.</p></div></div>
+    <div class="step"><div class="n">03</div><div class="c"><h4>Run the server</h4><p><code>studio-pro-mcp --port-name StudioOneMCP</code> — opens the virtual port Studio One binds to.</p></div></div>
     <div class="step"><div class="n">04</div><div class="c"><h4>Connect your MCP client</h4><p>Point Claude Desktop (or any MCP client) at it and drive your DAW by name.</p></div></div>
   </div>
 </div></section>
@@ -167,14 +167,14 @@
 <section id="vision"><div class="wrap">
   <div class="shead"><div><div class="fig">Fig. 03 — Roadmap</div><h2>A DAW-controller instrument</h2></div></div>
   <p class="lead">Production first — an assistant that quantizes, edits, inserts plugins, bounces and exports on request. And a north-star: <strong>AI-assisted mixing</strong> — riding faders, throwing effects, transitioning songs, with the launcher's quantize handling the timing so the AI works at the musical level.</p>
-  <div class="cta" style="margin-top:22px"><a class="btn o" href="https://github.com/tiwadara/StudioOneMcp/issues/1">Read the vision →</a></div>
+  <div class="cta" style="margin-top:22px"><a class="btn o" href="https://github.com/pajdarova/FenderStudioProMCP/issues/1">Read the vision →</a></div>
 </div></section>
 
 <footer><div class="wrap">
   <div class="measure"><span class="tick">STUDIOONEMCP</span>&nbsp;&nbsp;<span class="l"></span>&nbsp;&nbsp;<span class="tick">MIT · v0.1</span></div>
   <div class="foot">
     <div>Unofficial community project. Not affiliated with or endorsed by PreSonus.</div>
-    <a class="btn o" href="https://github.com/tiwadara/StudioOneMcp">View source ↗</a>
+    <a class="btn o" href="https://github.com/pajdarova/FenderStudioProMCP">View source ↗</a>
   </div>
 </div></footer>
 </body>

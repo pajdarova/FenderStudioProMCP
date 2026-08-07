@@ -6,12 +6,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from studio_one_mcp.midi_bridge import MidiBridge, MidiBridgeError
+from studio_pro_mcp.midi_bridge import MidiBridge, MidiBridgeError
 
 
 @pytest.fixture()
 def bridge():
-    with patch("studio_one_mcp.midi_bridge.rtmidi.MidiOut") as mock_out_cls:
+    with patch("studio_pro_mcp.midi_bridge.rtmidi.MidiOut") as mock_out_cls:
         mock_out = MagicMock()
         mock_out_cls.return_value = mock_out
         b = MidiBridge(port_name="TestPort", message_delay=0)
@@ -174,7 +174,7 @@ class TestMixerPan:
 
 class TestLifecycle:
     def test_send_before_open_raises(self):
-        with patch("studio_one_mcp.midi_bridge.rtmidi.MidiOut"):
+        with patch("studio_pro_mcp.midi_bridge.rtmidi.MidiOut"):
             b = MidiBridge(port_name="X", message_delay=0)
             with pytest.raises(MidiBridgeError):
                 b.play()

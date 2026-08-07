@@ -1,4 +1,4 @@
-"""Tests for studio_one_mcp.macro_writer."""
+"""Tests for studio_pro_mcp.macro_writer."""
 from __future__ import annotations
 
 import base64
@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from unittest.mock import patch
 
-from studio_one_mcp.macro_writer import (
+from studio_pro_mcp.macro_writer import (
     MacroCommand,
     macro_command_name,
     write_macro,
@@ -56,7 +56,7 @@ class TestMacroCommandName:
 
 class TestWriteMacro:
     def test_creates_file(self, tmp_path: Path) -> None:
-        with patch("studio_one_mcp.macro_writer._macros_dir", return_value=tmp_path):
+        with patch("studio_pro_mcp.macro_writer._macros_dir", return_value=tmp_path):
             path = write_macro(
                 "Insert Serum",
                 "MCP",
@@ -71,18 +71,18 @@ class TestWriteMacro:
         assert path.exists()
 
     def test_file_extension(self, tmp_path: Path) -> None:
-        with patch("studio_one_mcp.macro_writer._macros_dir", return_value=tmp_path):
+        with patch("studio_pro_mcp.macro_writer._macros_dir", return_value=tmp_path):
             path = write_macro("My Macro", "MCP", [MacroCommand("Track", "Do Thing")])
         assert path.suffix == ".studioonemacro"
 
     def test_xml_declaration(self, tmp_path: Path) -> None:
-        with patch("studio_one_mcp.macro_writer._macros_dir", return_value=tmp_path):
+        with patch("studio_pro_mcp.macro_writer._macros_dir", return_value=tmp_path):
             path = write_macro("Test Macro", "MCP", [MacroCommand("Cat", "Name")])
         content = path.read_text(encoding="utf-8")
         assert content.startswith('<?xml version="1.0" encoding="UTF-8"?>')
 
     def test_valid_xml_structure(self, tmp_path: Path) -> None:
-        with patch("studio_one_mcp.macro_writer._macros_dir", return_value=tmp_path):
+        with patch("studio_pro_mcp.macro_writer._macros_dir", return_value=tmp_path):
             path = write_macro(
                 "Insert Pro-Q 3",
                 "MCP",
@@ -104,7 +104,7 @@ class TestWriteMacro:
         assert root.attrib["group"] == "MCP"
 
     def test_macro_attributes(self, tmp_path: Path) -> None:
-        with patch("studio_one_mcp.macro_writer._macros_dir", return_value=tmp_path):
+        with patch("studio_pro_mcp.macro_writer._macros_dir", return_value=tmp_path):
             path = write_macro("My Title", "MyGroup", [MacroCommand("Cat", "Cmd")])
         content = path.read_text(encoding="utf-8")
         xml_body = content[content.index("<Macro"):]
@@ -118,7 +118,7 @@ class TestWriteMacro:
             MacroCommand("Track", "Add Insert to Selected Channels", {"mode": "1"}),
             MacroCommand("Console", "Show Channel Editor"),
         ]
-        with patch("studio_one_mcp.macro_writer._macros_dir", return_value=tmp_path):
+        with patch("studio_pro_mcp.macro_writer._macros_dir", return_value=tmp_path):
             path = write_macro("Test", "MCP", commands)
         content = path.read_text(encoding="utf-8")
         xml_body = content[content.index("<Macro"):]
@@ -134,7 +134,7 @@ class TestWriteMacro:
                 {"mode": "1", "cid": "{TEST-GUID}", "preset": "default"},
             )
         ]
-        with patch("studio_one_mcp.macro_writer._macros_dir", return_value=tmp_path):
+        with patch("studio_pro_mcp.macro_writer._macros_dir", return_value=tmp_path):
             path = write_macro("Test Args", "MCP", commands)
         content = path.read_text(encoding="utf-8")
         xml_body = content[content.index("<Macro"):]
@@ -150,7 +150,7 @@ class TestWriteMacro:
 
     def test_command_element_without_arguments(self, tmp_path: Path) -> None:
         commands = [MacroCommand("Console", "Show Channel Editor")]
-        with patch("studio_one_mcp.macro_writer._macros_dir", return_value=tmp_path):
+        with patch("studio_pro_mcp.macro_writer._macros_dir", return_value=tmp_path):
             path = write_macro("No Args", "MCP", commands)
         content = path.read_text(encoding="utf-8")
         xml_body = content[content.index("<Macro"):]
@@ -163,7 +163,7 @@ class TestWriteMacro:
 
     def test_safe_filename_generation(self, tmp_path: Path) -> None:
         """Title with special chars should produce a safe filename."""
-        with patch("studio_one_mcp.macro_writer._macros_dir", return_value=tmp_path):
+        with patch("studio_pro_mcp.macro_writer._macros_dir", return_value=tmp_path):
             path = write_macro("Insert Pro/Q:3", "MCP", [MacroCommand("Cat", "Cmd")])
         # The filename should not contain slashes or colons
         assert "/" not in path.name
@@ -172,7 +172,7 @@ class TestWriteMacro:
 
     def test_xml_escaping_ampersand_in_title(self, tmp_path: Path) -> None:
         """Ampersand in title should be escaped to &amp; so XML is valid."""
-        with patch("studio_one_mcp.macro_writer._macros_dir", return_value=tmp_path):
+        with patch("studio_pro_mcp.macro_writer._macros_dir", return_value=tmp_path):
             path = write_macro("Insert Kick & Bass", "MCP", [MacroCommand("Cat", "Cmd")])
         content = path.read_text(encoding="utf-8")
         # The raw content should contain the escaped form
@@ -184,7 +184,7 @@ class TestWriteMacro:
         assert "&" in root.attrib["title"]
 
     def test_returns_path(self, tmp_path: Path) -> None:
-        with patch("studio_one_mcp.macro_writer._macros_dir", return_value=tmp_path):
+        with patch("studio_pro_mcp.macro_writer._macros_dir", return_value=tmp_path):
             result = write_macro("Test", "MCP", [MacroCommand("Cat", "Cmd")])
         assert isinstance(result, Path)
 
@@ -199,7 +199,7 @@ class TestWriteMacro:
             ),
             MacroCommand("Console", "Show Channel Editor"),
         ]
-        with patch("studio_one_mcp.macro_writer._macros_dir", return_value=tmp_path):
+        with patch("studio_pro_mcp.macro_writer._macros_dir", return_value=tmp_path):
             path = write_macro("Insert Serum", "MCP", commands)
         content = path.read_text(encoding="utf-8")
         # Check key structural elements
