@@ -25,6 +25,8 @@ Command line
 from __future__ import annotations
 
 import argparse
+import base64
+import binascii
 import json
 import os
 import sys
@@ -35,12 +37,16 @@ from typing import Any
 
 __all__ = [
     "KeySchemeError",
+    "decode_macro_name",
     "default_config_path",
     "discover_keyscheme",
+    "load_catalog",
     "load_shortcuts",
     "parse_keyscheme",
     "translate_combo",
 ]
+
+_MACRO_PREFIX = "Macro "
 
 
 class KeySchemeError(Exception):
@@ -167,6 +173,35 @@ def translate_combo(combo: str) -> tuple[str | None, int, str | None]:
 
 
 # ---------------------------------------------------------------------------
+# Macro name decoding
+#
+# A macro's internal command name is ``Macro <base64(title)>``, or
+# ``Macro <package-id>-<base64(title)>`` when the macro ships as part of a
+# package. The base64 payload never contains '-', so splitting on the *last*
+# '-' cleanly separates package id from payload.
+# ---------------------------------------------------------------------------
+
+def decode_macro_name(name: str) -> tuple[str, str | None] | None:
+    """Decode a macro's internal command name into ``(label, package)``.
+
+    Returns ``None`` if *name* is not a macro command name or the payload is
+    not valid base64/UTF-8.
+    """
+    if not name.startswith(_MACRO_PREFIX):
+        return None
+    token = name[len(_MACRO_PREFIX):]
+    package: str | None = None
+    payload = token
+    if "-" in token:
+        package, _, payload = token.rpartition("-")
+    try:
+        label = base64.b64decode(payload).decode("utf-8")
+    except (binascii.Error, UnicodeDecodeError):
+        return None
+    return label, package or None
+
+
+# ---------------------------------------------------------------------------
 # Parsing
 # ---------------------------------------------------------------------------
 
@@ -188,8 +223,10 @@ def parse_keyscheme(path: str | Path) -> dict[str, Any]:
         raise KeySchemeError(f"{path}: expected a <Commands> root, found <{root.tag}>.")
 
     shortcuts: dict[str, list[str]] = {}
+    catalog: dict[str, dict[str, Any]] = {}
     problems: list[str] = []
     total = 0
+    macro_count = 0
 
     for command in root.findall("Command"):
         category = command.get("category") or ""
@@ -197,6 +234,7 @@ def parse_keyscheme(path: str | Path) -> dict[str, Any]:
         if not name:
             continue
         total += 1
+        key = f"{category}|{name}"
 
         ranked: list[tuple[int, int, str]] = []
         for order, key_el in enumerate(command.findall("Key")):
@@ -206,23 +244,36 @@ def parse_keyscheme(path: str | Path) -> dict[str, Any]:
             token, penalty, problem = translate_combo(raw)
             if token is None:
                 if problem:
-                    problems.append(f"{category}|{name}: {problem}")
+                    problems.append(f"{key}: {problem}")
                 continue
             ranked.append((penalty, order, token))
 
+        best: str | None = None
         if ranked:
             ranked.sort()
             seen: list[str] = []
             for _, _, token in ranked:
                 if token not in seen:
                     seen.append(token)
-            shortcuts[f"{category}|{name}"] = seen
+            shortcuts[key] = seen
+            best = seen[0]
+
+        decoded = decode_macro_name(name)
+        if decoded is not None:
+            macro_count += 1
+            label, package = decoded
+        else:
+            label, package = name, None
+
+        catalog[key] = {"label": label, "package": package, "shortcut": best}
 
     return {
         "source": str(path),
         "generated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "command_count": total,
+        "macro_count": macro_count,
         "shortcuts": shortcuts,
+        "catalog": catalog,
         "problems": problems,
     }
 
@@ -268,6 +319,22 @@ def load_shortcuts(path: str | Path | None = None) -> dict[str, list[str]]:
     return result
 
 
+def load_catalog(path: str | Path | None = None) -> dict[str, dict[str, Any]]:
+    """Load the generated command catalog, or return an empty map if absent."""
+    target = Path(path) if path else default_config_path()
+    if not target.is_file():
+        return {}
+    try:
+        with open(target, encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (OSError, json.JSONDecodeError) as exc:
+        raise KeySchemeError(f"Cannot read shortcut config {target}: {exc}") from exc
+    result = data.get("catalog", {})
+    if not isinstance(result, dict):
+        raise KeySchemeError(f"{target}: 'catalog' must be an object.")
+    return result
+
+
 # ---------------------------------------------------------------------------
 # Command line
 # ---------------------------------------------------------------------------
@@ -300,9 +367,10 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.list is not None:
         needle = args.list.lower()
-        for command, combos in sorted(data["shortcuts"].items()):
-            if needle in command.lower():
-                print(f"{command:55} {', '.join(combos)}")
+        for key, entry in sorted(data["catalog"].items()):
+            if needle in key.lower() or needle in entry["label"].lower():
+                combo = entry["shortcut"] or ""
+                print(f"{key:65} {entry['label']:30} {combo}")
         return 0
 
     destination = Path(args.output) if args.output else default_config_path()
@@ -312,7 +380,8 @@ def main(argv: list[str] | None = None) -> int:
 
     print(f"Source:    {source}")
     print(f"Written:   {destination}")
-    print(f"Commands:  {data['command_count']} scanned, {len(data['shortcuts'])} with a shortcut")
+    print(f"Commands:  {data['command_count']} scanned, {len(data['shortcuts'])} with a shortcut, "
+          f"{data['macro_count']} macro(s) decoded")
     if data["problems"]:
         print(f"Skipped:   {len(data['problems'])} shortcut(s) could not be translated")
         if args.verbose:

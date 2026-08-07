@@ -14,8 +14,20 @@ class MacroCommand:
     arguments: dict[str, str] = field(default_factory=dict)
 
 
+# Documents folder name, newest first. Confirmed on a Fender Studio Pro 8
+# Windows install: Documents\Studio Pro\Macros (not Studio One).
+_DOCS_DIRS = ("Studio Pro", "Studio One")
+
+
 def _macros_dir() -> Path:
-    base = Path.home() / "Documents" / "Studio One" / "Macros" / "MCP"
+    documents = Path.home() / "Documents"
+    for name in _DOCS_DIRS:
+        candidate = documents / name / "Macros"
+        if candidate.is_dir():
+            base = candidate / "MCP"
+            base.mkdir(parents=True, exist_ok=True)
+            return base
+    base = documents / _DOCS_DIRS[0] / "Macros" / "MCP"
     base.mkdir(parents=True, exist_ok=True)
     return base
 

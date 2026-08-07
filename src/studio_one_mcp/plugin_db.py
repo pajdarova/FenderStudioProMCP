@@ -30,10 +30,15 @@ class PluginNotFoundError(Exception):
 # Path helpers
 # ---------------------------------------------------------------------------
 
-# Candidate user-data folder names, newest first. Fender Studio Pro 8 is the
-# rebranded Studio One; the exact folder name is unverified, so several
-# spellings are probed and non-existent ones are simply skipped.
+# Vendor folder, newest first. Confirmed on a Fender Studio Pro 8 Windows
+# install: %APPDATA%\Fender\Studio Pro 8\ (not PreSonus). PreSonus is kept as
+# a fallback for users still on pre-rebrand Studio One.
+_VENDOR_DIRS = ("Fender", "PreSonus")
+
+# Candidate version folder names, newest first. "Studio Pro 8" is confirmed;
+# the others are unverified spellings, probed and skipped if absent.
 _VERSION_DIRS = (
+    "Studio Pro 8",
     "Fender Studio Pro 8",
     "Fender Studio Pro",
     "Studio One 8",
@@ -44,18 +49,20 @@ _VERSION_DIRS = (
 
 
 def _prefs_dirs() -> list[Path]:
-    """Return candidate PreSonus user-data directories in priority order."""
+    """Return candidate DAW user-data directories in priority order."""
     system = platform.system()
     candidates: list[Path] = []
     if system == "Darwin":
-        base = Path.home() / "Library" / "Application Support" / "PreSonus"
-        for ver in _VERSION_DIRS:
-            candidates.append(base / ver)
+        app_support = Path.home() / "Library" / "Application Support"
+        for vendor in _VENDOR_DIRS:
+            for ver in _VERSION_DIRS:
+                candidates.append(app_support / vendor / ver)
     elif system == "Windows":
         import os
         base = Path(os.environ.get("APPDATA", str(Path.home())))
-        for ver in _VERSION_DIRS:
-            candidates.append(base / "PreSonus" / ver)
+        for vendor in _VENDOR_DIRS:
+            for ver in _VERSION_DIRS:
+                candidates.append(base / vendor / ver)
     return candidates
 
 

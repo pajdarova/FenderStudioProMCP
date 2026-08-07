@@ -16,3 +16,4 @@ htmlcov/
 *.key
 .claude/
 .shortcuts.json
+*.keyscheme
