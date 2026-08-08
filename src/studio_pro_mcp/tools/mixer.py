@@ -106,8 +106,8 @@ def _mixer_tools() -> list[Tool]:
                     "channel": channel_schema,
                     "pan": {
                         "type": "integer",
-                        "description": "Pan offset −64 (hard left) to +63 (hard right). 0 = center.",
-                        "minimum": -64,
+                        "description": "Pan offset −63 (hard left) to +63 (hard right). 0 = center.",
+                        "minimum": -63,
                         "maximum": 63,
                     },
                 },

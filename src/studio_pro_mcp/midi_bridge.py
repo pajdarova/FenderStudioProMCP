@@ -377,15 +377,23 @@ class MidiBridge:
     def set_pan(self, channel: int, pan: int) -> None:
         """Adjust pan via a relative VPot encoder message.
 
+        Spec (Logic Control p.109, VPot relative CC): XX = 0iiiiii — bit 6
+        (0x40) is the direction flag (0 = right/increment, 1 = left/
+        decrement), bits 0-5 are the tick count 0-63. Previously this
+        encoded negative pan inverted (larger tick count for a *smaller*
+        left deflection) — found auditing against Studio Pro's own
+        MackieShared.surface.xml (2026-08-08), fixed here.
+
         Parameters
         ----------
         pan:
-            Signed offset in the range −64 to +63.
-            Positive = right, negative = left.
+            Signed offset in the range −63 to +63 (6-bit tick magnitude,
+            can't reach 64 in either direction). Positive = right, negative
+            = left.
         """
         ch = self._validate_strip(channel)
-        pan = max(-64, min(63, pan))
-        cc_value = (pan if pan > 0 else 0) if pan >= 0 else 64 + (64 + pan)  # 65–127 = left
+        pan = max(-63, min(63, pan))
+        cc_value = pan if pan >= 0 else 0x40 | -pan
         self._cc(_CC_VPOT_BASE + ch, cc_value)
 
     def enable_channel_meter(

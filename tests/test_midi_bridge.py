@@ -260,9 +260,34 @@ class TestMixerPan:
         cc_msgs = [m for m in msgs if m[0] == 0xB0 and m[1] == 16]
         assert cc_msgs[0][2] == 0
 
+    def test_pan_left_sets_direction_bit_plus_magnitude(self, bridge):
+        """0x40 (direction) | magnitude — NOT the old inverted (64 + (64+pan)) formula."""
+        b, midi = bridge
+        b.set_pan(0, -10)
+        msgs = sent_messages(midi)
+        cc_msgs = [m for m in msgs if m[0] == 0xB0 and m[1] == 16]
+        assert cc_msgs[0][2] == 0x4A  # 0x40 | 10
+
+    def test_pan_left_magnitude_scales_with_deflection(self, bridge):
+        """A bigger left deflection must encode a bigger tick count, not smaller."""
+        b, midi = bridge
+        b.set_pan(0, -1)
+        small_cc = [m for m in sent_messages(midi) if m[0] == 0xB0 and m[1] == 16][0][2]
+        b.set_pan(0, -63)
+        large_cc = [m for m in sent_messages(midi) if m[0] == 0xB0 and m[1] == 16][-1][2]
+        assert (small_cc & 0x3F) < (large_cc & 0x3F)
+
     def test_pan_clamps(self, bridge):
-        b, _ = bridge
+        b, midi = bridge
         b.set_pan(0, 100)  # should clamp to 63
+        cc_msgs = [m for m in sent_messages(midi) if m[0] == 0xB0 and m[1] == 16]
+        assert cc_msgs[0][2] == 63
+
+    def test_pan_clamps_negative(self, bridge):
+        b, midi = bridge
+        b.set_pan(0, -100)  # should clamp to -63
+        cc_msgs = [m for m in sent_messages(midi) if m[0] == 0xB0 and m[1] == 16]
+        assert cc_msgs[0][2] == 0x7F  # 0x40 | 63
 
 
 class TestLifecycle:
