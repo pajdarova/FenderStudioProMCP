@@ -342,7 +342,16 @@ class MidiBridge:
         """Close the virtual MIDI ports."""
         if self._out is not None:
             self._reset_display_and_meters()
+            # Reproduced 2026-08-08: closing _in right after this burst of
+            # self-echoed SysEx (loopMIDI echoes our own sends back to us)
+            # deadlocks close_port() on Windows, even with cancel_callback()
+            # called first. A short pause lets the echoed messages drain
+            # before we tear the port down. Root cause not fully understood
+            # (a python-rtmidi/WinMM close-vs-pending-input race); this is
+            # a pragmatic workaround, verified to fix it reliably (3/3 runs).
+            time.sleep(0.1)
         if self._in is not None:
+            self._in.cancel_callback()
             self._in.close_port()
             del self._in
             self._in = None
