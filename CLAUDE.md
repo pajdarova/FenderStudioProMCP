@@ -184,6 +184,55 @@ Five asks, not yet sequenced or scoped in detail:
 current `mcp` release actually exposes before committing to an approach for
 either.
 
+**Update (2026-08-08):** item #4 (finish the MIDI control path) is now
+essentially done — see §8 below. Items #1/#2/#3 above stayed as described;
+#5 (audio read/transform) is still unstarted.
+
+---
+
+## 8. 2026-08-08 breakthrough session — full MCU path live-verified, FSP instability root-caused
+
+Full narrative: `memory/2026-08.md`, section "2026-08-08 (pokračování) —
+Breakthrough session". Short version: every MCU code path this project has
+is now live-verified against the real DAW (not just inferred from a spec):
+
+- **Transport**: play/stop/record/save/undo/redo all confirmed. Redo has no
+  dedicated MCU note in the reference spec — it's SHIFT (0x46) held + UNDO
+  (0x51) pressed, per the Logic Control manual's prose (not its ID table).
+- **Mixer**: fader (pitch-bend), mute/solo/rec-arm, and pan (`set_pan()`,
+  V-Pot relative CC) all confirmed. `set_pan()` had a real bug — negative
+  (left) pan was encoded inverted — fixed and verified against Studio Pro's
+  own bundled `MackieShared.surface.xml` (`external/Mackie/`, gitignored,
+  not a spec doc — Studio Pro's actual device definition file).
+- **Metering**: `enable_channel_meter()` SysEx + Channel Pressure (`D0`)
+  parsing, live-verified across all 8 channels during real playback.
+- **Channel names**: `find_channel_by_name()` works, live-verified 8/8
+  against a user-supplied ground-truth mapping. Non-obvious: reading a
+  channel's name requires `select_channel(ch)` first (puts the device into
+  "Pan Focus Mode"), and the LCD text semantics are **display-mode
+  dependent** — a static "Pan L/R" title always occupies label-row slot 0,
+  which is *not* the channel name; the name is in label-row slot 7,
+  attributed back to whichever channel was just selected (see
+  `_update_channel_names()`'s docstring for the full mechanism).
+- **The connect/disconnect handshake fix likely explains most of this
+  project's recurring FSP-instability incidents.** `MidiBridge.open()` now
+  sends a host-connection-query SysEx on connect and `close()` sends a
+  cleanup burst on disconnect, mirroring what real devices/hosts
+  (FaderPort/Nuendo, FL Studio's own MCU script) actually do — our
+  diagnostic scripts previously just vanished mid-session with neither. User
+  confirmed FSP was "dokonale stabilní" (perfectly stable) after a real
+  playback test with the fix in place, following what had been a repeatable
+  crash pattern across multiple sessions before this fix.
+- **Model ID `0x14`** (not the Logic Control manual's own `0x10`) is what
+  real MCU surfaces/hosts (FaderPort, Nuendo, FL Studio) actually use for
+  the Mackie SysEx header — confirmed via three independent sources
+  (MIDI-OX capture, FL Studio's source, Studio Pro's own device XML).
+
+Remaining open items: dB fader calibration below −20dB, MIDI Clock/Timecode
+for real transport-position reading, and an anti-clipping MCP tool
+(infrastructure — `_meter_levels`/`_meter_overload` — already exists, just
+needs a tool wrapper). See `TASKS.md` for current status of all of these.
+
 ---
 
 ## 6. Uncommitted work from an earlier session (still not integrated)
@@ -241,3 +290,22 @@ question (§4) — keep it around, don't productionize it.
   Solo, not Split, and silently soloed a track during testing.
 - No Windows equivalent of the macOS Undo-label verification — nothing
   confirms an action actually took effect once dispatched.
+- **Renaming a package in `pyproject.toml` doesn't renaming what's
+  installed (2026-08-08).** After the `studio_one_mcp`→`studio_pro_mcp`
+  rename (§1), this machine's venv still had the *old* `studio-one-mcp==0.1.0`
+  installed, pinning `mcp<2` — contradicting the new `pyproject.toml`'s
+  `mcp>=2.0.0` and silently keeping the old 1.x `mcp` API active (9 test
+  failures, mypy errors, none related to whatever was actually being worked
+  on). Fix: `pip uninstall studio-one-mcp && pip install -e .`. If tests or
+  mypy fail in ways that look totally unrelated to a change just made, check
+  `pip show mcp` / `pip list | grep studio` before assuming the change is at
+  fault.
+- **Closing `MidiBridge` right after sending a burst of SysEx can deadlock
+  on Windows (2026-08-08).** `close()` sends a cleanup burst (disable all
+  channel meters + blank the LCD) before closing the ports. Because
+  loopMIDI echoes our own output back into our own `MidiIn`, closing
+  `_in` right after that burst — even with `cancel_callback()` called
+  first — hung indefinitely on `close_port()`. Fixed with a 100ms sleep
+  after the burst, before `cancel_callback()`/`close_port()`, to let the
+  self-echoed messages drain. If a future change adds more outgoing traffic
+  right before `close()`, re-check this doesn't regress.

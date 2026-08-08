@@ -11,7 +11,10 @@ bound (see `memory/2026-08.md` §9 for why).
   (2026-08-03); SDK 2.0 upgrade, Ctrl+K dispatch, rebrand to
   FenderStudioProMCP, CI platform-divergence fixes, project-state migration
   into this repo, overlay-panel brainstorm (2026-08-07); bridge test fixture
-  fix, Ctrl+K reliability finding, MCU port rename (2026-08-08).
+  fix, Ctrl+K reliability finding, MCU port rename, then a full breakthrough
+  session — SAVE/UNDO/REDO/pan-bug/metering/LCD-channel-names all
+  live-verified, and the recurring FSP instability traced to a missing
+  connect/disconnect MCU handshake and fixed (2026-08-08).
 
 ## Reference
 
