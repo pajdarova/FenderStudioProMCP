@@ -589,8 +589,12 @@ def _resolve_keys(action_name: str, plat_action: dict[str, Any]) -> list[str]:
     )
 
 
-async def send_command(category: str, name: str) -> None:
-    """Send the user's shortcut for one DAW command, e.g. ``("Edit", "Undo")``."""
+async def send_command(category: str, name: str, *, confirm_dialog: bool = False) -> None:
+    """Send the user's shortcut for one DAW command, e.g. ``("Edit", "Undo")``.
+
+    ``confirm_dialog`` sends an extra Enter after a short delay, for commands
+    that pop a confirmation dialog (e.g. a "name this version" prompt).
+    """
     from studio_pro_mcp.keyscheme import load_shortcuts
 
     combos = load_shortcuts().get(f"{category}|{name}")
@@ -605,6 +609,8 @@ async def send_command(category: str, name: str) -> None:
     plat = _platform_key()
     app_name: str = keymap.get("app_name", {}).get(plat, "Studio One")
     action: dict[str, Any] = {"keys": [combos[0]]}
+    if confirm_dialog:
+        action["dialog"] = {"confirm": ["return"]}
 
     if plat == "mac":
         await _send_mac(app_name, action)

@@ -16,7 +16,9 @@ _CATALOG = {
         "label": "Duplicate Track Down", "package": None, "shortcut": None
     },
     "Macros|Macro QWRkIEVR": {"label": "Add EQ", "package": None, "shortcut": None},
-    "File|Save New Version...": {"label": "Save New Version...", "package": None, "shortcut": None},
+    "File|Save New Version": {
+        "label": "Save New Version", "package": None, "shortcut": "ctrl+shift+alt+s"
+    },
 }
 
 
@@ -55,17 +57,40 @@ class TestResolve:
 
 class TestDispatch:
     @pytest.mark.asyncio
-    async def test_run_command_calls_palette_with_label(self) -> None:
+    async def test_run_command_with_shortcut_prefers_send_command(self) -> None:
+        """Undo has a catalog shortcut, so dispatch should skip Ctrl+K entirely."""
         with (
             patch("studio_pro_mcp.tools.commands.load_catalog", return_value=_CATALOG),
+            patch(
+                "studio_pro_mcp.tools.commands.send_command", new_callable=AsyncMock
+            ) as mock_send,
             patch(
                 "studio_pro_mcp.tools.commands.run_via_command_palette", new_callable=AsyncMock
             ) as mock_palette,
         ):
             result = await _dispatch("studio_one_run_command", {"name": "undo"})
-        mock_palette.assert_awaited_once_with("Undo", confirm_dialog=False)
+        mock_send.assert_awaited_once_with("Edit", "Undo", confirm_dialog=False)
+        mock_palette.assert_not_awaited()
         assert "Ran 'Undo'" in result[0].text
         assert "[Edit]" in result[0].text
+
+    @pytest.mark.asyncio
+    async def test_run_command_without_shortcut_falls_back_to_palette(self) -> None:
+        """Add EQ has no catalog shortcut (it's a macro), so it must go via Ctrl+K."""
+        with (
+            patch("studio_pro_mcp.tools.commands.load_catalog", return_value=_CATALOG),
+            patch(
+                "studio_pro_mcp.tools.commands.send_command", new_callable=AsyncMock
+            ) as mock_send,
+            patch(
+                "studio_pro_mcp.tools.commands.run_via_command_palette", new_callable=AsyncMock
+            ) as mock_palette,
+        ):
+            result = await _dispatch("studio_one_run_command", {"name": "add eq"})
+        mock_palette.assert_awaited_once_with("Add EQ", confirm_dialog=False)
+        mock_send.assert_not_awaited()
+        assert "Ran 'Add EQ'" in result[0].text
+        assert "[Macros]" in result[0].text
 
     @pytest.mark.asyncio
     async def test_run_command_unknown_reports_error(self) -> None:
@@ -84,7 +109,7 @@ class TestDispatch:
         with (
             patch("studio_pro_mcp.tools.commands.load_catalog", return_value=_CATALOG),
             patch(
-                "studio_pro_mcp.tools.commands.run_via_command_palette",
+                "studio_pro_mcp.tools.commands.send_command",
                 new_callable=AsyncMock,
                 side_effect=KeystrokeError("no window"),
             ),
@@ -106,16 +131,18 @@ class TestDispatch:
         assert f"{len(_CATALOG)} command(s)" in result[0].text
 
     @pytest.mark.asyncio
-    async def test_save_new_version_uses_confirm_dialog(self) -> None:
+    async def test_save_new_version_uses_shortcut_with_confirm_dialog(self) -> None:
+        """Save New Version has a real shortcut, so it should skip the palette too,
+        but still needs the follow-up Enter for the naming dialog."""
         with (
             patch("studio_pro_mcp.tools.commands.load_catalog", return_value=_CATALOG),
             patch(
-                "studio_pro_mcp.tools.commands.run_via_command_palette", new_callable=AsyncMock
-            ) as mock_palette,
+                "studio_pro_mcp.tools.commands.send_command", new_callable=AsyncMock
+            ) as mock_send,
         ):
             result = await _dispatch("studio_one_save_new_version", {})
-        mock_palette.assert_awaited_once_with("Save New Version...", confirm_dialog=True)
-        assert "Ran 'Save New Version...'" in result[0].text
+        mock_send.assert_awaited_once_with("File", "Save New Version", confirm_dialog=True)
+        assert "Ran 'Save New Version'" in result[0].text
 
     @pytest.mark.asyncio
     async def test_empty_catalog_reports_error(self) -> None:

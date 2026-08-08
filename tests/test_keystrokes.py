@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import platform
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -19,6 +19,7 @@ from studio_pro_mcp.keystrokes import (
     _win32,
     load_keymap,
     run_via_command_palette,
+    send_command,
 )
 
 
@@ -150,6 +151,44 @@ class TestRunViaCommandPalette:
         ):
             await run_via_command_palette("Add EQ", confirm_dialog=True)
         mock_blocking.assert_called_once_with("Studio One", "Add EQ", confirm_dialog=True)
+
+
+class TestSendCommand:
+    @pytest.mark.asyncio
+    async def test_sends_first_shortcut_for_command(self):
+        with (
+            patch(
+                "studio_pro_mcp.keyscheme.load_shortcuts",
+                return_value={"Edit|Undo": ["ctrl+z", "vk:0x5A"]},
+            ),
+            patch("studio_pro_mcp.keystrokes._send_windows", new_callable=AsyncMock) as mock_send,
+        ):
+            await send_command("Edit", "Undo")
+        mock_send.assert_awaited_once()
+        app_name, action = mock_send.await_args.args
+        assert action["keys"] == ["ctrl+z"]
+        assert "dialog" not in action
+
+    @pytest.mark.asyncio
+    async def test_confirm_dialog_adds_return_followup(self):
+        with (
+            patch(
+                "studio_pro_mcp.keyscheme.load_shortcuts",
+                return_value={"File|Save New Version": ["ctrl+shift+alt+s"]},
+            ),
+            patch("studio_pro_mcp.keystrokes._send_windows", new_callable=AsyncMock) as mock_send,
+        ):
+            await send_command("File", "Save New Version", confirm_dialog=True)
+        _app_name, action = mock_send.await_args.args
+        assert action["dialog"] == {"confirm": ["return"]}
+
+    @pytest.mark.asyncio
+    async def test_no_shortcut_raises(self):
+        with (
+            patch("studio_pro_mcp.keyscheme.load_shortcuts", return_value={}),
+            pytest.raises(KeystrokeError, match="No shortcut known"),
+        ):
+            await send_command("Edit", "Nonexistent")
 
 
 class TestLoadKeymap:
