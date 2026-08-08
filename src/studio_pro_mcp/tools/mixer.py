@@ -29,7 +29,9 @@ def _mixer_tools() -> list[Tool]:
             name="mixer_set_fader",
             description=(
                 "Set the fader level of a mixer channel or the master fader. "
-                "Level 0 = minimum (−∞ dB), 100 = maximum (+12 dB), ~75 ≈ 0 dB."
+                "Level 0 = minimum (−∞ dB), 100 = maximum (+10 dB), 76 ≈ 0 dB, "
+                "61.6 ≈ −6 dB, 49.6 ≈ −12 dB, 40 ≈ −20 dB (measured on a real "
+                "installation 2026-08-08; below −20 dB not yet calibrated)."
             ),
             input_schema={
                 "type": "object",
