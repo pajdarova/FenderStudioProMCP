@@ -171,6 +171,24 @@ class TestMidiInFeedback:
 
 
 class TestChannelMetering:
+    def test_enable_channel_meter_sends_sysex(self, bridge):
+        b, midi = bridge
+        b.enable_channel_meter(2)
+        sysex = [m for m in sent_messages(midi) if m[0] == 0xF0]
+        assert sysex == [[0xF0, 0x00, 0x00, 0x66, 0x14, 0x20, 2, 0x4, 0xF7]]
+
+    def test_enable_channel_meter_mode_bits(self, bridge):
+        b, midi = bridge
+        b.enable_channel_meter(0, level=True, peak_hold=True, signal_present=True)
+        sysex = [m for m in sent_messages(midi) if m[0] == 0xF0][0]
+        assert sysex[-2] == 0x7  # mm = 0b111
+
+    def test_set_global_meter_mode_sends_sysex(self, bridge):
+        b, midi = bridge
+        b.set_global_meter_mode(vertical=True)
+        sysex = [m for m in sent_messages(midi) if m[0] == 0xF0]
+        assert sysex == [[0xF0, 0x00, 0x00, 0x66, 0x14, 0x21, 1, 0xF7]]
+
     def test_channel_pressure_updates_meter_level(self, bridge):
         b, _ = bridge
         # channel 3, level nibble 0xC (100%): high nibble = 3, low nibble = 0xC

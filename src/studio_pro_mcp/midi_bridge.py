@@ -98,6 +98,21 @@ _LCD_BUFFER_SIZE = 112
 _LCD_LINE2_OFFSET = 56
 _LCD_CHARS_PER_CHANNEL = 7
 
+# Channel meter mode: <Hdr>, 20, ii, mm, F7 (p.118) — enables/disables
+# Channel Pressure meter data for channel ii. Global horizontal/vertical
+# mode: <Hdr>, 21, yy, F7. CORRECTION (2026-08-08): earlier today this was
+# removed as "no real host ever sends this", based on one MIDI-OX capture
+# (Nuendo, which streams meters unconditionally without it). That
+# conclusion was too strong — FL Studio's own shipped, source-available MCU
+# script (device_MackieCU.py) actively sends both of these on every meter
+# mode change: `F0 00 00 66 14 20 <ch> <mm> F7` and `F0 00 00 66 14 21 <yy>
+# F7`. So the handshake is real, spec-compliant behavior some hosts use —
+# restored. Whether Studio Pro's own implementation handles it gracefully
+# is still unconfirmed; the FSP crash after first sending this is still
+# unexplained, not proven caused by this message specifically.
+_SYSEX_CMD_CHANNEL_METER_MODE = 0x20
+_SYSEX_CMD_GLOBAL_METER_MODE = 0x21
+
 
 class MidiBridgeError(Exception):
     """Raised when the MIDI bridge cannot open a port or send a message."""
@@ -131,10 +146,10 @@ class MidiBridge:
         self._solo_state: dict[int, bool] = {}
         self._rec_arm_state: dict[int, bool] = {}
         # Meter levels populate once the DAW starts sending Channel Pressure
-        # (0xD0) meter messages — see _on_midi_in(). Confirmed live 2026-08-08
-        # (real FaderPort 8 <-> Nuendo MCU traffic) that no enable handshake
-        # is needed: meters just stream as part of the normal per-strip
-        # reset-on-connect sequence.
+        # (0xD0) meter messages — see _on_midi_in(). Nuendo streams these
+        # unconditionally (no enable needed); FL Studio's own MCU script
+        # explicitly gates them via enable_channel_meter()'s SysEx — host
+        # behavior varies, see the comment above _SYSEX_CMD_CHANNEL_METER_MODE.
         self._meter_levels: dict[int, float] = {}
         self._meter_overload: dict[int, bool] = {}
         # Raw LCD display buffer (2 lines x 56 chars) plus the channel
@@ -453,6 +468,25 @@ class MidiBridge:
         pan = max(-63, min(63, pan))
         cc_value = pan if pan >= 0 else 0x40 | -pan
         self._cc(_CC_VPOT_BASE + ch, cc_value)
+
+    def enable_channel_meter(
+        self, channel: int, *, level: bool = True, peak_hold: bool = False, signal_present: bool = False
+    ) -> None:
+        """Ask the DAW to start sending Channel Pressure meter data for *channel*.
+
+        Restored 2026-08-08 (see comment at _SYSEX_CMD_CHANNEL_METER_MODE) —
+        confirmed real via FL Studio's own MCU script, which sends mm=3
+        (peak_hold|signal_present) to enable and mm=0 to disable. The exact
+        bit meaning of *level*/*peak_hold*/*signal_present* follows the
+        Logic Control spec table; not independently re-verified bit-by-bit.
+        """
+        ch = self._validate_strip(channel)
+        mm = (0x4 if level else 0) | (0x2 if peak_hold else 0) | (0x1 if signal_present else 0)
+        self._sysex([_SYSEX_CMD_CHANNEL_METER_MODE, ch, mm])
+
+    def set_global_meter_mode(self, *, vertical: bool) -> None:
+        """Switch all channel meters between horizontal and vertical display mode."""
+        self._sysex([_SYSEX_CMD_GLOBAL_METER_MODE, int(vertical)])
 
     # ------------------------------------------------------------------
     # Bank navigation
