@@ -61,6 +61,37 @@ ready to drag into Fender Studio Pro.
    existing reader/writer, and "transform" is undefined (EQ? generation?
    stem separation?) — needs its own scoping before any implementation.
 
+6. **Voice input (added 2026-08-08).** Just another input mode feeding the
+   same text → LLM → MCP pipeline the panel already has — speech-to-text
+   turns voice into text, then it's handled identically to typed input. No
+   new "understanding" logic needed.
+
+   - **Local Whisper, not cloud STT** — consistent with the project running
+     entirely local (no MIDI/audio ever leaves the machine); avoids sending
+     studio audio to a third party and avoids network latency.
+   - **Push-to-talk, not always-listening** — safer (no accidental trigger),
+     more private, and this is a *music production* tool: the user is
+     realistically going to want voice commands while audio is actively
+     playing through speakers, which the mic will also pick up. Push-to-talk
+     limits the window but doesn't eliminate the problem — expect it to work
+     best with playback stopped or with a headset mic.
+   - **Code-switching risk:** the user speaks Czech, but command/macro/plugin
+     names are English ("Add EQ", "Bounce Selection") — mixed-language
+     utterances are a known weak spot for STT models, expect more
+     transcription errors here than for pure single-language speech.
+   - **Risk-scaled confirmation, not blanket confirmation.** An LLM in the
+     loop already self-corrects a lot of STT noise (mirrors
+     `tools/commands.py:resolve()`'s existing ambiguous-match handling —
+     ask instead of guessing). But it can't catch the more dangerous case:
+     Whisper confidently swapping one *valid* word for another (e.g. "Undo"
+     misheard as "Redo") — both parse as unambiguous commands, so nothing
+     signals the LLM anything is wrong. Mitigation: reuse the same
+     reversible/irreversible split already established for
+     `studio_one_save_new_version` — low-risk, reversible actions (Undo,
+     panel toggles, navigation) execute straight from voice; anything hard
+     to reverse shows what the LLM understood in the panel and waits for
+     confirmation before dispatching.
+
 ## Not yet decided
 
 - Panel tech stack (Python GUI vs. Tauri/Electron).
@@ -72,3 +103,6 @@ ready to drag into Fender Studio Pro.
 - Whether this replaces or complements the existing MCP-client-based
   workflow (Claude Desktop / other MCP clients still work over stdio
   regardless of whether the panel gets built).
+- Voice: which local Whisper variant/size (latency vs. accuracy trade-off
+  untested), exact push-to-talk hotkey, and where the reversible/irreversible
+  line actually gets drawn for auto-execute vs. confirm-first.
