@@ -170,6 +170,44 @@ class TestMidiInFeedback:
         assert b.get_assumed_state()["fader_levels"] == {}
 
 
+class TestChannelMetering:
+    def test_enable_channel_meter_sends_sysex(self, bridge):
+        b, midi = bridge
+        b.enable_channel_meter(2)
+        msgs = sent_messages(midi)
+        sysex = [m for m in msgs if m[0] == 0xF0]
+        assert len(sysex) == 1
+        assert sysex[0] == [0xF0, 0x00, 0x00, 0x66, 0x14, 0x20, 2, 0x4, 0xF7]
+
+    def test_enable_channel_meter_mode_bits(self, bridge):
+        b, midi = bridge
+        b.enable_channel_meter(0, level=True, peak_hold=True, signal_present=True)
+        sysex = [m for m in sent_messages(midi) if m[0] == 0xF0][0]
+        assert sysex[-2] == 0x7  # mm = 0b111
+
+    def test_channel_pressure_updates_meter_level(self, bridge):
+        b, _ = bridge
+        # channel 3, level nibble 0xC (100%): high nibble = 3, low nibble = 0xC
+        b._on_midi_in(([0xD0, (3 << 4) | 0xC], 0.0))
+        assert b.get_assumed_state()["meter_levels"][3] == pytest.approx(100.0)
+
+    def test_channel_pressure_zero_level(self, bridge):
+        b, _ = bridge
+        b._on_midi_in(([0xD0, (1 << 4) | 0x0], 0.0))
+        assert b.get_assumed_state()["meter_levels"][1] == pytest.approx(0.0)
+
+    def test_channel_pressure_set_overload(self, bridge):
+        b, _ = bridge
+        b._on_midi_in(([0xD0, (5 << 4) | 0xE], 0.0))
+        assert b.get_assumed_state()["meter_overload"][5] is True
+
+    def test_channel_pressure_clear_overload(self, bridge):
+        b, _ = bridge
+        b._on_midi_in(([0xD0, (5 << 4) | 0xE], 0.0))
+        b._on_midi_in(([0xD0, (5 << 4) | 0xF], 0.0))
+        assert b.get_assumed_state()["meter_overload"][5] is False
+
+
 class TestMixerButtons:
     def test_toggle_mute_toggles_state(self, bridge):
         b, midi = bridge

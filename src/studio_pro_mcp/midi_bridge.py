@@ -10,7 +10,7 @@ from contextlib import contextmanager
 from typing import Any
 
 import rtmidi
-from rtmidi.midiconstants import CONTROL_CHANGE, NOTE_ON, PITCH_BEND
+from rtmidi.midiconstants import CHANNEL_PRESSURE, CONTROL_CHANGE, NOTE_ON, PITCH_BEND
 
 log = logging.getLogger(__name__)
 
@@ -72,6 +72,22 @@ _MAX_BANK = 7
 # Minimum inter-message delay to avoid Studio One dropping rapid bursts
 _DEFAULT_MESSAGE_DELAY_S = 0.02
 
+# ---------------------------------------------------------------------------
+# SysEx (Emagic Logic Control MIDI Implementation, "SysEx Messages" p.105+)
+# ---------------------------------------------------------------------------
+
+# F0, 00 00 66 (Mackie 3-byte manufacturer ID), <model ID>, ... , F7.
+# The spec's own model ID for Logic Control hardware is 0x10 (0x11 for the
+# XT extender) — but Studio Pro's External Device is configured as a plain
+# "Mackie Control Universal" surface, not Logic Control, so 0x14 (the real
+# MCU model ID) is used here instead. Unverified live which one Studio Pro
+# actually expects/accepts for this particular message — see TASKS.md.
+_SYSEX_MFR_ID = (0x00, 0x00, 0x66)
+_SYSEX_MODEL_MCU = 0x14
+
+# Channel meter mode command byte: <Hdr>, 20, ii, mm, F7 (p.118).
+_SYSEX_CMD_CHANNEL_METER_MODE = 0x20
+
 
 class MidiBridgeError(Exception):
     """Raised when the MIDI bridge cannot open a port or send a message."""
@@ -104,6 +120,11 @@ class MidiBridge:
         self._mute_state: dict[int, bool] = {}
         self._solo_state: dict[int, bool] = {}
         self._rec_arm_state: dict[int, bool] = {}
+        # Meter levels only populate once enable_channel_meter() has been
+        # called for a channel and the DAW starts sending Channel Pressure
+        # (0xD0) meter messages — see _on_midi_in().
+        self._meter_levels: dict[int, float] = {}
+        self._meter_overload: dict[int, bool] = {}
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -132,6 +153,10 @@ class MidiBridge:
                 self._in.open_virtual_port(self._port_name)
                 log.info("Opened virtual MIDI port: %s", self._port_name)
             self._in.set_callback(self._on_midi_in)
+            # Defaults block SysEx — needed for the meter-enable handshake
+            # and any future LCD-text reads. Keep timing/active-sense
+            # blocked; there's no use for those messages here.
+            self._in.ignore_types(sysex=False, timing=True, active_sense=True)
         except MidiBridgeError:
             self._out = None
             self._in = None
@@ -180,6 +205,9 @@ class MidiBridge:
         a plain dict write, same as everything else this cache does.
         """
         message, _delta_time = event
+        if len(message) >= 2 and message[0] == CHANNEL_PRESSURE:
+            self._handle_meter_message(message[1])
+            return
         if len(message) < 3:
             return
         status, lsb, msb = message[0], message[1], message[2]
@@ -191,6 +219,21 @@ class MidiBridge:
         key: str | int = "master" if channel == _MIDI_CH_MASTER_FADER else channel
         if key == "master" or 0 <= channel <= 7:
             self._fader_levels[key] = level
+
+    def _handle_meter_message(self, data_byte: int) -> None:
+        """Parse a Channel Pressure (0xD0) meter data byte: 0 hhh llll.
+
+        High nibble bits 6-4 = channel (0-7); low nibble = level 0-C (0-100%),
+        E = set overload, F = clear overload (p.118).
+        """
+        channel = (data_byte >> 4) & 0x07
+        level_nibble = data_byte & 0x0F
+        if level_nibble == 0xE:
+            self._meter_overload[channel] = True
+        elif level_nibble == 0xF:
+            self._meter_overload[channel] = False
+        elif level_nibble <= 0xC:
+            self._meter_levels[channel] = level_nibble / 0xC * 100.0
 
     def close(self) -> None:
         """Close the virtual MIDI ports."""
@@ -246,6 +289,9 @@ class MidiBridge:
 
     def _cc(self, cc: int, value: int, channel: int = 0) -> None:
         self._send([CONTROL_CHANGE | channel, cc, value & 0x7F])
+
+    def _sysex(self, body: list[int]) -> None:
+        self._send([0xF0, *_SYSEX_MFR_ID, _SYSEX_MODEL_MCU, *body, 0xF7])
 
     # ------------------------------------------------------------------
     # Transport commands
@@ -342,6 +388,18 @@ class MidiBridge:
         cc_value = (pan if pan > 0 else 0) if pan >= 0 else 64 + (64 + pan)  # 65–127 = left
         self._cc(_CC_VPOT_BASE + ch, cc_value)
 
+    def enable_channel_meter(
+        self, channel: int, *, level: bool = True, peak_hold: bool = False, signal_present: bool = False
+    ) -> None:
+        """Ask the DAW to start sending Channel Pressure meter data for *channel*.
+
+        The DAW sends nothing on this channel until this handshake is sent —
+        see _handle_meter_message() for the resulting data format.
+        """
+        ch = self._validate_strip(channel)
+        mm = (0x4 if level else 0) | (0x2 if peak_hold else 0) | (0x1 if signal_present else 0)
+        self._sysex([_SYSEX_CMD_CHANNEL_METER_MODE, ch, mm])
+
     # ------------------------------------------------------------------
     # Bank navigation
     # ------------------------------------------------------------------
@@ -401,6 +459,8 @@ class MidiBridge:
             "mute": dict(self._mute_state),
             "solo": dict(self._solo_state),
             "rec_arm": dict(self._rec_arm_state),
+            "meter_levels": dict(self._meter_levels),
+            "meter_overload": dict(self._meter_overload),
         }
 
     # ------------------------------------------------------------------
