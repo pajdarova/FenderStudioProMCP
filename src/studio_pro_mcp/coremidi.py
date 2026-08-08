@@ -16,7 +16,9 @@ import ctypes
 import ctypes.util
 import platform
 
-# Fixed uniqueID for the "StudioOneMCP" virtual port ("S1MC" as a 32-bit int).
+# Fixed uniqueID for the "StudioPro-MCU" virtual port ("S1MC" as a 32-bit int,
+# kept from the port's original name so the pinned ID stays stable across
+# the rename).
 # Positive 32-bit, so Studio One writes it as plain hex "53314D43".
 MCP_PORT_UNIQUE_ID = 0x53314D43
 

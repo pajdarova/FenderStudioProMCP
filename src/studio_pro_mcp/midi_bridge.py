@@ -74,7 +74,7 @@ class MidiBridge:
         Seconds to wait between messages when sending press/release pairs.
     """
 
-    def __init__(self, port_name: str = "StudioOneMCP", message_delay: float = _DEFAULT_MESSAGE_DELAY_S) -> None:
+    def __init__(self, port_name: str = "StudioPro-MCU", message_delay: float = _DEFAULT_MESSAGE_DELAY_S) -> None:
         self._port_name = port_name
         self._message_delay = message_delay
         self._out: rtmidi.MidiOut | None = None
@@ -186,15 +186,6 @@ class MidiBridge:
         self._note_on(note, 127, channel)
         time.sleep(self._message_delay)
         self._note_off(note, channel)
-
-    def press_cc(self, cc: int, channel: int = 0) -> None:
-        """Momentary CC press (127) then release (0).
-
-        Fires a command mapped on the StudioOneMCP Pads surface (CC → <Command>).
-        """
-        self._send([0xB0 | (channel & 0x0F), cc, 127])
-        time.sleep(self._message_delay)
-        self._send([0xB0 | (channel & 0x0F), cc, 0])
 
     def _pitch_bend(self, value: int, channel: int = 0) -> None:
         """Send a 14-bit pitch-bend message on the given MIDI channel."""

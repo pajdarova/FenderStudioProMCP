@@ -10,16 +10,17 @@ bound (see `memory/2026-08.md` §9 for why).
 - [`memory/2026-08.md`](memory/2026-08.md) — Windows port origins
   (2026-08-03); SDK 2.0 upgrade, Ctrl+K dispatch, rebrand to
   FenderStudioProMCP, CI platform-divergence fixes, project-state migration
-  into this repo, overlay-panel brainstorm (2026-08-07).
+  into this repo, overlay-panel brainstorm (2026-08-07); bridge test fixture
+  fix, Ctrl+K reliability finding, MCU port rename (2026-08-08).
 
 ## Reference
 
 - [`memory/glossary.md`](memory/glossary.md) — decoder ring for
   project-specific terms (`.keyscheme`, catalog, Ctrl+K palette, MCU,
-  loopMIDI, `StudioOneMCP`, External Device).
+  loopMIDI, `StudioPro-MCU`, External Device).
 - [`memory/brainstorm_panel.md`](memory/brainstorm_panel.md) — design
-  discussion for a global-hotkey overlay panel + MIDI/audio round-trip with
-  Fender Studio Pro. Not implemented, nothing decided yet.
+  discussion for a global-hotkey overlay panel + voice input + MIDI/audio
+  round-trip with Fender Studio Pro. Not implemented, nothing decided yet.
 
 ## Current state & open work
 

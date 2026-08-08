@@ -21,10 +21,15 @@ complementary, **push-based** paths — each proven to work on Studio One 7 (mac
 | **Menu / keyboard automation** | Clicks Studio One menu items and sends shortcuts via macOS System Events; verifies actions via the Edit▸Undo label | macOS Accessibility |
 | **Macro generation** | Writes `.studioonemacro` files for command sequences with no shortcut | Nothing |
 
-⭐ **The MIDI → command path is the backbone.** It's confirmed working: the MCP sends a CC
-on the `StudioOneMCP` virtual port and Studio One fires the mapped command (e.g. *Add Audio
-Track*, verified via the Edit▸Undo label). Every Studio One command and every installed
-macro can be reached this way — see the catalog below.
+⭐ **Superseded.** The MIDI → command path described above never reliably fired in
+practice (a shelved upstream finding — its CC range collides with MCU's V-Pots
+on the same channel/port) and the code that sent those CCs has since been
+removed. Command/macro dispatch now goes through the DAW's Ctrl+K command
+palette instead (`studio_one_run_command`), backed by a per-user catalog
+generated from the DAW's own `.keyscheme` export — see
+[`docs/shortcut-setup.md`](docs/shortcut-setup.md). This section is kept for
+history; the `StudioOneMCP Pads` control surface below is not required for
+current functionality.
 
 ---
 
@@ -51,9 +56,9 @@ python -m venv .venv && ./.venv/bin/pip install -e ".[dev]"
 ```
 
 ### 2. Virtual MIDI port
-FenderStudioProMCP opens a virtual port named **`StudioOneMCP`** (pinned to a fixed uniqueID so
+FenderStudioProMCP opens a virtual port named **`StudioPro-MCU`** (pinned to a fixed uniqueID so
 Studio One re-binds to it every launch). Just run the server — the port appears. (On
-Windows/Linux, use a loopback such as loopMIDI / `snd-virmidi` named `StudioOneMCP`.)
+Windows/Linux, use a loopback such as loopMIDI / `snd-virmidi` named `StudioPro-MCU`.)
 
 ### 3. Install the control surface (MIDI → command)
 Copy `studio-one-devices/StudioOneMCPPads/` into your Studio One **User Devices** folder:
@@ -65,7 +70,7 @@ StudioOneMCP Pads**, and set **Receive From = `StudioOneMCP`**. Leave **Send To*
 (the surface is receive-only). Relaunch Studio One so it scans the device.
 
 ### 4. (Optional) MCU surface for faders/transport
-External Devices ▸ Add ▸ **Mackie Control Universal** ▸ Receive From = `StudioOneMCP`.
+External Devices ▸ Add ▸ **Mackie Control Universal** ▸ Receive From = `StudioPro-MCU`.
 
 ### 5. (Optional) Accessibility for menu/keyboard automation
 System Settings ▸ Privacy & Security ▸ **Accessibility** → enable your MCP host app.
@@ -74,7 +79,7 @@ System Settings ▸ Privacy & Security ▸ **Accessibility** → enable your MCP
 ```json
 {
   "mcpServers": {
-    "studio-pro": { "command": "studio-pro-mcp", "args": ["--port-name", "StudioOneMCP"] }
+    "studio-pro": { "command": "studio-pro-mcp", "args": ["--port-name", "StudioPro-MCU"] }
   }
 }
 ```
@@ -103,9 +108,10 @@ LLM / MCP client
 MCP server (server.py) ── tool registration, arg validation
    │
    ├─ MidiBridge (midi_bridge.py) ─┐
-   │   MCU + CC command dispatch   │  virtual port "StudioOneMCP"
+   │   MCU mixer/transport         │  virtual port "StudioPro-MCU"
    ├─ CoreMIDI pin (coremidi.py) ──┘  (pinned uniqueID)  ──► Studio One
-   │                                       surfaces: StudioOneMCP Pads (commands), MCU (mixer)
+   │                                       surface: Mackie Control Universal
+   ├─ Command/macro dispatch (keystrokes.py)  ──► Ctrl+K palette / direct shortcut
    ├─ Automation (keystrokes.py)  ──► System Events (menus / shortcuts)
    └─ Macro writer (macro_writer.py) ──► ~/Documents/Studio One/Macros
 ```

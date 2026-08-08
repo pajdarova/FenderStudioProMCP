@@ -35,12 +35,13 @@ Windows support, an MCP SDK 2.0 upgrade with dual stdio/HTTP transport, and
 Ctrl+K command-palette dispatch, and now lives in its own repository (2026-08-07).
 
 Python package/CLI renamed `studio_one_mcp` → `studio_pro_mcp` /
-`studio-pro-mcp` in the same pass (2026-08-07). The MIDI port name/default
-(`StudioOneMCP`) and the `studio-one-devices/StudioOneMCPPads` control-surface
-files were deliberately left unchanged — a loopMIDI port and a Studio Pro
-External Device are already bound to that name on this machine; renaming
-those is scoped into the pending 3-port split (see TASKS.md in the
-productivity project, `C:\Users\adp\test\TASKS.md`).
+`studio-pro-mcp` in the same pass (2026-08-07). The MCU MIDI port was later
+renamed `StudioOneMCP` → `StudioPro-MCU` (2026-08-08) once command-surface
+(SURF) CC dispatch was confirmed dead code — see `memory/2026-08.md` §12.
+`studio-one-devices/StudioOneMCPPads` (the SURF device files) stays
+unrenamed; it's unused, not wired to anything. Project state (`TASKS.md`,
+`memory/`) lives in this repo, not the productivity project anymore — see
+`memory/2026-08.md` §7.
 
 | | |
 |---|---|

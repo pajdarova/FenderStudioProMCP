@@ -85,13 +85,13 @@ This path uses MIDI instead of keystrokes, so it needs **no Accessibility
 permission** — but only covers transport and mixer (faders, pan, mute, solo,
 track select).
 
-1. Create a virtual MIDI port named **`StudioOneMCP`**:
+1. Create a virtual MIDI port named **`StudioPro-MCU`**:
    - **macOS**: *Audio MIDI Setup → Window → Show MIDI Studio → double-click
      **IAC Driver** → enable "Device is online" → add a port/bus.* Name it
-     `StudioOneMCP`.
+     `StudioPro-MCU`.
 2. In Studio One: **Preferences → External Devices → Add → New Control Surface**
    - **Type** = `Mackie Control Universal`
-   - **Receive From** = `StudioOneMCP`
+   - **Receive From** = `StudioPro-MCU`
 3. Click **OK**.
 
 The `transport_*` and `mixer_*` tools now drive Studio One over MIDI.

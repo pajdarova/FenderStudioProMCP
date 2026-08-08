@@ -115,7 +115,7 @@ async def _run_http(bridge: MidiBridge, automation: bool, host: str, port: int) 
 @click.command()
 @click.option(
     "--port-name",
-    default="StudioOneMCP",
+    default="StudioPro-MCU",
     show_default=True,
     envvar="STUDIO_PRO_MCP_PORT",
     help="Name of the virtual MIDI output port to create.",

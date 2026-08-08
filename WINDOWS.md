@@ -176,11 +176,11 @@ Windows cannot create virtual MIDI ports, so the loopback port must exist before
 the server starts.
 
 1. Install [loopMIDI](https://www.tobias-erichsen.de/software/loopmidi.html) and
-   create a port named `StudioOneMCP`.
+   create a port named `StudioPro-MCU`.
 2. In the DAW: *Preferences → External Devices → Add → Mackie Control Universal*,
-   **Receive From** = `StudioOneMCP`.
+   **Receive From** = `StudioPro-MCU`.
 
-The port may appear to the system with a numeric suffix (`StudioOneMCP 2`);
+The port may appear to the system with a numeric suffix (`StudioPro-MCU 2`);
 matching is by substring, so this is fine. If no matching port exists, the
 server reports the available ports rather than crashing.
 
@@ -210,7 +210,7 @@ mismatch. Run the MCP client and the DAW at the same elevation level.
 different physical key under the active layout. Prefer a keypad or letter
 alternative, or write the code directly as `vk:0x...`.
 
-**No MIDI port matching 'StudioOneMCP'** — create the loopback port first; the
+**No MIDI port matching 'StudioPro-MCU'** — create the loopback port first; the
 error message lists what is available.
 
 ## Known limitations

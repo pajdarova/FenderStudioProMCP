@@ -35,7 +35,7 @@ LLM / MCP Client
              │ MIDI bytes
              ▼
    Virtual MIDI port  ←──── Studio One (MCU surface)
-   (e.g. "StudioOneMCP")
+   (e.g. "StudioPro-MCU")
 ```
 
 ---
@@ -88,18 +88,18 @@ linearly to 0–16383.
 
 ### macOS
 ```bash
-# Built-in IAC Driver — open Audio MIDI Setup, add a bus named "StudioOneMCP"
+# Built-in IAC Driver — open Audio MIDI Setup, add a bus named "StudioPro-MCU"
 ```
 
 ### Linux
 ```bash
 sudo modprobe snd-virmidi   # or use JACK / pipewire virtual ports
-# Creates /dev/snd/midi* devices; expose one as "StudioOneMCP"
+# Creates /dev/snd/midi* devices; expose one as "StudioPro-MCU"
 ```
 
 ### Windows
 ```
-Install loopMIDI (Tobias Erichsen) and create a port named "StudioOneMCP"
+Install loopMIDI (Tobias Erichsen) and create a port named "StudioPro-MCU"
 ```
 
 ---
@@ -109,7 +109,7 @@ Install loopMIDI (Tobias Erichsen) and create a port named "StudioOneMCP"
 1. Open **Studio One → Options (Preferences on Mac) → External Devices**.
 2. Click **Add** → choose **New Control Surface**.
 3. Set **Type** to "Mackie Control Universal".
-4. Set **Receive From** to the virtual MIDI port (e.g. "StudioOneMCP").
+4. Set **Receive From** to the virtual MIDI port (e.g. "StudioPro-MCU").
 5. Leave **Send To** blank (or point to a second virtual port if you want feedback).
 6. Click **OK** and close.
 
@@ -171,7 +171,7 @@ Add to `claude_desktop_config.json`:
   "mcpServers": {
     "studio-one": {
       "command": "studio-pro-mcp",
-      "args": ["--port-name", "StudioOneMCP"]
+      "args": ["--port-name", "StudioPro-MCU"]
     }
   }
 }
