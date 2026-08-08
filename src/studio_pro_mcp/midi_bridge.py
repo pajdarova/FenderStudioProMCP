@@ -77,16 +77,14 @@ _DEFAULT_MESSAGE_DELAY_S = 0.02
 # ---------------------------------------------------------------------------
 
 # F0, 00 00 66 (Mackie 3-byte manufacturer ID), <model ID>, ... , F7.
-# The spec's own model ID for Logic Control hardware is 0x10 (0x11 for the
-# XT extender) — but Studio Pro's External Device is configured as a plain
-# "Mackie Control Universal" surface, not Logic Control, so 0x14 (the real
-# MCU model ID) is used here instead. Unverified live which one Studio Pro
-# actually expects/accepts for this particular message — see TASKS.md.
+# 0x14 = Mackie Control (0x15 = XT/extender) — confirmed correct 2026-08-08
+# by sniffing real FaderPort 8 <-> Nuendo MCU traffic with MIDI-OX: both the
+# device's own connection-query handshake (F0 00 00 66 14 1A 00 F7) and the
+# host's LCD-text replies (command 0x12) use this exact model ID. The
+# Logic Control manual's own model ID (0x10/0x11) is for that specific
+# hardware, not what real MCU hosts/surfaces use in the wild.
 _SYSEX_MFR_ID = (0x00, 0x00, 0x66)
 _SYSEX_MODEL_MCU = 0x14
-
-# Channel meter mode command byte: <Hdr>, 20, ii, mm, F7 (p.118).
-_SYSEX_CMD_CHANNEL_METER_MODE = 0x20
 
 
 class MidiBridgeError(Exception):
@@ -120,9 +118,11 @@ class MidiBridge:
         self._mute_state: dict[int, bool] = {}
         self._solo_state: dict[int, bool] = {}
         self._rec_arm_state: dict[int, bool] = {}
-        # Meter levels only populate once enable_channel_meter() has been
-        # called for a channel and the DAW starts sending Channel Pressure
-        # (0xD0) meter messages — see _on_midi_in().
+        # Meter levels populate once the DAW starts sending Channel Pressure
+        # (0xD0) meter messages — see _on_midi_in(). Confirmed live 2026-08-08
+        # (real FaderPort 8 <-> Nuendo MCU traffic) that no enable handshake
+        # is needed: meters just stream as part of the normal per-strip
+        # reset-on-connect sequence.
         self._meter_levels: dict[int, float] = {}
         self._meter_overload: dict[int, bool] = {}
 
@@ -224,7 +224,9 @@ class MidiBridge:
         """Parse a Channel Pressure (0xD0) meter data byte: 0 hhh llll.
 
         High nibble bits 6-4 = channel (0-7); low nibble = level 0-C (0-100%),
-        E = set overload, F = clear overload (p.118).
+        E = set overload, F = clear overload (p.118). Confirmed byte-for-byte
+        against real FaderPort 8 <-> Nuendo MCU traffic (MIDI-OX capture,
+        2026-08-08): status is always D0, data byte = (channel<<4)|level.
         """
         channel = (data_byte >> 4) & 0x07
         level_nibble = data_byte & 0x0F
@@ -395,18 +397,6 @@ class MidiBridge:
         pan = max(-63, min(63, pan))
         cc_value = pan if pan >= 0 else 0x40 | -pan
         self._cc(_CC_VPOT_BASE + ch, cc_value)
-
-    def enable_channel_meter(
-        self, channel: int, *, level: bool = True, peak_hold: bool = False, signal_present: bool = False
-    ) -> None:
-        """Ask the DAW to start sending Channel Pressure meter data for *channel*.
-
-        The DAW sends nothing on this channel until this handshake is sent —
-        see _handle_meter_message() for the resulting data format.
-        """
-        ch = self._validate_strip(channel)
-        mm = (0x4 if level else 0) | (0x2 if peak_hold else 0) | (0x1 if signal_present else 0)
-        self._sysex([_SYSEX_CMD_CHANNEL_METER_MODE, ch, mm])
 
     # ------------------------------------------------------------------
     # Bank navigation
