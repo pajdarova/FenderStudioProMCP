@@ -31,8 +31,24 @@ _NOTE_STOP = 93
 _NOTE_PLAY = 94
 _NOTE_RECORD = 95
 _NOTE_CYCLE = 86   # Loop / Cycle
-_NOTE_SAVE = 98
-_NOTE_UNDO = 110
+
+# SAVE/UNDO cross-checked 2026-08-08 against the Emagic Logic Control MIDI
+# Implementation (v1.0, the same Mackie-licensed protocol family MCU
+# belongs to) — "Control Surface Layout and IDs", UTILITIES: SAVE = 0x50,
+# UTILITIES: UNDO = 0x51. The previous values (98, 110) didn't match
+# anything in that table (98/0x62 = Cursor Left, 110/0x6E = Fader Touch
+# Ch. 7) and were likely never verified against a real spec. Not yet
+# re-verified live against Studio Pro specifically — do that before
+# trusting these fully; Studio Pro's own MCU implementation could still
+# deviate from the reference spec.
+_NOTE_SAVE = 0x50   # 80
+_NOTE_UNDO = 0x51   # 81
+# No dedicated Redo button exists anywhere in the reference spec's ID
+# table (0x00-0x76) — Logic Control simply doesn't define one. The old
+# value (101/0x65) mapped to "Scrub" in that table, not Redo, so it was
+# almost certainly wrong too, but there's no known-correct replacement to
+# put in its place. Left unverified; transport_redo may just not have a
+# working MCU path until this is investigated live.
 _NOTE_REDO = 101
 
 # VPot relative CC base (pan encoders) — channels 0–7 → CC 16–23

@@ -59,18 +59,20 @@ class TestTransport:
         notes = [m[1] for m in msgs if m[0] == 0x90]
         assert 86 in notes
 
-    def test_save_sends_note_98(self, bridge):
+    def test_save_sends_note_0x50(self, bridge):
+        """UTILITIES: SAVE per the Emagic Logic Control MIDI Implementation spec."""
         b, midi = bridge
         b.save()
         msgs = sent_messages(midi)
         notes = [m[1] for m in msgs if m[0] == 0x90]
-        assert 98 in notes
+        assert 0x50 in notes
 
-    def test_undo_sends_note_110(self, bridge):
+    def test_undo_sends_note_0x51(self, bridge):
+        """UTILITIES: UNDO per the Emagic Logic Control MIDI Implementation spec."""
         b, midi = bridge
         b.undo()
         notes = [m[1] for m in sent_messages(midi) if m[0] == 0x90]
-        assert 110 in notes
+        assert 0x51 in notes
 
     def test_redo_sends_note_101(self, bridge):
         b, midi = bridge
