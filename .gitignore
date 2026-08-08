@@ -19,3 +19,7 @@ htmlcov/
 *.keyscheme
 *.mid
 *.wav
+
+# Reference material — copyrighted (e.g. the Emagic Logic Control manual)
+# or personal exports (keyboard shortcuts HTML). Keep locally, never publish.
+external/
