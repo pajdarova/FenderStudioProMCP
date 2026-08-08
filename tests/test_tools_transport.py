@@ -13,6 +13,7 @@ from studio_pro_mcp.tools.transport import _dispatch, _transport_tools
 def bridge():
     with patch("studio_pro_mcp.midi_bridge.rtmidi.MidiOut") as mock_cls:
         mock_out = MagicMock()
+        mock_out.get_ports.return_value = ["Test"]
         mock_cls.return_value = mock_out
         from studio_pro_mcp.midi_bridge import MidiBridge
         b = MidiBridge(port_name="Test", message_delay=0)
