@@ -98,6 +98,15 @@ _LCD_BUFFER_SIZE = 112
 _LCD_LINE2_OFFSET = 56
 _LCD_CHARS_PER_CHANNEL = 7
 
+# Host connection query: <Hdr>, 1A, 00, F7 — sent by a real control surface
+# on connect (seen from FaderPort 8 in the Nuendo MIDI-OX capture, twice at
+# startup, ~100ms apart). Our scripts never sent this — they went straight
+# to Note On/Pitch Bend/SysEx. Suspected (2026-08-08, per the user) as a
+# contributor to Studio Pro instability: without ever seeing this
+# handshake, its MCU connection state may end up in an inconsistent place,
+# especially across repeated open/close cycles from our diagnostic scripts.
+_SYSEX_CMD_HOST_CONNECTION_QUERY = 0x1A
+
 # Channel meter mode: <Hdr>, 20, ii, mm, F7 (p.118) — enables/disables
 # Channel Pressure meter data for channel ii. Global horizontal/vertical
 # mode: <Hdr>, 21, yy, F7. CORRECTION (2026-08-08): earlier today this was
@@ -209,6 +218,10 @@ class MidiBridge:
             except Exception as exc:  # never block MIDI on this
                 log.debug("Could not pin port uniqueID: %s", exc)
 
+        # Announce ourselves as a control surface, matching what a real one
+        # does on connect (FaderPort 8, per the Nuendo MIDI-OX capture).
+        self._sysex([_SYSEX_CMD_HOST_CONNECTION_QUERY, 0x00])
+
     def _open_existing_port(self, port: rtmidi.MidiIn | rtmidi.MidiOut, label: str) -> None:
         """Attach *port* to an existing port whose name contains ``port_name``.
 
@@ -308,8 +321,27 @@ class MidiBridge:
                 return ch
         return None
 
+    def _reset_display_and_meters(self) -> None:
+        """Best-effort cleanup sent on disconnect, mirroring FL Studio's OnDeInit.
+
+        Disables per-channel meters and blanks both display lines, rather
+        than just vanishing mid-session (which is what our diagnostic
+        scripts did before this — suspected, per the user, of leaving
+        Studio Pro's MCU connection state inconsistent).
+        """
+        try:
+            for ch in range(8):
+                self._sysex([_SYSEX_CMD_CHANNEL_METER_MODE, ch, 0])
+            blank_line = [0x20] * 56
+            self._sysex([_SYSEX_CMD_LCD_TEXT, 0, *blank_line])
+            self._sysex([_SYSEX_CMD_LCD_TEXT, _LCD_LINE2_OFFSET, *blank_line])
+        except MidiBridgeError:
+            pass
+
     def close(self) -> None:
         """Close the virtual MIDI ports."""
+        if self._out is not None:
+            self._reset_display_and_meters()
         if self._in is not None:
             self._in.close_port()
             del self._in

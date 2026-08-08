@@ -175,19 +175,19 @@ class TestChannelMetering:
         b, midi = bridge
         b.enable_channel_meter(2)
         sysex = [m for m in sent_messages(midi) if m[0] == 0xF0]
-        assert sysex == [[0xF0, 0x00, 0x00, 0x66, 0x14, 0x20, 2, 0x4, 0xF7]]
+        assert sysex[-1] == [0xF0, 0x00, 0x00, 0x66, 0x14, 0x20, 2, 0x4, 0xF7]
 
     def test_enable_channel_meter_mode_bits(self, bridge):
         b, midi = bridge
         b.enable_channel_meter(0, level=True, peak_hold=True, signal_present=True)
-        sysex = [m for m in sent_messages(midi) if m[0] == 0xF0][0]
+        sysex = [m for m in sent_messages(midi) if m[0] == 0xF0][-1]
         assert sysex[-2] == 0x7  # mm = 0b111
 
     def test_set_global_meter_mode_sends_sysex(self, bridge):
         b, midi = bridge
         b.set_global_meter_mode(vertical=True)
         sysex = [m for m in sent_messages(midi) if m[0] == 0xF0]
-        assert sysex == [[0xF0, 0x00, 0x00, 0x66, 0x14, 0x21, 1, 0xF7]]
+        assert sysex[-1] == [0xF0, 0x00, 0x00, 0x66, 0x14, 0x21, 1, 0xF7]
 
     def test_channel_pressure_updates_meter_level(self, bridge):
         b, _ = bridge
@@ -342,3 +342,24 @@ class TestLifecycle:
         b, midi = bridge
         b.close()
         midi.close_port.assert_called_once()
+
+    def test_open_sends_host_connection_query(self, bridge):
+        b, midi = bridge
+        sysex = [m for m in sent_messages(midi) if m[0] == 0xF0]
+        assert sysex[0] == [0xF0, 0x00, 0x00, 0x66, 0x14, 0x1A, 0x00, 0xF7]
+
+    def test_close_disables_all_channel_meters(self, bridge):
+        b, midi = bridge
+        b.close()
+        meter_off = [
+            m for m in sent_messages(midi) if m[0] == 0xF0 and len(m) > 5 and m[5] == 0x20 and m[-2] == 0
+        ]
+        assert {m[6] for m in meter_off} == set(range(8))
+
+    def test_close_blanks_both_display_lines(self, bridge):
+        b, midi = bridge
+        b.close()
+        lcd = [m for m in sent_messages(midi) if m[0] == 0xF0 and len(m) > 5 and m[5] == 0x12]
+        offsets = {m[6] for m in lcd}
+        assert offsets == {0, 56}
+        assert all(b == 0x20 for m in lcd for b in m[7:-1])
