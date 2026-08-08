@@ -194,6 +194,43 @@ class TestChannelMetering:
         assert b.get_assumed_state()["meter_overload"][5] is False
 
 
+class TestLcdChannelNames:
+    def _sysex_lcd(self, offset: int, text: str) -> list[int]:
+        return [0xF0, 0x00, 0x00, 0x66, 0x14, 0x12, offset, *text.encode("ascii"), 0xF7]
+
+    def test_line2_sysex_decodes_channel_names(self, bridge):
+        b, _ = bridge
+        text = "01_Loo 02_Loo 03_Loo 04_Loo 05_Loo 06_Loo 07_Loo 08_Loo"
+        b._on_midi_in((self._sysex_lcd(56, text), 0.0))
+        names = b.get_assumed_state()["channel_names"]
+        assert names[0] == "01_Loo"
+        assert names[1] == "02_Loo"
+        assert names[7] == "08_Loo"
+
+    def test_find_channel_by_name_case_insensitive_substring(self, bridge):
+        b, _ = bridge
+        text = "HELPERS Drums  Bass   Vocals "
+        b._on_midi_in((self._sysex_lcd(56, text), 0.0))
+        assert b.find_channel_by_name("helpers") == 0
+        assert b.find_channel_by_name("drum") == 1
+        assert b.find_channel_by_name("nonexistent") is None
+
+    def test_line1_sysex_does_not_populate_channel_names(self, bridge):
+        b, _ = bridge
+        b._on_midi_in((self._sysex_lcd(0, "Pan Left-Right Page:01/02"), 0.0))
+        assert b.get_assumed_state()["channel_names"] == {}
+
+    def test_non_lcd_sysex_command_ignored(self, bridge):
+        b, _ = bridge
+        b._on_midi_in(([0xF0, 0x00, 0x00, 0x66, 0x14, 0x1A, 0x00, 0xF7], 0.0))
+        assert b.get_assumed_state()["channel_names"] == {}
+
+    def test_sysex_from_other_manufacturer_ignored(self, bridge):
+        b, _ = bridge
+        b._on_midi_in(([0xF0, 0x00, 0x01, 0x06, 0x02, 0x12, 56, ord("X"), 0xF7], 0.0))
+        assert b.get_assumed_state()["channel_names"] == {}
+
+
 class TestMixerButtons:
     def test_toggle_mute_toggles_state(self, bridge):
         b, midi = bridge

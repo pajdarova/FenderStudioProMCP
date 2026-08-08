@@ -86,6 +86,18 @@ _DEFAULT_MESSAGE_DELAY_S = 0.02
 _SYSEX_MFR_ID = (0x00, 0x00, 0x66)
 _SYSEX_MODEL_MCU = 0x14
 
+# LCD text command byte: <Hdr>, 12, oo, <ascii text>, F7 (p.109-110).
+# oo = offset into a 112-byte display buffer (2 lines x 56 chars = 8
+# channels x 7 chars/line). Confirmed live 2026-08-08 (MIDI-OX capture,
+# real FaderPort 8 <-> Nuendo): offset 0x38 (56, line 2) carried genuine
+# per-channel track names ("01_Loo 02_Loo ..." — 7 chars/channel,
+# space-padded/truncated); offset 0x00 (line 1) carried a single
+# non-per-channel status string ("Pan Left-Right Page:01/02").
+_SYSEX_CMD_LCD_TEXT = 0x12
+_LCD_BUFFER_SIZE = 112
+_LCD_LINE2_OFFSET = 56
+_LCD_CHARS_PER_CHANNEL = 7
+
 
 class MidiBridgeError(Exception):
     """Raised when the MIDI bridge cannot open a port or send a message."""
@@ -125,6 +137,10 @@ class MidiBridge:
         # reset-on-connect sequence.
         self._meter_levels: dict[int, float] = {}
         self._meter_overload: dict[int, bool] = {}
+        # Raw LCD display buffer (2 lines x 56 chars) plus the channel
+        # names decoded from its second line — see _handle_lcd_text().
+        self._lcd_buffer = bytearray(b" " * _LCD_BUFFER_SIZE)
+        self._channel_names: dict[int, str] = {}
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -205,6 +221,9 @@ class MidiBridge:
         a plain dict write, same as everything else this cache does.
         """
         message, _delta_time = event
+        if message and message[0] == 0xF0:
+            self._handle_sysex(message)
+            return
         if len(message) >= 2 and message[0] == CHANNEL_PRESSURE:
             self._handle_meter_message(message[1])
             return
@@ -236,6 +255,43 @@ class MidiBridge:
             self._meter_overload[channel] = False
         elif level_nibble <= 0xC:
             self._meter_levels[channel] = level_nibble / 0xC * 100.0
+
+    def _handle_sysex(self, message: list[int]) -> None:
+        """Dispatch an incoming SysEx message: F0, 00 00 66, <model>, <cmd>, ..., F7."""
+        if len(message) < 7 or message[-1] != 0xF7:
+            return
+        if tuple(message[1:4]) != _SYSEX_MFR_ID:
+            return
+        command = message[5]
+        if command == _SYSEX_CMD_LCD_TEXT and len(message) >= 8:
+            self._handle_lcd_text(message[6], message[7:-1])
+
+    def _handle_lcd_text(self, offset: int, text_bytes: list[int]) -> None:
+        """Write *text_bytes* into the display buffer at *offset* and re-decode channel names."""
+        end = min(offset + len(text_bytes), _LCD_BUFFER_SIZE)
+        n = end - offset
+        if n <= 0:
+            return
+        self._lcd_buffer[offset:end] = bytes(text_bytes[:n])
+        self._update_channel_names()
+
+    def _update_channel_names(self) -> None:
+        line2 = bytes(self._lcd_buffer[_LCD_LINE2_OFFSET : _LCD_LINE2_OFFSET + 56])
+        for ch in range(8):
+            start = ch * _LCD_CHARS_PER_CHANNEL
+            name = line2[start : start + _LCD_CHARS_PER_CHANNEL].decode("ascii", errors="replace").strip()
+            if name:
+                self._channel_names[ch] = name
+            else:
+                self._channel_names.pop(ch, None)
+
+    def find_channel_by_name(self, name: str) -> int | None:
+        """Return the channel index whose last-known LCD name contains *name* (case-insensitive)."""
+        wanted = name.lower()
+        for ch, ch_name in self._channel_names.items():
+            if wanted in ch_name.lower():
+                return ch
+        return None
 
     def close(self) -> None:
         """Close the virtual MIDI ports."""
@@ -459,6 +515,7 @@ class MidiBridge:
             "rec_arm": dict(self._rec_arm_state),
             "meter_levels": dict(self._meter_levels),
             "meter_overload": dict(self._meter_overload),
+            "channel_names": dict(self._channel_names),
         }
 
     # ------------------------------------------------------------------
