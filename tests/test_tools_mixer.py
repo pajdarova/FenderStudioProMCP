@@ -12,10 +12,16 @@ from studio_pro_mcp.tools.mixer import _dispatch, _mixer_tools
 
 @pytest.fixture()
 def bridge():
-    with patch("studio_pro_mcp.midi_bridge.rtmidi.MidiOut") as mock_cls:
+    with (
+        patch("studio_pro_mcp.midi_bridge.rtmidi.MidiOut") as mock_cls,
+        patch("studio_pro_mcp.midi_bridge.rtmidi.MidiIn") as mock_in_cls,
+    ):
         mock_out = MagicMock()
         mock_out.get_ports.return_value = ["Test"]
         mock_cls.return_value = mock_out
+        mock_in = MagicMock()
+        mock_in.get_ports.return_value = ["Test"]
+        mock_in_cls.return_value = mock_in
         from studio_pro_mcp.midi_bridge import MidiBridge
         b = MidiBridge(port_name="Test", message_delay=0)
         b.open()

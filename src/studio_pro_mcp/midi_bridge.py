@@ -78,8 +78,13 @@ class MidiBridge:
         self._port_name = port_name
         self._message_delay = message_delay
         self._out: rtmidi.MidiOut | None = None
+        self._in: rtmidi.MidiIn | None = None
         self._current_bank: int = 0
-        # Optimistic state cache — populated when we send commands
+        # Fader levels start as an optimistic cache (populated when we send
+        # commands) but are overwritten with confirmed values whenever the
+        # DAW echoes fader position back over the input port — see
+        # _on_midi_in(). Mute/solo/rec-arm stay optimistic-only; MCU as
+        # implemented here doesn't parse their feedback messages.
         self._fader_levels: dict[str | int, float] = {}
         self._mute_state: dict[int, bool] = {}
         self._solo_state: dict[int, bool] = {}
@@ -90,27 +95,35 @@ class MidiBridge:
     # ------------------------------------------------------------------
 
     def open(self) -> None:
-        """Open the MIDI output port.
+        """Open the MIDI output port, plus a paired input port for feedback.
 
         On macOS and Linux a virtual port is created on the fly. The Windows
         backend of python-rtmidi (WinMM) cannot create virtual ports, so there
         we attach to an already existing loopback port instead — created by
         loopMIDI, LoopBe1 or a comparable tool and named after ``port_name``.
+        The input side lets Studio One echo fader positions (and, in future,
+        meters) back to us instead of relying solely on what we last sent.
         """
         if self._out is not None:
             return
         try:
             self._out = rtmidi.MidiOut()
+            self._in = rtmidi.MidiIn()
             if platform.system() == "Windows":
-                self._open_existing_port()
+                self._open_existing_port(self._out, "output")
+                self._open_existing_port(self._in, "input")
             else:
                 self._out.open_virtual_port(self._port_name)
+                self._in.open_virtual_port(self._port_name)
                 log.info("Opened virtual MIDI port: %s", self._port_name)
+            self._in.set_callback(self._on_midi_in)
         except MidiBridgeError:
             self._out = None
+            self._in = None
             raise
         except Exception as exc:
             self._out = None
+            self._in = None
             raise MidiBridgeError(f"Failed to open MIDI port '{self._port_name}': {exc}") from exc
 
         # macOS only: pin a stable uniqueID so a saved Studio One device
@@ -125,28 +138,51 @@ class MidiBridge:
             except Exception as exc:  # never block MIDI on this
                 log.debug("Could not pin port uniqueID: %s", exc)
 
-    def _open_existing_port(self) -> None:
-        """Attach to an existing output port whose name contains ``port_name``.
+    def _open_existing_port(self, port: rtmidi.MidiIn | rtmidi.MidiOut, label: str) -> None:
+        """Attach *port* to an existing port whose name contains ``port_name``.
 
         Windows has no virtual-port support, so the loopback port must already
-        exist before the server starts.
+        exist before the server starts. Works for both ``MidiIn`` and
+        ``MidiOut`` — both expose the same ``get_ports``/``open_port`` shape.
         """
-        assert self._out is not None
-        available = self._out.get_ports()
+        available = port.get_ports()
         wanted = self._port_name.lower()
         for index, name in enumerate(available):
             if wanted in name.lower():
-                self._out.open_port(index)
-                log.info("Opened existing MIDI port %d: %s", index, name)
+                port.open_port(index)
+                log.info("Opened existing MIDI %s port %d: %s", label, index, name)
                 return
         raise MidiBridgeError(
-            f"No MIDI output port matching '{self._port_name}' was found. "
+            f"No MIDI {label} port matching '{self._port_name}' was found. "
             f"On Windows, create a loopback port with that name first "
             f"(loopMIDI). Available ports: {available or 'none'}"
         )
 
+    def _on_midi_in(self, event: tuple[list[int], float], _data: object = None) -> None:
+        """Fold incoming MCU feedback into the fader-level cache.
+
+        Runs on rtmidi's own callback thread, not the asyncio loop — kept to
+        a plain dict write, same as everything else this cache does.
+        """
+        message, _delta_time = event
+        if len(message) < 3:
+            return
+        status, lsb, msb = message[0], message[1], message[2]
+        if status & 0xF0 != PITCH_BEND:
+            return
+        channel = status & 0x0F
+        value = (msb << 7) | lsb
+        level = value / _PB_MAX * 100.0
+        key: str | int = "master" if channel == _MIDI_CH_MASTER_FADER else channel
+        if key == "master" or 0 <= channel <= 7:
+            self._fader_levels[key] = level
+
     def close(self) -> None:
-        """Close the virtual MIDI port."""
+        """Close the virtual MIDI ports."""
+        if self._in is not None:
+            self._in.close_port()
+            del self._in
+            self._in = None
         if self._out is not None:
             self._out.close_port()
             del self._out

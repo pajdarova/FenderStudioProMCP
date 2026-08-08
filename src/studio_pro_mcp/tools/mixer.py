@@ -115,8 +115,11 @@ def _mixer_tools() -> list[Tool]:
         Tool(
             name="mixer_get_state",
             description=(
-                "Return the optimistic (last-sent) mixer state cached by the MCP server. "
-                "Because MCU is write-only, these values reflect commands sent, not confirmed DAW state."
+                "Return the mixer state cached by the MCP server. Fader levels are "
+                "confirmed values when Studio One echoes fader position back over MIDI, "
+                "falling back to the last value this server sent otherwise. Mute/solo/"
+                "rec-arm are always optimistic (last commands sent, not confirmed DAW state) "
+                "— MCU as implemented here doesn't parse their feedback messages."
             ),
             input_schema={"type": "object", "properties": {}, "required": []},
         ),

@@ -11,10 +11,16 @@ from studio_pro_mcp.midi_bridge import MidiBridge, MidiBridgeError
 
 @pytest.fixture()
 def bridge():
-    with patch("studio_pro_mcp.midi_bridge.rtmidi.MidiOut") as mock_out_cls:
+    with (
+        patch("studio_pro_mcp.midi_bridge.rtmidi.MidiOut") as mock_out_cls,
+        patch("studio_pro_mcp.midi_bridge.rtmidi.MidiIn") as mock_in_cls,
+    ):
         mock_out = MagicMock()
         mock_out.get_ports.return_value = ["TestPort"]
         mock_out_cls.return_value = mock_out
+        mock_in = MagicMock()
+        mock_in.get_ports.return_value = ["TestPort"]
+        mock_in_cls.return_value = mock_in
         b = MidiBridge(port_name="TestPort", message_delay=0)
         b.open()
         yield b, mock_out
@@ -114,6 +120,42 @@ class TestMixerFader:
         b, _ = bridge
         with pytest.raises(ValueError):
             b.set_fader(9, 50)
+
+
+class TestMidiInFeedback:
+    def test_pitch_bend_updates_channel_fader_level(self, bridge):
+        b, _ = bridge
+        # channel 2 (0-indexed), full-scale pitch bend (0x7F, 0x7F -> 16383)
+        b._on_midi_in(([0xE2, 0x7F, 0x7F], 0.0))
+        assert b.get_assumed_state()["fader_levels"][2] == pytest.approx(100.0)
+
+    def test_pitch_bend_zero_maps_to_zero_level(self, bridge):
+        b, _ = bridge
+        b._on_midi_in(([0xE0, 0x00, 0x00], 0.0))
+        assert b.get_assumed_state()["fader_levels"][0] == pytest.approx(0.0)
+
+    def test_pitch_bend_master_channel_maps_to_master_key(self, bridge):
+        b, _ = bridge
+        b._on_midi_in(([0xE8, 0x00, 0x40], 0.0))  # channel 8 (0-indexed) = master
+        assert "master" in b.get_assumed_state()["fader_levels"]
+        assert 0 not in b.get_assumed_state()["fader_levels"]
+
+    def test_confirmed_feedback_overrides_optimistic_send(self, bridge):
+        b, _ = bridge
+        b.set_fader(0, 100)
+        assert b.get_assumed_state()["fader_levels"][0] == pytest.approx(100.0)
+        b._on_midi_in(([0xE0, 0x00, 0x00], 0.0))  # DAW reports it's actually at 0
+        assert b.get_assumed_state()["fader_levels"][0] == pytest.approx(0.0)
+
+    def test_non_pitch_bend_message_ignored(self, bridge):
+        b, _ = bridge
+        b._on_midi_in(([0x90, 60, 127], 0.0))  # note-on, not pitch bend
+        assert b.get_assumed_state()["fader_levels"] == {}
+
+    def test_short_message_ignored(self, bridge):
+        b, _ = bridge
+        b._on_midi_in(([0xE0], 0.0))
+        assert b.get_assumed_state()["fader_levels"] == {}
 
 
 class TestMixerButtons:
