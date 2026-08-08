@@ -44,12 +44,11 @@ _NOTE_CYCLE = 86   # Loop / Cycle
 _NOTE_SAVE = 0x50   # 80
 _NOTE_UNDO = 0x51   # 81
 # No dedicated Redo button exists anywhere in the reference spec's ID
-# table (0x00-0x76) — Logic Control simply doesn't define one. The old
-# value (101/0x65) mapped to "Scrub" in that table, not Redo, so it was
-# almost certainly wrong too, but there's no known-correct replacement to
-# put in its place. Left unverified; transport_redo may just not have a
-# working MCU path until this is investigated live.
-_NOTE_REDO = 101
+# table (0x00-0x76) — Logic Control simply doesn't define one. Per the
+# manual's prose (Function Button Zone, p.72; Functions and Menus, p.96):
+# "Holding down the SHIFT button while pressing UNDO performs a 'Redo'."
+# So Redo = SHIFT (0x46) held + UNDO (0x51) pressed, not its own note.
+_NOTE_SHIFT = 0x46  # 70
 
 # VPot relative CC base (pan encoders) — channels 0–7 → CC 16–23
 _CC_VPOT_BASE = 16
@@ -277,7 +276,12 @@ class MidiBridge:
         self._button_press(_NOTE_UNDO)
 
     def redo(self) -> None:
-        self._button_press(_NOTE_REDO)
+        """Redo = hold SHIFT while pressing UNDO (Logic Control has no dedicated Redo ID)."""
+        self._note_on(_NOTE_SHIFT)
+        time.sleep(self._message_delay)
+        self._button_press(_NOTE_UNDO)
+        time.sleep(self._message_delay)
+        self._note_off(_NOTE_SHIFT)
 
     # ------------------------------------------------------------------
     # Mixer commands

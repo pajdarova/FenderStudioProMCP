@@ -74,11 +74,21 @@ class TestTransport:
         notes = [m[1] for m in sent_messages(midi) if m[0] == 0x90]
         assert 0x51 in notes
 
-    def test_redo_sends_note_101(self, bridge):
+    def test_redo_holds_shift_while_pressing_undo(self, bridge):
+        """Logic Control has no dedicated Redo ID: SHIFT (0x46) held + UNDO (0x51) pressed."""
         b, midi = bridge
         b.redo()
-        notes = [m[1] for m in sent_messages(midi) if m[0] == 0x90]
-        assert 101 in notes
+        msgs = sent_messages(midi)
+        note_on_notes = [m[1] for m in msgs if m[0] == 0x90 and m[2] > 0]
+        note_off_notes = [m[1] for m in msgs if m[0] == 0x90 and m[2] == 0]
+        assert 0x46 in note_on_notes  # SHIFT pressed
+        assert 0x51 in note_on_notes  # UNDO pressed
+        assert 0x46 in note_off_notes  # SHIFT released
+        # SHIFT must go down before UNDO and come up after it
+        shift_on_idx = next(i for i, m in enumerate(msgs) if m[1] == 0x46 and m[2] > 0)
+        undo_on_idx = next(i for i, m in enumerate(msgs) if m[1] == 0x51 and m[2] > 0)
+        shift_off_idx = next(i for i, m in enumerate(msgs) if m[1] == 0x46 and m[2] == 0)
+        assert shift_on_idx < undo_on_idx < shift_off_idx
 
 
 class TestMixerFader:
