@@ -157,6 +157,7 @@ class TestSendCommand:
     @pytest.mark.asyncio
     async def test_sends_first_shortcut_for_command(self):
         with (
+            patch("platform.system", return_value="Windows"),
             patch(
                 "studio_pro_mcp.keyscheme.load_shortcuts",
                 return_value={"Edit|Undo": ["ctrl+z", "vk:0x5A"]},
@@ -172,6 +173,7 @@ class TestSendCommand:
     @pytest.mark.asyncio
     async def test_confirm_dialog_adds_return_followup(self):
         with (
+            patch("platform.system", return_value="Windows"),
             patch(
                 "studio_pro_mcp.keyscheme.load_shortcuts",
                 return_value={"File|Save New Version": ["ctrl+shift+alt+s"]},
