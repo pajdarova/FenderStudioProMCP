@@ -165,6 +165,10 @@ class MidiBridge:
         # names decoded from its second line — see _handle_lcd_text().
         self._lcd_buffer = bytearray(b" " * _LCD_BUFFER_SIZE)
         self._channel_names: dict[int, str] = {}
+        # Tracks which channel select_channel() last chose, so a focus-info
+        # LCD broadcast (see _update_channel_names()) can be attributed to
+        # the right channel index instead of the literal display slot.
+        self._last_selected_channel: int | None = None
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -303,11 +307,50 @@ class MidiBridge:
         self._lcd_buffer[offset:end] = bytes(text_bytes[:n])
         self._update_channel_names()
 
+    @staticmethod
+    def _decode_slot(raw: bytes) -> str:
+        text = raw.decode("ascii", errors="replace")
+        return "".join(c for c in text if c.isprintable()).strip()
+
+    def _slots(self, line_offset: int) -> list[str]:
+        line = bytes(self._lcd_buffer[line_offset : line_offset + 56])
+        return [
+            self._decode_slot(line[ch * _LCD_CHARS_PER_CHANNEL : (ch + 1) * _LCD_CHARS_PER_CHANNEL])
+            for ch in range(8)
+        ]
+
     def _update_channel_names(self) -> None:
-        line2 = bytes(self._lcd_buffer[_LCD_LINE2_OFFSET : _LCD_LINE2_OFFSET + 56])
-        for ch in range(8):
-            start = ch * _LCD_CHARS_PER_CHANNEL
-            name = line2[start : start + _LCD_CHARS_PER_CHANNEL].decode("ascii", errors="replace").strip()
+        """Re-derive channel names from the display buffer.
+
+        LCD content is display-mode-dependent (confirmed live 2026-08-08 —
+        see MackieShared.js's per-ChannelAssignmentMode updateChannel()
+        logic): a plain per-channel names broadcast (seen from Nuendo) puts
+        8 names in the VALUE row (offset 56+), one per channel slot. But
+        select_channel() triggers a *focus-info* broadcast instead (Pan
+        Focus Mode, "Simple" panner type per the JS): LABEL slot 0 holds a
+        static "Pan L/R" title (not a channel name — the first version of
+        this check wrongly required *only* slot 7 populated, which slot 0's
+        static title always broke), LABEL slot 7 holds the *selected*
+        channel's own name, VALUE slot 0 holds its pan reading (e.g. "<C>",
+        "L45"), VALUE slot 7 holds the panner-type label ("Simple"). Fixed
+        to key off slot 7 alone (ignoring slot 0), confirmed 8/8 correct
+        live against a known channel-name mapping (Studio Pro's own 7-char
+        abbreviation, e.g. "Kick _01" -> "Kick_01", may not match verbatim).
+        We track which channel select_channel() last chose so that slot 7
+        gets attributed to the right index instead of literally "channel 7".
+        """
+        label_slots = self._slots(0)
+        value_slots = self._slots(_LCD_LINE2_OFFSET)
+
+        if (
+            self._last_selected_channel is not None
+            and label_slots[7]
+            and not any(label_slots[1:7])
+        ):
+            self._channel_names[self._last_selected_channel] = label_slots[7]
+            return
+
+        for ch, name in enumerate(value_slots):
             if name:
                 self._channel_names[ch] = name
             else:
@@ -487,6 +530,7 @@ class MidiBridge:
     def select_channel(self, channel: int) -> None:
         ch = self._validate_strip(channel)
         self._button_press(_NOTE_SELECT_BASE + ch)
+        self._last_selected_channel = ch
 
     def set_pan(self, channel: int, pan: int) -> None:
         """Adjust pan via a relative VPot encoder message.

@@ -225,6 +225,40 @@ class TestLcdChannelNames:
         assert names[1] == "02_Loo"
         assert names[7] == "08_Loo"
 
+    def test_focus_info_broadcast_attributed_to_selected_channel(self, bridge):
+        """select_channel() triggers a focus-info LCD write: only slot 7 (label
+        row) is populated, with the *selected* channel's own name — confirmed
+        live 2026-08-08 against a known 8-channel mapping (8/8 correct)."""
+        b, midi = bridge
+        b.select_channel(3)
+        label_row = " " * 49 + "Tom_01"  # slot 7 = chars 49-55
+        b._on_midi_in((self._sysex_lcd(0, label_row), 0.0))
+        names = b.get_assumed_state()["channel_names"]
+        assert names[3] == "Tom_01"
+        assert 7 not in names
+
+    def test_focus_info_ignored_without_prior_select_channel(self, bridge):
+        b, _ = bridge
+        label_row = " " * 49 + "Tom_01"
+        b._on_midi_in((self._sysex_lcd(0, label_row), 0.0))
+        assert b.get_assumed_state()["channel_names"] == {}
+
+    def test_focus_info_with_static_pan_title_in_slot0_still_attributed(self, bridge):
+        """Slot 0 ('Pan L/R', a static non-channel title) must not defeat detection —
+        real Studio Pro traffic always includes it alongside the slot 7 name."""
+        b, _ = bridge
+        b.select_channel(0)
+        label_row = "Pan L/R" + " " * 42 + "PERCS  "
+        b._on_midi_in((self._sysex_lcd(0, label_row), 0.0))
+        assert b.get_assumed_state()["channel_names"][0] == "PERCS"
+
+    def test_decode_slot_strips_stray_null_bytes(self, bridge):
+        b, _ = bridge
+        b.select_channel(2)
+        label_row = " " * 49 + "LTm_01\x00"
+        b._on_midi_in((self._sysex_lcd(0, label_row), 0.0))
+        assert b.get_assumed_state()["channel_names"][2] == "LTm_01"
+
     def test_find_channel_by_name_case_insensitive_substring(self, bridge):
         b, _ = bridge
         text = "HELPERS Drums  Bass   Vocals "
